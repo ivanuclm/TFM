@@ -1,0 +1,8 @@
+fastapi
+uvicorn[standard]
+httpx
+polyline
+joblib
+numpy
+scikit-learn
+xgboost

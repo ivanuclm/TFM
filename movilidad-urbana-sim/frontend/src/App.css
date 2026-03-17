@@ -1,0 +1,160 @@
+.app-root {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Cabecera */
+.app-header-title {
+  margin: 0;
+  font-size: 2.1rem;
+  font-weight: 600;
+}
+
+.app-header-subtitle {
+  margin: 0.25rem 0 0;
+  color: #4b5563;
+  font-size: 0.95rem;
+}
+
+/* Contenedor principal */
+.app-main {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* En escritorio: mapa grande a la izquierda, panel a la derecha */
+@media (min-width: 900px) {
+  .app-main {
+    display: grid;
+    /* Mapa mucho más ancho que el panel */
+    grid-template-columns: minmax(0, 5fr) minmax(0, 2fr);
+    align-items: stretch;
+    gap: 1.5rem;
+  }
+}
+
+.card {
+  background: #ffffff;
+  border-radius: 0.75rem;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
+  padding: 1rem 1.25rem;
+}
+
+/* Que la tarjeta del mapa ocupe casi toda la altura de la ventana */
+.map-card {
+  height: calc(100vh - 200px); /* ajusta 200 según lo que ocupe la cabecera */
+  display: flex;
+  flex-direction: column;
+}
+
+.section-title {
+  margin: 0 0 0.5rem;
+  font-size: 1.1rem;
+}
+
+/* El MapContainer usará todo el espacio disponible de la tarjeta */
+.map-container {
+  flex: 1;
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+/* Panel de modos + tabla */
+.mode-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0.25rem 0 0.75rem;
+}
+
+.mode-button {
+  padding: 0.25rem 0.85rem;
+  border-radius: 999px;
+  border: 1px solid #d4d4d8;
+  background: #f4f4f5;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.mode-button--active {
+  background: #2563eb;
+  border-color: #2563eb;
+  color: #ffffff;
+}
+
+.primary-button {
+  margin-bottom: 0.75rem;
+  padding: 0.45rem 1.1rem;
+  border-radius: 0.5rem;
+  border: none;
+  background: #16a34a;
+  color: white;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.primary-button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.error-text {
+  color: #b91c1c;
+  margin-top: 0.25rem;
+}
+
+.routes-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.routes-table th,
+.routes-table td {
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid #e4e4e7;
+  text-align: left;
+}
+
+.row-active {
+  background: #eff6ff;
+}
+
+.marker-circle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: bold;
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.4);
+}
+
+.marker-origin {
+  background-color: #16a34a; /* verde */
+}
+
+.marker-destination {
+  background-color: #dc2626; /* rojo */
+}
+
+.tooltip-chip {
+  border: none;
+  border-radius: 999px;
+  padding: 2px 6px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  background-color: #e5e7eb;
+  color: #111827;
+  white-space: nowrap;
+}
+
+.tooltip-chip:hover {
+  background-color: #d1d5db;
+}
