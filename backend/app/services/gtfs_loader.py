@@ -10,7 +10,7 @@ from typing import Dict, List, Optional, Tuple, Set
 
 
 DEFAULT_GTFS_DIR = (
-    Path(__file__).resolve().parents[2] / "data" / "gtfs" / "GTFS_Urbano_Toledo"
+    Path(__file__).resolve().parents[2] / "data" / "gtfs" / "GTFS_Urbano_Toledo_2026"
 )
 
 

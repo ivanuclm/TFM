@@ -109,9 +109,9 @@ docker run --rm -v "f:/TFM/otp-toledo:/var/opentripplanner" opentripplanner/open
 ### 5.1 OSRM
 
 ```powershell
-docker run -d --name osrm-car  -p 5000:5000 -v "f:/TFM/osrm-clm/car:/data"  osrm/osrm-backend:v5.27.0 osrm-routed --algorithm mld /data/clm.osrm
-docker run -d --name osrm-bike -p 5001:5000 -v "f:/TFM/osrm-clm/bike:/data" osrm/osrm-backend:v5.27.0 osrm-routed --algorithm mld /data/clm.osrm
-docker run -d --name osrm-foot -p 5002:5000 -v "f:/TFM/osrm-clm/foot:/data" osrm/osrm-backend:v5.27.0 osrm-routed --algorithm mld /data/clm.osrm
+docker run -d --name osrm-car  -p 5000:5000 -v "f:/TFM/osrm-clm/car:/data"  osrm/osrm-backend:latest osrm-routed --algorithm mld /data/clm.osrm
+docker run -d --name osrm-bike -p 5001:5000 -v "f:/TFM/osrm-clm/bike:/data" osrm/osrm-backend:latest osrm-routed --algorithm mld /data/clm.osrm
+docker run -d --name osrm-foot -p 5002:5000 -v "f:/TFM/osrm-clm/foot:/data" osrm/osrm-backend:latest osrm-routed --algorithm mld /data/clm.osrm
 ```
 
 ### 5.2 OTP
@@ -156,7 +156,7 @@ Frontend:
 
 ## 7) Dependencias backend (estado real)
 
-No existe `requirements.txt` en `backend/` ahora mismo.
+Existe `requirements.txt` en `backend/` para facilitar dockerizacion y recreacion del entorno.
 
 Si creas un entorno nuevo desde cero:
 

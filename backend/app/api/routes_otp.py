@@ -1,6 +1,7 @@
 # backend/app/api/routes_otp.py
 
 from datetime import datetime
+import os
 from typing import List, Optional
 
 import httpx
@@ -11,7 +12,10 @@ from pydantic import BaseModel
 router = APIRouter(prefix="/api/otp", tags=["otp"])
 
 # Si lo tienes en otro puerto, ajusta aquí (tú usas 8080)
-OTP_PLAN_URL = "http://localhost:8080/otp/routers/default/plan"
+OTP_PLAN_URL = os.environ.get(
+    "OTP_PLAN_URL",
+    "http://localhost:8080/otp/routers/default/plan",
+)
 
 
 class Point(BaseModel):

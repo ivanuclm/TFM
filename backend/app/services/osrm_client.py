@@ -1,4 +1,5 @@
 import httpx
+import os
 from typing import Literal
 
 
@@ -9,9 +10,9 @@ OSRM_BASE_URLS = {
     # "driving": "https://routing.openstreetmap.de/routed-car",
     # "cycling": "https://routing.openstreetmap.de/routed-bike",
     # "foot": "https://routing.openstreetmap.de/routed-foot",
-    "driving": "http://127.0.0.1:5000", # Usamos instancia local de OSRM con perfil car.lua
-    "cycling": "http://127.0.0.1:5001", # bike.lua
-    "foot":    "http://127.0.0.1:5002", # foot.lua
+    "driving": os.environ.get("OSRM_DRIVING_URL", "http://127.0.0.1:5000"),
+    "cycling": os.environ.get("OSRM_CYCLING_URL", "http://127.0.0.1:5001"),
+    "foot": os.environ.get("OSRM_FOOT_URL", "http://127.0.0.1:5002"),
 }
 
 

@@ -3,6 +3,9 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { MapView } from "./components/MapView";
 import "./App.css";
 
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL ?? "http://127.0.0.1:8000";
+
 type Profile = "driving" | "cycling" | "foot";
 type UiMode = Profile | "transit";
 
@@ -152,7 +155,7 @@ async function fetchRoutes(
   origin: Point,
   destination: Point
 ): Promise<RouteResponse> {
-  const res = await fetch("http://127.0.0.1:8000/api/osrm/routes", {
+  const res = await fetch(`${API_BASE_URL}/api/osrm/routes`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -178,7 +181,7 @@ async function fetchTransitRoute(
     payload.itinerary_index = itineraryIndex;
   }
 
-  const res = await fetch("http://127.0.0.1:8000/api/otp/routes", {
+  const res = await fetch(`${API_BASE_URL}/api/otp/routes`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
@@ -198,7 +201,7 @@ async function fetchLpmcPredict(
   user_profile: LpmcUserProfile,
   itinerary_index?: number
 ): Promise<LpmcPredictResponse> {
-  const res = await fetch("http://127.0.0.1:8000/api/lpmc/predict", {
+  const res = await fetch(`${API_BASE_URL}/api/lpmc/predict`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ origin, destination, user_profile, itinerary_index }),
@@ -213,7 +216,7 @@ async function fetchLpmcDebug(
   user_profile: LpmcUserProfile,
   itinerary_index?: number
 ): Promise<LpmcDebugResponse> {
-  const res = await fetch("http://127.0.0.1:8000/api/lpmc/debug-features", {
+  const res = await fetch(`${API_BASE_URL}/api/lpmc/debug-features`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ origin, destination, user_profile, itinerary_index }),
@@ -395,7 +398,7 @@ function App() {
     queryKey: ["gtfs-stops"],
     queryFn: async () => {
       const res = await fetch(
-        "http://127.0.0.1:8000/api/gtfs/stops?limit=5000"
+        `${API_BASE_URL}/api/gtfs/stops?limit=5000`
       );
       if (!res.ok) throw new Error("Error cargando paradas GTFS");
       return res.json();
@@ -407,7 +410,7 @@ function App() {
   const gtfsRoutesQuery = useQuery<TransitRouteListItem[]>({
     queryKey: ["gtfs-routes"],
     queryFn: async () => {
-      const res = await fetch("http://127.0.0.1:8000/api/gtfs/routes");
+      const res = await fetch(`${API_BASE_URL}/api/gtfs/routes`);
       if (!res.ok) throw new Error("Error cargando rutas GTFS");
       return res.json();
     },
@@ -420,7 +423,7 @@ function App() {
     enabled: !!selectedTransitRouteId,
     queryFn: async () => {
       const res = await fetch(
-        `http://127.0.0.1:8000/api/gtfs/routes/${selectedTransitRouteId}`
+        `${API_BASE_URL}/api/gtfs/routes/${selectedTransitRouteId}`
       );
       if (!res.ok) throw new Error("Error cargando detalles de ruta GTFS");
       return res.json();
@@ -441,7 +444,7 @@ function App() {
         params.set("date", scheduleDate);
       }
       const res = await fetch(
-        `http://127.0.0.1:8000/api/gtfs/routes/${selectedTransitRouteId}/schedule?${params.toString()}`
+        `${API_BASE_URL}/api/gtfs/routes/${selectedTransitRouteId}/schedule?${params.toString()}`
       );
       if (!res.ok) throw new Error("Error cargando horarios GTFS");
       return res.json();
@@ -1192,6 +1195,5 @@ function App() {
 }
 
 export default App;
-
 
 

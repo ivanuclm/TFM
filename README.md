@@ -10,6 +10,9 @@ Este repositorio contiene el código del Trabajo Fin de Máster orientado al **a
 
 El objetivo final es disponer de un simulador capaz de combinar tiempos y distancias reales de red (OSRM/OTP) con preferencias aprendidas a partir del LPMC para estimar qué modo de transporte escogería un usuario en Toledo (walk, cycle, pt, drive).
 
+Nota de organizacion:
+Actualmente existe ademas una capa de orquestacion en la raiz `F:/TFM`, con `docker-compose.yml`, pensada para coordinar frontend, backend, OSRM y OTP desde un unico punto de entrada. Este README sigue siendo valido como referencia tecnica del simulador, pero el arranque unificado se documenta en `F:/TFM/README.md`.
+
 ---
 
 ## 1. Estructura del repositorio

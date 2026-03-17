@@ -43,10 +43,28 @@ def _resolve_model_paths() -> tuple[Path, Path]:
         return Path(model_override), Path(scaler_override)
 
     models_dir = _project_root() / "lpmc" / "models"
-    model_candidates = [
-        models_dir / "xgb_lpmc_tuned.joblib",
-        models_dir / "xgb_lpmc_baseline.joblib",
-    ]
+    variant = os.environ.get("LPMC_MODEL_VARIANT", "nohh").strip().lower()
+    if variant == "legacy":
+        model_candidates = [
+            models_dir / "xgb_lpmc_tuned.joblib",
+            models_dir / "xgb_lpmc_baseline.joblib",
+        ]
+        scaler_candidates = [
+            models_dir / "xgb_lpmc_scaler.joblib",
+        ]
+    else:
+        # Default: model trained without household_id as input feature.
+        model_candidates = [
+            models_dir / "xgb_lpmc_tuned_nohh.joblib",
+            models_dir / "xgb_lpmc_baseline_nohh.joblib",
+            # Fallback to legacy artifacts if nohh artifacts are not present.
+            models_dir / "xgb_lpmc_tuned.joblib",
+            models_dir / "xgb_lpmc_baseline.joblib",
+        ]
+        scaler_candidates = [
+            models_dir / "xgb_lpmc_scaler_nohh.joblib",
+            models_dir / "xgb_lpmc_scaler.joblib",
+        ]
 
     model_path = next((p for p in model_candidates if p.exists()), None)
     if model_path is None:
@@ -54,9 +72,11 @@ def _resolve_model_paths() -> tuple[Path, Path]:
             f"No se encontro modelo LPMC en: {[str(p) for p in model_candidates]}"
         )
 
-    scaler_path = models_dir / "xgb_lpmc_scaler.joblib"
-    if not scaler_path.exists():
-        raise FileNotFoundError(f"No se encontro scaler LPMC en: {scaler_path}")
+    scaler_path = next((p for p in scaler_candidates if p.exists()), None)
+    if scaler_path is None:
+        raise FileNotFoundError(
+            f"No se encontro scaler LPMC en: {[str(p) for p in scaler_candidates]}"
+        )
 
     return model_path, scaler_path
 
@@ -196,8 +216,8 @@ def _build_feature_frame(payload: dict, route_features: dict[str, float | int]):
 
     row = {name: 0.0 for name in feature_names}
 
-    # Keep household_id out of the API contract. If model still contains this
-    # legacy feature, we neutralize it to a fixed value.
+    # Keep household_id out of the API contract. If a legacy model still
+    # contains this feature, neutralize it to a fixed value.
     if "household_id" in row:
         row["household_id"] = 0.0
 
@@ -286,7 +306,11 @@ def _build_debug_payload(x, feature_names: list[str], otp: dict, route_features:
         "model_info": {
             "model_path": artifacts["model_path"],
             "scaler_path": artifacts["scaler_path"],
-            "household_id_strategy": "fixed_zero_not_user_input",
+            "household_id_strategy": (
+                "fixed_zero_legacy_model"
+                if "household_id" in feature_names
+                else "not_used_in_model_features"
+            ),
             "itinerary_index": otp["itinerary_index"],
             "total_itineraries": otp["total_itineraries"],
         },
@@ -335,7 +359,11 @@ async def run_lpmc_inference(body: dict) -> dict:
         "model_info": {
             "model_path": artifacts["model_path"],
             "scaler_path": artifacts["scaler_path"],
-            "household_id_strategy": "fixed_zero_not_user_input",
+            "household_id_strategy": (
+                "fixed_zero_legacy_model"
+                if "household_id" in feature_names
+                else "not_used_in_model_features"
+            ),
             "itinerary_index": otp["itinerary_index"],
             "total_itineraries": otp["total_itineraries"],
         },
