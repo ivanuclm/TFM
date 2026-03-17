@@ -1,0 +1,66 @@
+# Root repo hygiene
+.DS_Store
+Thumbs.db
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+
+# Virtual environments
+.venv/
+venv/
+
+# Node
+node_modules/
+dist/
+
+# LaTeX build artifacts
+latex/*.aux
+latex/*.bbl
+latex/*.bcf
+latex/*.blg
+latex/*.fdb_latexmk
+latex/*.fls
+latex/*.lof
+latex/*.log
+latex/*.lot
+latex/*.out
+latex/*.run.xml
+latex/*.synctex.gz
+latex/*.toc
+latex/*.locode
+latex/*.loalgorithm
+
+# Heavy transport data and generated artifacts
+osrm-clm/**/*.osrm
+osrm-clm/**/*.osrm.*
+osrm-clm/**/*.osm.pbf
+otp-toledo/graph.obj
+otp-toledo/*.osm.pbf
+otp-toledo/*.zip
+otp-toledo/graphs/
+
+# ML data and models
+lpmc/data/raw/
+lpmc/data/processed/
+lpmc/data/preprocessed/
+lpmc/models/
+lpmc/artifacts/
+LPMC_dataset(in).csv
+
+# Papers and zips
+papers/*.pdf
+*.zip
+
+# Existing nested repos - keep until migration is completed
+latex/.git/
+movilidad-urbana-sim/.git/
+prediction-behavioural-analysis-ml-travel-mode-choice/.git/
+
+# Nested git backups
+**/.git_backup_*/
+**/.git_backup_*/**

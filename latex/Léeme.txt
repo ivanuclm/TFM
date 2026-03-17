@@ -1,0 +1,49 @@
+- Compilar con XeLaTeX
+
+- El archivo include/opciones.tex ha de editarse para incluir la información del TFG.
+
+- El archivo include/colores.tex puede editarse también para escoger el color de títulos e índices. En concreto, se ha de definir el color denominado "tema".
+
+-----------------------------------------------------------
+EL USO DE FUENTES PUEDE PRODUCIR ALGÚN PROBLEMA AL COMPILAR
+-----------------------------------------------------------
+
+- Se han de configurar dos fuentes:
+
+	- La fuente de la portada, que se configura en la LÍNEA 27 del archivo TFG.tex (usa una por defecto, y no hace falta cambiarla)
+	- La fuente del propio documento, que se configura en la LÍNEA 33 del archivo TFG.tex
+
+
+- La fuente por defecto (y recomendada) para el documento, Calibri, HA DE ESTAR INSTALADA EN EL SISTEMA. Por defecto se añaden algunas opciones que admite esta fuente:
+
+		\setmainfont[Ligatures={NoRequired,NoCommon,NoContextual}]{Calibri}
+
+
+- En sistemas MacOS con MSOffice instalado, es posible localizar la carpeta que contiene las fuentes e instalar Calibri en el sistema. Esta carpeta es: /Applications/Microsoft Word.app/Contents/Resources/DFonts
+
+
+- Se puede utilizar cualquier otra fuente instalada en el sistema. Por ejemplo (con fuente de MacOS):
+
+		\setmainfont{Avenir}
+
+
+- También es posible utilizar archivos con fuentes no instaladas (se puede configurar aquí Calibri, pero no es una fuente libre).
+
+		\setmainfont[
+			BoldFont=NimbusSanL-Bold.ttf,
+			ItalicFont=NimbusSanL-ReguItal.ttf,
+			BoldItalicFont=NimbusSanL-BoldItal.ttf
+		]{NimbusSanL-Regu.ttf}
+
+	A este respecto, XeLaTeX y fontspec ofrecen cierta flexibilidad. Se puede obtener más información en este enlace: https://www.overleaf.com/learn/latex/XeLaTeX
+
+
+- En overleaf, también se puede trabajar con archivos de fuentes, como en el caso anterior. Sin embargo, es mejor trabajar con algunas de las fuentes disponibles, por ejemplo:
+
+		\setmainfont{Roboto Condensed} 
+
+	Este documento contiene las fuentes que tiene instaladas overleaf: 
+		https://www.overleaf.com/learn/latex/Questions/Which%20OTF%20or%20TTF%20fonts%20are%20supported%20via%20fontspec%3F
+
+	Este documento permite visualizar esas fuentes: 
+		https://www.overleaf.com/articles/fontspec-all-the-fonts/hjrpnxhrrtxc 

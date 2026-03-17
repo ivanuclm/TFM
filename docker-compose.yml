@@ -1,0 +1,68 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: docker/backend.Dockerfile
+    working_dir: /workspace/movilidad-urbana-sim/backend
+    volumes:
+      - ./:/workspace
+    environment:
+      OSRM_DRIVING_URL: http://osrm-car:5000
+      OSRM_CYCLING_URL: http://osrm-bike:5000
+      OSRM_FOOT_URL: http://osrm-foot:5000
+      OTP_PLAN_URL: http://otp:8080/otp/routers/default/plan
+      LPMC_MODEL_VARIANT: nohh
+    ports:
+      - "8000:8000"
+    depends_on:
+      - osrm-car
+      - osrm-bike
+      - osrm-foot
+      - otp
+
+  frontend:
+    build:
+      context: .
+      dockerfile: docker/frontend.Dockerfile
+    working_dir: /workspace/movilidad-urbana-sim/frontend
+    volumes:
+      - ./:/workspace
+      - /workspace/movilidad-urbana-sim/frontend/node_modules
+    environment:
+      VITE_API_BASE_URL: http://127.0.0.1:8000
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+
+  osrm-car:
+    image: osrm/osrm-backend:latest
+    command: osrm-routed --algorithm mld /data/clm.osrm
+    volumes:
+      - ./osrm-clm/car:/data
+    ports:
+      - "5000:5000"
+
+  osrm-bike:
+    image: osrm/osrm-backend:latest
+    command: osrm-routed --algorithm mld /data/clm.osrm
+    volumes:
+      - ./osrm-clm/bike:/data
+    ports:
+      - "5001:5000"
+
+  osrm-foot:
+    image: osrm/osrm-backend:latest
+    command: osrm-routed --algorithm mld /data/clm.osrm
+    volumes:
+      - ./osrm-clm/foot:/data
+    ports:
+      - "5002:5000"
+
+  otp:
+    image: opentripplanner/opentripplanner:2.5.0
+    command: --load --serve
+    volumes:
+      - ./otp-toledo:/var/opentripplanner
+    ports:
+      - "8080:8080"

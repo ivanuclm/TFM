@@ -1,0 +1,1323 @@
+This is XeTeX, Version 3.141592653-2.6-0.999997 (TeX Live 2025) (preloaded format=xelatex 2025.5.9)  6 NOV 2025 11:24
+entering extended mode
+ restricted \write18 enabled.
+ %&-line parsing enabled.
+**preambulo.tex
+(./preambulo.tex
+LaTeX2e <2024-11-01> patch level 2
+L3 programming layer <2025-01-18>
+
+! LaTeX Error: Environment textblock* undefined.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.17 \begin{textblock*}
+                       {\textwidth}(3cm,2.4cm)
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+! Missing number, treated as zero.
+<to be read again> 
+                   }
+l.17 \begin{textblock*}{\textwidth}
+                                   (3cm,2.4cm)
+A number should have been here; I inserted `0'.
+(If you can't figure out why I needed to see a number,
+look up `weird error' in the index to The TeXbook.)
+
+! Illegal unit of measure (pt inserted).
+<to be read again> 
+                   }
+l.17 \begin{textblock*}{\textwidth}
+                                   (3cm,2.4cm)
+Dimensions can be in units of em, ex, in, pt, pc,
+cm, mm, dd, cc, bp, or sp; but yours is a new one!
+I'll assume that you meant to say pt, for printer's points.
+To recover gracefully from this error, it's best to
+delete the erroneous units; e.g., type `2' to delete
+two letters. (See Chapter 27 of The TeXbook.)
+
+
+! LaTeX Error: Missing \begin{document}.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.17 \begin{textblock*}{\textwidth}(
+                                    3cm,2.4cm)
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Missing character: There is no ( ("28) in font nullfont!
+Missing character: There is no 3 ("33) in font nullfont!
+Missing character: There is no c ("63) in font nullfont!
+Missing character: There is no m ("6D) in font nullfont!
+Missing character: There is no , ("2C) in font nullfont!
+Missing character: There is no 2 ("32) in font nullfont!
+Missing character: There is no . ("2E) in font nullfont!
+Missing character: There is no 4 ("34) in font nullfont!
+Missing character: There is no c ("63) in font nullfont!
+Missing character: There is no m ("6D) in font nullfont!
+Missing character: There is no ) ("29) in font nullfont!
+
+Overfull \hbox (20.0pt too wide) in paragraph at lines 17--18
+[] 
+ []
+
+! Undefined control sequence.
+l.19 \includegraphics
+                     [height=1.1cm]{figs/logouclm.jpg}
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+Missing character: There is no [ ("5B) in font nullfont!
+Missing character: There is no h ("68) in font nullfont!
+Missing character: There is no e ("65) in font nullfont!
+Missing character: There is no i ("69) in font nullfont!
+Missing character: There is no g ("67) in font nullfont!
+Missing character: There is no h ("68) in font nullfont!
+Missing character: There is no t ("74) in font nullfont!
+Missing character: There is no = ("3D) in font nullfont!
+Missing character: There is no 1 ("31) in font nullfont!
+Missing character: There is no . ("2E) in font nullfont!
+Missing character: There is no 1 ("31) in font nullfont!
+Missing character: There is no c ("63) in font nullfont!
+Missing character: There is no m ("6D) in font nullfont!
+Missing character: There is no ] ("5D) in font nullfont!
+Missing character: There is no f ("66) in font nullfont!
+Missing character: There is no i ("69) in font nullfont!
+Missing character: There is no g ("67) in font nullfont!
+Missing character: There is no s ("73) in font nullfont!
+Missing character: There is no / ("2F) in font nullfont!
+Missing character: There is no l ("6C) in font nullfont!
+Missing character: There is no o ("6F) in font nullfont!
+Missing character: There is no g ("67) in font nullfont!
+Missing character: There is no o ("6F) in font nullfont!
+Missing character: There is no u ("75) in font nullfont!
+Missing character: There is no c ("63) in font nullfont!
+Missing character: There is no l ("6C) in font nullfont!
+Missing character: There is no m ("6D) in font nullfont!
+Missing character: There is no . ("2E) in font nullfont!
+Missing character: There is no j ("6A) in font nullfont!
+Missing character: There is no p ("70) in font nullfont!
+Missing character: There is no g ("67) in font nullfont!
+
+! LaTeX Error: \begin{document} ended by \end{textblock*}.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.21 \end{textblock*}
+                     
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+
+! LaTeX Error: Environment textblock* undefined.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.25 \begin{textblock*}
+                       {\textwidth}(3cm,2.5cm)  % Corrige la posición porque...
+
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+! Missing number, treated as zero.
+<to be read again> 
+                   }
+l.25 \begin{textblock*}{\textwidth}
+                                   (3cm,2.5cm)  % Corrige la posición porque...
+A number should have been here; I inserted `0'.
+(If you can't figure out why I needed to see a number,
+look up `weird error' in the index to The TeXbook.)
+
+! Illegal unit of measure (pt inserted).
+<to be read again> 
+                   }
+l.25 \begin{textblock*}{\textwidth}
+                                   (3cm,2.5cm)  % Corrige la posición porque...
+Dimensions can be in units of em, ex, in, pt, pc,
+cm, mm, dd, cc, bp, or sp; but yours is a new one!
+I'll assume that you meant to say pt, for printer's points.
+To recover gracefully from this error, it's best to
+delete the erroneous units; e.g., type `2' to delete
+two letters. (See Chapter 27 of The TeXbook.)
+
+Missing character: There is no ( ("28) in font nullfont!
+Missing character: There is no 3 ("33) in font nullfont!
+Missing character: There is no c ("63) in font nullfont!
+Missing character: There is no m ("6D) in font nullfont!
+Missing character: There is no , ("2C) in font nullfont!
+Missing character: There is no 2 ("32) in font nullfont!
+Missing character: There is no . ("2E) in font nullfont!
+Missing character: There is no 5 ("35) in font nullfont!
+Missing character: There is no c ("63) in font nullfont!
+Missing character: There is no m ("6D) in font nullfont!
+Missing character: There is no ) ("29) in font nullfont!
+
+Overfull \hbox (20.0pt too wide) in paragraph at lines 25--26
+[] 
+ []
+
+! Undefined control sequence.
+l.27 \includegraphics
+                     [height=1cm]{figs/logoesii.png}
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+Missing character: There is no [ ("5B) in font nullfont!
+Missing character: There is no h ("68) in font nullfont!
+Missing character: There is no e ("65) in font nullfont!
+Missing character: There is no i ("69) in font nullfont!
+Missing character: There is no g ("67) in font nullfont!
+Missing character: There is no h ("68) in font nullfont!
+Missing character: There is no t ("74) in font nullfont!
+Missing character: There is no = ("3D) in font nullfont!
+Missing character: There is no 1 ("31) in font nullfont!
+Missing character: There is no c ("63) in font nullfont!
+Missing character: There is no m ("6D) in font nullfont!
+Missing character: There is no ] ("5D) in font nullfont!
+Missing character: There is no f ("66) in font nullfont!
+Missing character: There is no i ("69) in font nullfont!
+Missing character: There is no g ("67) in font nullfont!
+Missing character: There is no s ("73) in font nullfont!
+Missing character: There is no / ("2F) in font nullfont!
+Missing character: There is no l ("6C) in font nullfont!
+Missing character: There is no o ("6F) in font nullfont!
+Missing character: There is no g ("67) in font nullfont!
+Missing character: There is no o ("6F) in font nullfont!
+Missing character: There is no e ("65) in font nullfont!
+Missing character: There is no s ("73) in font nullfont!
+Missing character: There is no i ("69) in font nullfont!
+Missing character: There is no i ("69) in font nullfont!
+Missing character: There is no . ("2E) in font nullfont!
+Missing character: There is no p ("70) in font nullfont!
+Missing character: There is no n ("6E) in font nullfont!
+Missing character: There is no g ("67) in font nullfont!
+
+! LaTeX Error: \begin{document} ended by \end{textblock*}.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.29 \end{textblock*}
+                     
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+
+! LaTeX Error: Environment textblock* undefined.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.33 \begin{textblock*}
+                       {\textwidth}(3cm,7cm)
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+! Missing number, treated as zero.
+<to be read again> 
+                   }
+l.33 \begin{textblock*}{\textwidth}
+                                   (3cm,7cm)
+A number should have been here; I inserted `0'.
+(If you can't figure out why I needed to see a number,
+look up `weird error' in the index to The TeXbook.)
+
+! Illegal unit of measure (pt inserted).
+<to be read again> 
+                   }
+l.33 \begin{textblock*}{\textwidth}
+                                   (3cm,7cm)
+Dimensions can be in units of em, ex, in, pt, pc,
+cm, mm, dd, cc, bp, or sp; but yours is a new one!
+I'll assume that you meant to say pt, for printer's points.
+To recover gracefully from this error, it's best to
+delete the erroneous units; e.g., type `2' to delete
+two letters. (See Chapter 27 of The TeXbook.)
+
+Missing character: There is no ( ("28) in font nullfont!
+Missing character: There is no 3 ("33) in font nullfont!
+Missing character: There is no c ("63) in font nullfont!
+Missing character: There is no m ("6D) in font nullfont!
+Missing character: There is no , ("2C) in font nullfont!
+Missing character: There is no 7 ("37) in font nullfont!
+Missing character: There is no c ("63) in font nullfont!
+Missing character: There is no m ("6D) in font nullfont!
+Missing character: There is no ) ("29) in font nullfont!
+
+Overfull \hbox (20.0pt too wide) in paragraph at lines 33--34
+[] 
+ []
+
+! Undefined control sequence.
+l.34 \begin{center}\doublespacing
+                                 
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+! Undefined control sequence.
+l.35 {\fontsize{18pt}{4pt}\selectfont \bft
+                                          {TRABAJO FIN DE GRADO}}
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+
+Overfull \hbox (82.422pt too wide) in paragraph at lines 35--36
+ \TU/lmr/m/n/18 TRABAJO 
+ []
+
+
+Overfull \hbox (29.214pt too wide) in paragraph at lines 35--36
+ \TU/lmr/m/n/18 FIN 
+ []
+
+
+Overfull \hbox (24.03pt too wide) in paragraph at lines 35--36
+ \TU/lmr/m/n/18 DE 
+ []
+
+
+Overfull \hbox (63.468pt too wide) in paragraph at lines 35--36
+ \TU/lmr/m/n/18 GRADO 
+ []
+
+
+Overfull \hbox (45.162pt too wide) in paragraph at lines 38--39
+ []\TU/lmr/m/n/18 Grado 
+ []
+
+
+Overfull \hbox (16.506pt too wide) in paragraph at lines 38--39
+ \TU/lmr/m/n/18 en 
+ []
+
+
+Overfull \hbox (20.538pt too wide) in paragraph at lines 38--39
+ \TU/lmr/m/n/18 In- 
+ []
+
+
+Overfull \hbox (21.006pt too wide) in paragraph at lines 38--39
+ \TU/lmr/m/n/18 ge- 
+ []
+
+
+Overfull \hbox (40.14pt too wide) in paragraph at lines 38--39
+ \TU/lmr/m/n/18 niería 
+ []
+
+
+Overfull \hbox (20.538pt too wide) in paragraph at lines 38--39
+ \TU/lmr/m/n/18 In- 
+ []
+
+
+Overfull \hbox (25.038pt too wide) in paragraph at lines 38--39
+ \TU/lmr/m/n/18 for- 
+ []
+
+
+Overfull \hbox (48.6pt too wide) in paragraph at lines 38--39
+ \TU/lmr/m/n/18 mática 
+ []
+
+! Undefined control sequence.
+l.41 {\fontsize{16pt}{4pt}\selectfont \espec
+                                            }
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+
+! LaTeX Error: \begin{document} ended by \end{textblock*}.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.43 \end{textblock*}
+                     
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+
+! LaTeX Error: Environment textblock* undefined.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.46 \begin{textblock*}
+                       {\textwidth}(3cm,13cm)
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+! Missing number, treated as zero.
+<to be read again> 
+                   }
+l.46 \begin{textblock*}{\textwidth}
+                                   (3cm,13cm)
+A number should have been here; I inserted `0'.
+(If you can't figure out why I needed to see a number,
+look up `weird error' in the index to The TeXbook.)
+
+! Illegal unit of measure (pt inserted).
+<to be read again> 
+                   }
+l.46 \begin{textblock*}{\textwidth}
+                                   (3cm,13cm)
+Dimensions can be in units of em, ex, in, pt, pc,
+cm, mm, dd, cc, bp, or sp; but yours is a new one!
+I'll assume that you meant to say pt, for printer's points.
+To recover gracefully from this error, it's best to
+delete the erroneous units; e.g., type `2' to delete
+two letters. (See Chapter 27 of The TeXbook.)
+
+Missing character: There is no ( ("28) in font nullfont!
+Missing character: There is no 3 ("33) in font nullfont!
+Missing character: There is no c ("63) in font nullfont!
+Missing character: There is no m ("6D) in font nullfont!
+Missing character: There is no , ("2C) in font nullfont!
+Missing character: There is no 1 ("31) in font nullfont!
+Missing character: There is no 3 ("33) in font nullfont!
+Missing character: There is no c ("63) in font nullfont!
+Missing character: There is no m ("6D) in font nullfont!
+Missing character: There is no ) ("29) in font nullfont!
+
+Overfull \hbox (20.0pt too wide) in paragraph at lines 46--47
+[] 
+ []
+
+! Undefined control sequence.
+l.47 \begin{center}\doublespacing
+                                 
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+! Undefined control sequence.
+l.48 {\fontsize{22pt}{4pt}\selectfont \bft
+                                          {\titulo}}
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+! Undefined control sequence.
+l.48 {\fontsize{22pt}{4pt}\selectfont \bft{\titulo
+                                                  }}
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+
+! LaTeX Error: \begin{document} ended by \end{textblock*}.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.50 \end{textblock*}
+                     
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+
+! LaTeX Error: Environment textblock* undefined.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.53 \begin{textblock*}
+                       {\textwidth}(3cm, 20cm)
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+! Missing number, treated as zero.
+<to be read again> 
+                   }
+l.53 \begin{textblock*}{\textwidth}
+                                   (3cm, 20cm)
+A number should have been here; I inserted `0'.
+(If you can't figure out why I needed to see a number,
+look up `weird error' in the index to The TeXbook.)
+
+! Illegal unit of measure (pt inserted).
+<to be read again> 
+                   }
+l.53 \begin{textblock*}{\textwidth}
+                                   (3cm, 20cm)
+Dimensions can be in units of em, ex, in, pt, pc,
+cm, mm, dd, cc, bp, or sp; but yours is a new one!
+I'll assume that you meant to say pt, for printer's points.
+To recover gracefully from this error, it's best to
+delete the erroneous units; e.g., type `2' to delete
+two letters. (See Chapter 27 of The TeXbook.)
+
+Missing character: There is no ( ("28) in font nullfont!
+Missing character: There is no 3 ("33) in font nullfont!
+Missing character: There is no c ("63) in font nullfont!
+Missing character: There is no m ("6D) in font nullfont!
+Missing character: There is no , ("2C) in font nullfont!
+Missing character: There is no 2 ("32) in font nullfont!
+Missing character: There is no 0 ("30) in font nullfont!
+Missing character: There is no c ("63) in font nullfont!
+Missing character: There is no m ("6D) in font nullfont!
+Missing character: There is no ) ("29) in font nullfont!
+
+Overfull \hbox (20.0pt too wide) in paragraph at lines 53--54
+[] 
+ []
+
+! Undefined control sequence.
+l.54 \begin{flushleft}\doublespacing
+                                    
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+! Undefined control sequence.
+l.55 {\fontsize{14pt}{4pt}\selectfont \bft
+                                          {Autor:} \autor}
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+! Undefined control sequence.
+l.55 ...{14pt}{4pt}\selectfont \bft{Autor:} \autor
+                                                  }
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+
+Overfull \hbox (38.85pt too wide) in paragraph at lines 55--56
+\TU/lmr/m/n/14 Autor: 
+ []
+
+! Undefined control sequence.
+l.57 {\fontsize{14pt}{4pt}\selectfont \bft
+                                          {Director:} \director}
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+! Undefined control sequence.
+l.57 ...{4pt}\selectfont \bft{Director:} \director
+                                                  }
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+
+Overfull \hbox (53.13pt too wide) in paragraph at lines 57--58
+[]\TU/lmr/m/n/14 Director: 
+ []
+
+! Undefined control sequence.
+l.59 {\fontsize{14pt}{4pt}\selectfont \bft
+                                          {Codirector:} \codirector}
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+! Undefined control sequence.
+l.59 ...}\selectfont \bft{Codirector:} \codirector
+                                                  }
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+
+Overfull \hbox (67.41pt too wide) in paragraph at lines 59--60
+[]\TU/lmr/m/n/14 Codirector:  
+ []
+
+
+! LaTeX Error: \begin{document} ended by \end{textblock*}.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.61 \end{textblock*}
+                     
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+
+! LaTeX Error: Environment textblock* undefined.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.64 \begin{textblock*}
+                       {\textwidth}(3cm,25.25cm)
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+! Missing number, treated as zero.
+<to be read again> 
+                   }
+l.64 \begin{textblock*}{\textwidth}
+                                   (3cm,25.25cm)
+A number should have been here; I inserted `0'.
+(If you can't figure out why I needed to see a number,
+look up `weird error' in the index to The TeXbook.)
+
+! Illegal unit of measure (pt inserted).
+<to be read again> 
+                   }
+l.64 \begin{textblock*}{\textwidth}
+                                   (3cm,25.25cm)
+Dimensions can be in units of em, ex, in, pt, pc,
+cm, mm, dd, cc, bp, or sp; but yours is a new one!
+I'll assume that you meant to say pt, for printer's points.
+To recover gracefully from this error, it's best to
+delete the erroneous units; e.g., type `2' to delete
+two letters. (See Chapter 27 of The TeXbook.)
+
+Missing character: There is no ( ("28) in font nullfont!
+Missing character: There is no 3 ("33) in font nullfont!
+Missing character: There is no c ("63) in font nullfont!
+Missing character: There is no m ("6D) in font nullfont!
+Missing character: There is no , ("2C) in font nullfont!
+Missing character: There is no 2 ("32) in font nullfont!
+Missing character: There is no 5 ("35) in font nullfont!
+Missing character: There is no . ("2E) in font nullfont!
+Missing character: There is no 2 ("32) in font nullfont!
+Missing character: There is no 5 ("35) in font nullfont!
+Missing character: There is no c ("63) in font nullfont!
+Missing character: There is no m ("6D) in font nullfont!
+Missing character: There is no ) ("29) in font nullfont!
+
+Overfull \hbox (20.0pt too wide) in paragraph at lines 64--65
+[] 
+ []
+
+! Undefined control sequence.
+l.66 {\fontsize{14pt}{4pt}\selectfont \fecha
+                                            }
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+
+! LaTeX Error: \begin{document} ended by \end{textblock*}.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.68 \end{textblock*}
+                     
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+
+
+
+! LaTeX Error: The font size command \normalsize is not defined:
+               there is probably something wrong with the class file.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.74 \cleardoublepage
+                     
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+[1
+
+]
+Overfull \hbox (20.0pt too wide) in paragraph at lines 78--78
+[] 
+ []
+
+
+Overfull \hbox (19.96pt too wide) in paragraph at lines 79--79
+ \TU/lmr/m/it/10 Aquí
+ []
+
+
+Overfull \hbox (9.71pt too wide) in paragraph at lines 79--79
+ \TU/lmr/m/it/10 va
+ []
+
+
+Overfull \hbox (7.67pt too wide) in paragraph at lines 79--79
+ \TU/lmr/m/it/10 la
+ []
+
+
+Overfull \hbox (17.89pt too wide) in paragraph at lines 79--79
+ \TU/lmr/m/it/10 ded-
+ []
+
+
+Overfull \hbox (6.65pt too wide) in paragraph at lines 79--79
+ \TU/lmr/m/it/10 i-
+ []
+
+
+Overfull \hbox (12.78pt too wide) in paragraph at lines 79--79
+ \TU/lmr/m/it/10 ca-
+ []
+
+
+Overfull \hbox (12.01pt too wide) in paragraph at lines 79--79
+ \TU/lmr/m/it/10 to-
+ []
+
+
+Overfull \hbox (12.4pt too wide) in paragraph at lines 79--79
+ \TU/lmr/m/it/10 ria
+ []
+
+
+Overfull \hbox (14.57pt too wide) in paragraph at lines 79--79
+ \TU/lmr/m/it/10 que
+ []
+
+
+Overfull \hbox (19.42pt too wide) in paragraph at lines 79--79
+ \TU/lmr/m/it/10 cada
+ []
+
+
+Overfull \hbox (17.64pt too wide) in paragraph at lines 79--79
+ \TU/lmr/m/it/10 cual
+ []
+
+
+Overfull \hbox (26.46pt too wide) in paragraph at lines 80--80
+ []\TU/lmr/m/it/10 quiera
+ []
+
+
+Overfull \hbox (12.27pt too wide) in paragraph at lines 80--80
+ \TU/lmr/m/it/10 es-
+ []
+
+
+Overfull \hbox (26.85pt too wide) in paragraph at lines 80--80
+ \TU/lmr/m/it/10 cribir.
+ []
+
+
+Overfull \hbox (9.34pt too wide) in paragraph at lines 80--80
+ \TU/lmr/m/it/10 El
+ []
+
+
+Overfull \hbox (14.31pt too wide) in paragraph at lines 80--80
+ \TU/lmr/m/it/10 an-
+ []
+
+
+Overfull \hbox (14.82pt too wide) in paragraph at lines 80--80
+ \TU/lmr/m/it/10 cho
+ []
+
+
+Overfull \hbox (8.69pt too wide) in paragraph at lines 80--80
+ \TU/lmr/m/it/10 se
+ []
+
+
+Overfull \hbox (18.4pt too wide) in paragraph at lines 80--80
+ \TU/lmr/m/it/10 con-
+ []
+
+
+Overfull \hbox (19.81pt too wide) in paragraph at lines 80--80
+ \TU/lmr/m/it/10 trola
+ []
+
+
+Overfull \hbox (58.27pt too wide) in paragraph at lines 81--82
+ []\TU/lmr/m/it/10 manualmente
+ []
+
+
+
+
+! LaTeX Error: The font size command \normalsize is not defined:
+               there is probably something wrong with the class file.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.88 \cleardoublepage
+                     
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+[2
+
+]
+! Undefined control sequence.
+l.90 \chapter
+             {Declaración de autoría}
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+Missing character: There is no D ("44) in font nullfont!
+Missing character: There is no e ("65) in font nullfont!
+Missing character: There is no c ("63) in font nullfont!
+Missing character: There is no l ("6C) in font nullfont!
+Missing character: There is no a ("61) in font nullfont!
+Missing character: There is no r ("72) in font nullfont!
+Missing character: There is no a ("61) in font nullfont!
+Missing character: There is no c ("63) in font nullfont!
+Missing character: There is no i ("69) in font nullfont!
+Missing character: There is no ó ("F3) in font nullfont!
+Missing character: There is no n ("6E) in font nullfont!
+Missing character: There is no d ("64) in font nullfont!
+Missing character: There is no e ("65) in font nullfont!
+Missing character: There is no a ("61) in font nullfont!
+Missing character: There is no u ("75) in font nullfont!
+Missing character: There is no t ("74) in font nullfont!
+Missing character: There is no o ("6F) in font nullfont!
+Missing character: There is no r ("72) in font nullfont!
+Missing character: There is no í ("ED) in font nullfont!
+Missing character: There is no a ("61) in font nullfont!
+
+Overfull \hbox (20.0pt too wide) in paragraph at lines 90--91
+[]
+ []
+
+Missing character: There is no Y ("59) in font nullfont!
+Missing character: There is no o ("6F) in font nullfont!
+Missing character: There is no , ("2C) in font nullfont!
+Missing character: There is no . ("2E) in font nullfont!
+Missing character: There is no . ("2E) in font nullfont!
+Missing character: There is no . ("2E) in font nullfont!
+Missing character: There is no , ("2C) in font nullfont!
+Missing character: There is no c ("63) in font nullfont!
+Missing character: There is no o ("6F) in font nullfont!
+Missing character: There is no n ("6E) in font nullfont!
+Missing character: There is no D ("44) in font nullfont!
+Missing character: There is no N ("4E) in font nullfont!
+Missing character: There is no I ("49) in font nullfont!
+Missing character: There is no . ("2E) in font nullfont!
+Missing character: There is no . ("2E) in font nullfont!
+Missing character: There is no . ("2E) in font nullfont!
+Missing character: There is no , ("2C) in font nullfont!
+Missing character: There is no d ("64) in font nullfont!
+Missing character: There is no e ("65) in font nullfont!
+Missing character: There is no c ("63) in font nullfont!
+Missing character: There is no l ("6C) in font nullfont!
+Missing character: There is no a ("61) in font nullfont!
+Missing character: There is no r ("72) in font nullfont!
+Missing character: There is no o ("6F) in font nullfont!
+Missing character: There is no q ("71) in font nullfont!
+Missing character: There is no u ("75) in font nullfont!
+Missing character: There is no e ("65) in font nullfont!
+Missing character: There is no s ("73) in font nullfont!
+Missing character: There is no o ("6F) in font nullfont!
+Missing character: There is no y ("79) in font nullfont!
+Missing character: There is no e ("65) in font nullfont!
+Missing character: There is no l ("6C) in font nullfont!
+Missing character: There is no ú ("FA) in font nullfont!
+Missing character: There is no n ("6E) in font nullfont!
+Missing character: There is no i ("69) in font nullfont!
+Missing character: There is no c ("63) in font nullfont!
+Missing character: There is no o ("6F) in font nullfont!
+Missing character: There is no a ("61) in font nullfont!
+Missing character: There is no u ("75) in font nullfont!
+Missing character: There is no t ("74) in font nullfont!
+Missing character: There is no o ("6F) in font nullfont!
+Missing character: There is no r ("72) in font nullfont!
+Missing character: There is no d ("64) in font nullfont!
+Missing character: There is no e ("65) in font nullfont!
+Missing character: There is no l ("6C) in font nullfont!
+Missing character: There is no t ("74) in font nullfont!
+Missing character: There is no r ("72) in font nullfont!
+Missing character: There is no a ("61) in font nullfont!
+Missing character: There is no b ("62) in font nullfont!
+Missing character: There is no a ("61) in font nullfont!
+Missing character: There is no j ("6A) in font nullfont!
+Missing character: There is no o ("6F) in font nullfont!
+Missing character: There is no f ("66) in font nullfont!
+Missing character: There is no i ("69) in font nullfont!
+Missing character: There is no n ("6E) in font nullfont!
+Missing character: There is no d ("64) in font nullfont!
+Missing character: There is no e ("65) in font nullfont!
+Missing character: There is no g ("67) in font nullfont!
+Missing character: There is no r ("72) in font nullfont!
+Missing character: There is no a ("61) in font nullfont!
+Missing character: There is no d ("64) in font nullfont!
+Missing character: There is no o ("6F) in font nullfont!
+Missing character: There is no t ("74) in font nullfont!
+Missing character: There is no i ("69) in font nullfont!
+Missing character: There is no t ("74) in font nullfont!
+Missing character: There is no u ("75) in font nullfont!
+Missing character: There is no l ("6C) in font nullfont!
+Missing character: There is no a ("61) in font nullfont!
+Missing character: There is no d ("64) in font nullfont!
+Missing character: There is no o ("6F) in font nullfont!
+Missing character: There is no ` ("60) in font nullfont!
+Missing character: There is no ` ("60) in font nullfont!
+Missing character: There is no . ("2E) in font nullfont!
+Missing character: There is no . ("2E) in font nullfont!
+Missing character: There is no . ("2E) in font nullfont!
+Missing character: There is no ' ("27) in font nullfont!
+Missing character: There is no ' ("27) in font nullfont!
+Missing character: There is no , ("2C) in font nullfont!
+Missing character: There is no q ("71) in font nullfont!
+Missing character: There is no u ("75) in font nullfont!
+Missing character: There is no e ("65) in font nullfont!
+Missing character: There is no e ("65) in font nullfont!
+Missing character: There is no l ("6C) in font nullfont!
+Missing character: There is no c ("63) in font nullfont!
+Missing character: There is no i ("69) in font nullfont!
+Missing character: There is no t ("74) in font nullfont!
+Missing character: There is no a ("61) in font nullfont!
+Missing character: There is no d ("64) in font nullfont!
+Missing character: There is no o ("6F) in font nullfont!
+Missing character: There is no t ("74) in font nullfont!
+Missing character: There is no r ("72) in font nullfont!
+Missing character: There is no a ("61) in font nullfont!
+Missing character: There is no b ("62) in font nullfont!
+Missing character: There is no a ("61) in font nullfont!
+Missing character: There is no j ("6A) in font nullfont!
+Missing character: There is no o ("6F) in font nullfont!
+Missing character: There is no n ("6E) in font nullfont!
+Missing character: There is no o ("6F) in font nullfont!
+Missing character: There is no i ("69) in font nullfont!
+Missing character: There is no n ("6E) in font nullfont!
+Missing character: There is no f ("66) in font nullfont!
+Missing character: There is no r ("72) in font nullfont!
+Missing character: There is no i ("69) in font nullfont!
+Missing character: There is no n ("6E) in font nullfont!
+Missing character: There is no g ("67) in font nullfont!
+Missing character: There is no e ("65) in font nullfont!
+Missing character: There is no l ("6C) in font nullfont!
+Missing character: There is no a ("61) in font nullfont!
+Missing character: There is no s ("73) in font nullfont!
+Missing character: There is no l ("6C) in font nullfont!
+Missing character: There is no e ("65) in font nullfont!
+Missing character: There is no y ("79) in font nullfont!
+Missing character: There is no e ("65) in font nullfont!
+Missing character: There is no s ("73) in font nullfont!
+Missing character: There is no e ("65) in font nullfont!
+Missing character: There is no n ("6E) in font nullfont!
+Missing character: There is no v ("76) in font nullfont!
+Missing character: There is no i ("69) in font nullfont!
+Missing character: There is no g ("67) in font nullfont!
+Missing character: There is no o ("6F) in font nullfont!
+Missing character: There is no r ("72) in font nullfont!
+Missing character: There is no s ("73) in font nullfont!
+Missing character: There is no o ("6F) in font nullfont!
+Missing character: There is no b ("62) in font nullfont!
+Missing character: There is no r ("72) in font nullfont!
+Missing character: There is no e ("65) in font nullfont!
+Missing character: There is no p ("70) in font nullfont!
+Missing character: There is no r ("72) in font nullfont!
+Missing character: There is no o ("6F) in font nullfont!
+Missing character: There is no p ("70) in font nullfont!
+Missing character: There is no i ("69) in font nullfont!
+Missing character: There is no e ("65) in font nullfont!
+Missing character: There is no d ("64) in font nullfont!
+Missing character: There is no a ("61) in font nullfont!
+Missing character: There is no d ("64) in font nullfont!
+Missing character: There is no i ("69) in font nullfont!
+Missing character: There is no n ("6E) in font nullfont!
+Missing character: There is no t ("74) in font nullfont!
+Missing character: There is no e ("65) in font nullfont!
+Missing character: There is no l ("6C) in font nullfont!
+Missing character: There is no e ("65) in font nullfont!
+Missing character: There is no c ("63) in font nullfont!
+Missing character: There is no t ("74) in font nullfont!
+Missing character: There is no u ("75) in font nullfont!
+Missing character: There is no a ("61) in font nullfont!
+Missing character: There is no l ("6C) in font nullfont!
+Missing character: There is no , ("2C) in font nullfont!
+Missing character: There is no y ("79) in font nullfont!
+Missing character: There is no q ("71) in font nullfont!
+Missing character: There is no u ("75) in font nullfont!
+Missing character: There is no e ("65) in font nullfont!
+Missing character: There is no t ("74) in font nullfont!
+Missing character: There is no o ("6F) in font nullfont!
+Missing character: There is no d ("64) in font nullfont!
+Missing character: There is no o ("6F) in font nullfont!
+Missing character: There is no e ("65) in font nullfont!
+Missing character: There is no l ("6C) in font nullfont!
+Missing character: There is no m ("6D) in font nullfont!
+Missing character: There is no a ("61) in font nullfont!
+Missing character: There is no t ("74) in font nullfont!
+Missing character: There is no e ("65) in font nullfont!
+Missing character: There is no r ("72) in font nullfont!
+Missing character: There is no i ("69) in font nullfont!
+Missing character: There is no a ("61) in font nullfont!
+Missing character: There is no l ("6C) in font nullfont!
+Missing character: There is no n ("6E) in font nullfont!
+Missing character: There is no o ("6F) in font nullfont!
+Missing character: There is no o ("6F) in font nullfont!
+Missing character: There is no r ("72) in font nullfont!
+Missing character: There is no i ("69) in font nullfont!
+Missing character: There is no g ("67) in font nullfont!
+Missing character: There is no i ("69) in font nullfont!
+Missing character: There is no n ("6E) in font nullfont!
+Missing character: There is no a ("61) in font nullfont!
+Missing character: There is no l ("6C) in font nullfont!
+Missing character: There is no c ("63) in font nullfont!
+Missing character: There is no o ("6F) in font nullfont!
+Missing character: There is no n ("6E) in font nullfont!
+Missing character: There is no t ("74) in font nullfont!
+Missing character: There is no e ("65) in font nullfont!
+Missing character: There is no n ("6E) in font nullfont!
+Missing character: There is no i ("69) in font nullfont!
+Missing character: There is no d ("64) in font nullfont!
+Missing character: There is no o ("6F) in font nullfont!
+Missing character: There is no e ("65) in font nullfont!
+Missing character: There is no n ("6E) in font nullfont!
+Missing character: There is no d ("64) in font nullfont!
+Missing character: There is no i ("69) in font nullfont!
+Missing character: There is no c ("63) in font nullfont!
+Missing character: There is no h ("68) in font nullfont!
+Missing character: There is no o ("6F) in font nullfont!
+Missing character: There is no t ("74) in font nullfont!
+Missing character: There is no r ("72) in font nullfont!
+Missing character: There is no a ("61) in font nullfont!
+Missing character: There is no b ("62) in font nullfont!
+Missing character: There is no a ("61) in font nullfont!
+Missing character: There is no j ("6A) in font nullfont!
+Missing character: There is no o ("6F) in font nullfont!
+Missing character: There is no e ("65) in font nullfont!
+Missing character: There is no s ("73) in font nullfont!
+Missing character: There is no t ("74) in font nullfont!
+Missing character: There is no á ("E1) in font nullfont!
+Missing character: There is no a ("61) in font nullfont!
+Missing character: There is no p ("70) in font nullfont!
+Missing character: There is no r ("72) in font nullfont!
+Missing character: There is no o ("6F) in font nullfont!
+Missing character: There is no p ("70) in font nullfont!
+Missing character: There is no i ("69) in font nullfont!
+Missing character: There is no a ("61) in font nullfont!
+Missing character: There is no d ("64) in font nullfont!
+Missing character: There is no a ("61) in font nullfont!
+Missing character: There is no m ("6D) in font nullfont!
+Missing character: There is no e ("65) in font nullfont!
+Missing character: There is no n ("6E) in font nullfont!
+Missing character: There is no t ("74) in font nullfont!
+Missing character: There is no e ("65) in font nullfont!
+Missing character: There is no a ("61) in font nullfont!
+Missing character: There is no t ("74) in font nullfont!
+Missing character: There is no r ("72) in font nullfont!
+Missing character: There is no i ("69) in font nullfont!
+Missing character: There is no b ("62) in font nullfont!
+Missing character: There is no u ("75) in font nullfont!
+Missing character: There is no i ("69) in font nullfont!
+Missing character: There is no d ("64) in font nullfont!
+Missing character: There is no o ("6F) in font nullfont!
+Missing character: There is no a ("61) in font nullfont!
+Missing character: There is no s ("73) in font nullfont!
+Missing character: There is no u ("75) in font nullfont!
+Missing character: There is no s ("73) in font nullfont!
+Missing character: There is no l ("6C) in font nullfont!
+Missing character: There is no e ("65) in font nullfont!
+Missing character: There is no g ("67) in font nullfont!
+Missing character: There is no í ("ED) in font nullfont!
+Missing character: There is no t ("74) in font nullfont!
+Missing character: There is no i ("69) in font nullfont!
+Missing character: There is no m ("6D) in font nullfont!
+Missing character: There is no o ("6F) in font nullfont!
+Missing character: There is no s ("73) in font nullfont!
+Missing character: There is no a ("61) in font nullfont!
+Missing character: There is no u ("75) in font nullfont!
+Missing character: There is no t ("74) in font nullfont!
+Missing character: There is no o ("6F) in font nullfont!
+Missing character: There is no r ("72) in font nullfont!
+Missing character: There is no e ("65) in font nullfont!
+Missing character: There is no s ("73) in font nullfont!
+Missing character: There is no . ("2E) in font nullfont!
+
+Overfull \hbox (20.0pt too wide) in paragraph at lines 97--98
+[]
+ []
+
+
+Overfull \hbox (20.0pt too wide) in paragraph at lines 100--100
+[] 
+ []
+
+Missing character: There is no A ("41) in font nullfont!
+Missing character: There is no l ("6C) in font nullfont!
+Missing character: There is no b ("62) in font nullfont!
+Missing character: There is no a ("61) in font nullfont!
+Missing character: There is no c ("63) in font nullfont!
+Missing character: There is no e ("65) in font nullfont!
+Missing character: There is no t ("74) in font nullfont!
+Missing character: There is no e ("65) in font nullfont!
+Missing character: There is no , ("2C) in font nullfont!
+Missing character: There is no a ("61) in font nullfont!
+Missing character: There is no . ("2E) in font nullfont!
+Missing character: There is no . ("2E) in font nullfont!
+Missing character: There is no . ("2E) in font nullfont!
+Missing character: There is no d ("64) in font nullfont!
+Missing character: There is no e ("65) in font nullfont!
+Missing character: There is no . ("2E) in font nullfont!
+Missing character: There is no . ("2E) in font nullfont!
+Missing character: There is no . ("2E) in font nullfont!
+Missing character: There is no d ("64) in font nullfont!
+Missing character: There is no e ("65) in font nullfont!
+Missing character: There is no 2 ("32) in font nullfont!
+Missing character: There is no 0 ("30) in font nullfont!
+Missing character: There is no . ("2E) in font nullfont!
+Missing character: There is no . ("2E) in font nullfont!
+Missing character: There is no . ("2E) in font nullfont!
+Missing character: There is no F ("46) in font nullfont!
+Missing character: There is no d ("64) in font nullfont!
+Missing character: There is no o ("6F) in font nullfont!
+Missing character: There is no . ("2E) in font nullfont!
+Missing character: There is no : ("3A) in font nullfont!
+! Undefined control sequence.
+l.105 Fdo.: \autor
+                  
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+
+
+
+! LaTeX Error: The font size command \normalsize is not defined:
+               there is probably something wrong with the class file.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.112 \cleardoublepage
+                      
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+! Undefined control sequence.
+\@oddfoot ->\reset@font \hfil \thepage 
+                                       \hfil 
+l.112 \cleardoublepage
+                      
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+[3
+
+]
+Overfull \hbox (20.0pt too wide) in paragraph at lines 114--114
+[] 
+ []
+
+! Undefined control sequence.
+l.115 \Large
+            {\bft{Resumen}}
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+! Undefined control sequence.
+l.115 \Large{\bft
+                 {Resumen}}
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+Missing character: There is no R ("52) in font nullfont!
+Missing character: There is no e ("65) in font nullfont!
+Missing character: There is no s ("73) in font nullfont!
+Missing character: There is no u ("75) in font nullfont!
+Missing character: There is no m ("6D) in font nullfont!
+Missing character: There is no e ("65) in font nullfont!
+Missing character: There is no n ("6E) in font nullfont!
+! Undefined control sequence.
+l.119 \lipsum
+             [1]
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+Missing character: There is no [ ("5B) in font nullfont!
+Missing character: There is no 1 ("31) in font nullfont!
+Missing character: There is no ] ("5D) in font nullfont!
+
+Overfull \hbox (20.0pt too wide) in paragraph at lines 119--120
+[] 
+ []
+
+
+
+
+! LaTeX Error: The font size command \normalsize is not defined:
+               there is probably something wrong with the class file.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.124 \cleardoublepage
+                      
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+! Undefined control sequence.
+\@oddfoot ->\reset@font \hfil \thepage 
+                                       \hfil 
+l.124 \cleardoublepage
+                      
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+[4
+
+]
+Overfull \hbox (20.0pt too wide) in paragraph at lines 126--126
+[] 
+ []
+
+! Undefined control sequence.
+l.127 \Large
+            {\bft{Agradecimientos}}
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+! Undefined control sequence.
+l.127 \Large{\bft
+                 {Agradecimientos}}
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+Missing character: There is no A ("41) in font nullfont!
+Missing character: There is no g ("67) in font nullfont!
+Missing character: There is no r ("72) in font nullfont!
+Missing character: There is no a ("61) in font nullfont!
+Missing character: There is no d ("64) in font nullfont!
+Missing character: There is no e ("65) in font nullfont!
+Missing character: There is no c ("63) in font nullfont!
+Missing character: There is no i ("69) in font nullfont!
+Missing character: There is no m ("6D) in font nullfont!
+Missing character: There is no i ("69) in font nullfont!
+Missing character: There is no e ("65) in font nullfont!
+Missing character: There is no n ("6E) in font nullfont!
+Missing character: There is no t ("74) in font nullfont!
+Missing character: There is no o ("6F) in font nullfont!
+Missing character: There is no s ("73) in font nullfont!
+! Undefined control sequence.
+l.131 \lipsum
+             [1]
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+Missing character: There is no [ ("5B) in font nullfont!
+Missing character: There is no 1 ("31) in font nullfont!
+Missing character: There is no ] ("5D) in font nullfont!
+)
+! Emergency stop.
+<*> preambulo.tex
+                 
+*** (job aborted, no legal \end found)
+
+ 
+Here is how much of TeX's memory you used:
+ 41 strings out of 473832
+ 1002 string characters out of 5729482
+ 389380 words of memory out of 5000000
+ 23197 multiletter control sequences out of 15000+600000
+ 558885 words of font info for 42 fonts, out of 8000000 for 9000
+ 1348 hyphenation exceptions out of 8191
+ 24i,5n,22p,388b,114s stack positions out of 10000i,1000n,20000p,200000b,200000s
+Output written on preambulo.pdf (4 pages).

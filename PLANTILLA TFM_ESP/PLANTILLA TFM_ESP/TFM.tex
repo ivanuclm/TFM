@@ -1,0 +1,92 @@
+% -------------------------------
+% Plantilla del TFM en la ESIIAB/ESICR de la UCLM. Versión 0.1 (Preliminar)
+%
+% Luis de la Ossa
+% 
+% Compilar con XeLaTeX 
+% -------------------------------
+\documentclass[12pt, a4paper]{book}
+
+% -------------------------------
+% Información y opciones del documento. Debe editarse.
+% -------------------------------
+\input{include/opciones}
+
+% -------------------------------
+% Configuración del documento, paquetes, etc. 
+% -------------------------------
+\input{include/configuracion}
+
+% Documento
+\begin{document}
+
+% -------------------------------
+% Portada y título
+% -------------------------------
+% Fuente  de la portada
+% \setmainfont[Ligatures={NoRequired,NoCommon,NoContextual}]{Calibri}
+\input{elements/portada}
+
+% -------------------------------
+% Fuente del documento.
+% -------------------------------
+\setmainfont[Ligatures={NoRequired,NoCommon,NoContextual}]{Calibri}
+
+% -------------------------------
+% Preámbulo
+% -------------------------------
+\frontmatter 
+\input{elements/preambulo}
+
+% -------------------------------
+% Índices y tablas
+% -------------------------------
+% Cambia a interlineado normal
+\singlespacing     
+
+\tableofcontents	% Índice
+\listoffigures		% Índice de figuras
+\listoftables		% Índice de tablas
+\listofalgorithms   % Índice de algoritmos (comentar si no los hay)
+\listofcodes	    % Índice de códigos (comentar si no los hay)
+\cleardoublepage
+
+% Vuelve a interlineado de 1.5
+\onehalfspacing 
+
+% -------------------------------
+% Documento
+% -------------------------------
+\mainmatter
+% Estilo de página
+\pagestyle{fancy}
+
+
+% Introducción
+\input{chapters/ch1} 
+
+% Algunos elementos
+\input{chapters/ch2} 
+
+% Utilidades para anotaciones
+\input{chapters/ch3} 
+
+% -------------------------------
+% Apéndices
+% -------------------------------
+\appendix
+\chapter{Anexo 1}
+\lipsum[1-2]
+
+\cleardoublepage
+\thispagestyle{empty}
+
+
+% -------------------------------
+% Bibliografía
+% -------------------------------
+\bibliographystyle{apalike}
+\bibliography{bib/ref} 
+\addcontentsline{toc}{chapter}{Referencia bibliográfica} % Añade a la tabla de contenidos
+
+\end{document}
