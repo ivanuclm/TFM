@@ -1,25 +1,50 @@
-# TFM - Workspace Raiz
+# TFM
 
-Este directorio raiz agrupa los bloques principales del TFM:
+Monorepo de trabajo del TFM con tres bloques principales:
 
-- `latex/`: memoria en LaTeX
-- `movilidad-urbana-sim/`: frontend + backend del simulador
-- `lpmc/`: scripts, modelos y artefactos de eleccion modal
-- `osrm-clm/`: datos y perfiles de OSRM
-- `otp-toledo/`: datos y grafo de OpenTripPlanner
-- `papers/`: bibliografia y material de apoyo local
+- `latex/`: memoria y recursos en LaTeX.
+- `movilidad-urbana-sim/`: simulador web de movilidad urbana.
+- `lpmc/`: scripts y artefactos del modelo de eleccion modal.
 
-## Estado actual
+Ademas contiene los datos y la infraestructura local necesarios para ejecutar los servicios de enrutado:
 
-Todavia existen repositorios Git anidados en:
+- `osrm-clm/`: datasets preparados para OSRM.
+- `otp-toledo/`: datos y grafo de OpenTripPlanner.
+- `docker-compose.yml`: arranque coordinado de frontend, backend, OSRM y OTP.
 
-- `latex/.git`
-- `movilidad-urbana-sim/.git`
-- `prediction-behavioural-analysis-ml-travel-mode-choice/.git`
+## Documentacion raiz
 
-Este README y la infraestructura Docker de la raiz preparan la migracion a un monorepo, pero no eliminan ni modifican esos repositorios internos.
+La documentacion util queda centralizada aqui:
 
-## Arranque unificado con Docker Compose
+- `README.md`: mapa del repositorio y punto de entrada.
+- `RUNBOOK.md`: operacion diaria, comandos y puertos.
+- `MEMORIA_TECNICA.md`: arquitectura y evolucion tecnica del simulador.
+
+La documentacion interna de `movilidad-urbana-sim/` se ha reducido a un README corto para evitar duplicidad.
+
+## Estructura
+
+```text
+TFM/
+|- latex/
+|- movilidad-urbana-sim/
+|  |- backend/
+|  |- frontend/
+|- lpmc/
+|- osrm-clm/
+|  |- car/
+|  |- bike/
+|  |- foot/
+|- otp-toledo/
+|- papers/
+|- docker/
+|- docker-compose.yml
+|- README.md
+|- RUNBOOK.md
+`- MEMORIA_TECNICA.md
+```
+
+## Arranque rapido
 
 Desde `F:/TFM`:
 
@@ -27,41 +52,48 @@ Desde `F:/TFM`:
 docker compose up --build
 ```
 
-Servicios que se levantan:
+Servicios esperados:
 
-- `frontend`: `http://127.0.0.1:5173`
-- `backend`: `http://127.0.0.1:8000`
-- `osrm-car`: `http://127.0.0.1:5000`
-- `osrm-bike`: `http://127.0.0.1:5001`
-- `osrm-foot`: `http://127.0.0.1:5002`
-- `otp`: `http://127.0.0.1:8080`
-
-Imagenes usadas:
-
-- `osrm/osrm-backend:latest`
-- `opentripplanner/opentripplanner:2.5.0`
+- frontend: `http://127.0.0.1:5173`
+- backend: `http://127.0.0.1:8000`
+- osrm-car: `http://127.0.0.1:5000`
+- osrm-bike: `http://127.0.0.1:5001`
+- osrm-foot: `http://127.0.0.1:5002`
+- otp: `http://127.0.0.1:8080`
 
 ## Requisitos de datos
 
-Antes de usar `docker compose`, deben existir ya los datos y artefactos pesados:
+Antes del arranque deben existir ya los artefactos pesados, que no se versionan en Git:
 
 - `osrm-clm/car/clm.osrm` y derivados
 - `osrm-clm/bike/clm.osrm` y derivados
 - `osrm-clm/foot/clm.osrm` y derivados
 - `otp-toledo/graph.obj`
-- modelos de `lpmc/models/`
+- modelos en `lpmc/models/`
 - GTFS extraido en `movilidad-urbana-sim/backend/data/gtfs/GTFS_Urbano_Toledo/`
 
-La infraestructura Docker de esta raiz no genera esos artefactos; solo orquesta los servicios una vez preparados.
+## Origen de datos y perfiles
 
-## Migracion recomendada a monorepo
+Los recursos base del sistema proceden de estas fuentes:
 
-Cuando quieras unificar el control de cambios, el orden razonable es:
+- GTFS urbano de Toledo: descarga desde el NAP del Ministerio de Transportes y Movilidad Sostenible.
+- Geografia viaria base: extracto OSM de Castilla-La Mancha descargado desde Geofabrik.
+- Perfiles de enrutado OSRM: perfiles base de la imagen oficial de `osrm/osrm-backend`, usando `car.lua`, `bicycle.lua` y `foot.lua`.
 
-1. hacer copia de seguridad o confirmar que los repos internos estan limpios;
-2. crear un Git unico en `F:/TFM`;
-3. eliminar o archivar los `.git` internos;
-4. versionar solo codigo, configuracion, memoria y scripts;
-5. mantener fuera de Git los datos pesados y artefactos generados.
+Sobre esos insumos se generan localmente:
 
-Hasta completar esa migracion, usa esta raiz como capa de coordinacion y documentacion.
+- los datasets `.osrm` para coche, bici y a pie;
+- el `graph.obj` de OTP;
+- la carpeta GTFS extraida que consume el backend.
+
+## Estado del versionado
+
+El historial heredado que se conserva en el monorepo es el de `movilidad-urbana-sim/`, importado mediante `git subtree`.
+
+Los backups de repos Git antiguos no deben formar parte del repo. El `.gitignore` ya los excluye.
+
+## Criterio de documentacion
+
+- Lo operativo y transversal va a la raiz.
+- La documentacion del subproyecto debe limitarse a detalles internos que no dupliquen la raiz.
+- Los datos pesados, binarios y artefactos generados permanecen fuera de Git.
