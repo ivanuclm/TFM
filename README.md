@@ -2,6 +2,27 @@
 
 Repositorio principal del TFM y de la aplicación desarrollada en él. El proyecto integra una interfaz web cartográfica, un backend de orquestación, motores locales de enrutado y un bloque de modelado de elección modal para analizar alternativas de viaje en el entorno urbano de Toledo.
 
+Aplicación web desarrollada como Trabajo Fin de Máster para comparar rutas multimodales, explorar transporte público urbano y ejecutar inferencia de elección modal sobre escenarios de movilidad urbana.
+
+![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-Backend-009688?logo=fastapi&logoColor=white)
+![React](https://img.shields.io/badge/React-Frontend-61DAFB?logo=react&logoColor=black)
+![TypeScript](https://img.shields.io/badge/TypeScript-UI-3178C6?logo=typescript&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)
+![Leaflet](https://img.shields.io/badge/Leaflet-Mapa-199900?logo=leaflet&logoColor=white)
+![OSRM](https://img.shields.io/badge/OSRM-Routing-EA4335)
+![OTP](https://img.shields.io/badge/OpenTripPlanner-Transit-6A1B9A)
+![LaTeX](https://img.shields.io/badge/LaTeX-Memoria-008080?logo=latex&logoColor=white)
+
+[Qué hace la aplicación](#qué-hace-la-aplicación) ·
+[Arquitectura general](#arquitectura-general) ·
+[Puesta en marcha](#puesta-en-marcha) ·
+[Datos necesarios](#datos-necesarios) ·
+[Fuentes de datos](#fuentes-de-datos-y-referencias)
+
+![Vista principal del simulador](docs/app-preview.png)
+
+
 ## Qué hace la aplicación
 
 La aplicación permite:
@@ -10,7 +31,8 @@ La aplicación permite:
 - calcular rutas para coche, bicicleta y desplazamientos a pie mediante OSRM;
 - consultar itinerarios de transporte público urbano mediante OpenTripPlanner y GTFS;
 - visualizar rutas, segmentos y paradas sobre el mapa;
-- servir de base para integrar inferencia de elección modal a partir del bloque LPMC.
+- seleccionar modelos entrenados, introducir manualmente variables explicativas o utilizar perfiles preconfigurados y ejecutar inferencia modal para estimar con qué probabilidad se elegiría cada alternativa de transporte en un trayecto concreto;
+- generar y analizar grandes volúmenes de ejemplos y escenarios de movilidad para detectar patrones espaciales y de comportamiento, incluyendo visualizaciones agregadas sobre el mapa.
 
 ## Arquitectura general
 
