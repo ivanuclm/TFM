@@ -10,8 +10,8 @@ Aplicación web desarrollada como Trabajo Fin de Máster para comparar rutas mul
 ![TypeScript](https://img.shields.io/badge/TypeScript-UI-3178C6?logo=typescript&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)
 ![Leaflet](https://img.shields.io/badge/Leaflet-Mapa-199900?logo=leaflet&logoColor=white)
-![OSRM](https://img.shields.io/badge/OSRM-Routing-EA4335)
-![OTP](https://img.shields.io/badge/OpenTripPlanner-Transit-6A1B9A)
+![OSRM](https://img.shields.io/badge/OSRM-Routing-EA4335?logo=OpenStreetMap&logoColor=white)
+![OTP](https://img.shields.io/badge/OpenTripPlanner-Transit-6A1B9A?logo=OsmAnd&logoColor=white)
 ![LaTeX](https://img.shields.io/badge/LaTeX-Memoria-008080?logo=latex&logoColor=white)
 
 [Qué hace la aplicación](#qué-hace-la-aplicación) ·
