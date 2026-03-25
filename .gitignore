@@ -61,6 +61,8 @@ papers/*.pdf
 # Existing nested repos - keep until migration is completed
 latex/.git/
 movilidad-urbana-sim/.git/
+movilidad-urbana-sim/.venv/
+PLANTILLA TFM_ESP/
 prediction-behavioural-analysis-ml-travel-mode-choice/.git/
 
 # Nested git backups
