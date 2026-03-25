@@ -2,6 +2,7 @@
 
 Este capítulo recoge la gestión del proyecto con un enfoque SCRUM adaptado a un TFM individual. Se busca dejar trazabilidad clara de qué se planificó, qué se ejecutó, qué bloqueos aparecieron y qué decisiones técnicas se tomaron en cada iteración.
 
+
 \section{SCRUM adaptado a un desarrollo unipersonal}
 
 SCRUM es una metodología ágil de carácter iterativo e incremental, orientada a organizar el trabajo en ciclos cortos, priorizar entregas de valor y revisar de forma continua el avance del producto \cite{ScrumGuide2020}. Aunque su formulación original está pensada para equipos, sus principios también pueden adaptarse a proyectos individuales cuando se busca mantener planificación, trazabilidad y capacidad de reacción ante cambios.
@@ -9,7 +10,6 @@ SCRUM es una metodología ágil de carácter iterativo e incremental, orientada 
 En este trabajo se ha utilizado una adaptación práctica de SCRUM, no como aplicación estricta del marco en todos sus elementos formales, sino como guía para estructurar el desarrollo del simulador, registrar decisiones y ordenar la evolución del proyecto. Esta adaptación ha resultado útil por tres motivos. En primer lugar, porque se han combinado tareas heterogéneas, incluyendo desarrollo backend, frontend, integración de motores de enrutado, tratamiento de datos, entrenamiento de modelos y redacción de memoria. En segundo lugar, porque el alcance real del proyecto ha ido evolucionando a medida que se validaban soluciones técnicas y se detectaban bloqueos. Por último, porque el seguimiento periódico con el tutor ha funcionado como mecanismo natural de revisión y reorientación.
 
 Desde el punto de vista organizativo, la Guía Scrum 2020 define un \textit{Scrum Team} compuesto por tres responsabilidades principales: \textit{Product Owner}, \textit{Scrum Master} y \textit{Developers} \cite{ScrumGuide2020}. En un trabajo unipersonal esta separación no puede reproducirse de forma literal, por lo que se ha reinterpretado del siguiente modo:
-
 \begin{itemize}
   \item \textbf{Product Owner}: el tutor académico ha asumido de forma aproximada esta función, al validar prioridades, orientar el alcance funcional del prototipo y revisar la utilidad de los entregables desde el punto de vista del objetivo del TFM.
   \item \textbf{Scrum Master}: esta responsabilidad ha sido asumida por el propio autor del trabajo, en la medida en que ha organizado iteraciones, registrado bloqueos, mantenido la trazabilidad del progreso y ajustado la planificación cuando han surgido incidencias técnicas o cambios de enfoque.
@@ -18,8 +18,7 @@ Desde el punto de vista organizativo, la Guía Scrum 2020 define un \textit{Scru
 
 En consecuencia, varias responsabilidades propias de un equipo Scrum han quedado concentradas en una única persona, mientras que el tutor ha actuado como agente externo de supervisión, validación y priorización. Esta circunstancia introduce diferencias claras respecto a un SCRUM de equipo, pero no invalida su uso como marco ligero de gestión. En este contexto, lo más relevante no ha sido reproducir todas las ceremonias de forma estricta, sino conservar los elementos que aportan valor real al proyecto: backlog priorizado, trabajo por iteraciones, revisión periódica y registro explícito de decisiones.
 
-La adaptación adoptada se ha basado, por tanto, en los siguientes principios:
-
+La metodología seguida en este trabajo se ha apoyado en los siguientes principios:
 \begin{itemize}
   \item dividir el trabajo en sprints con objetivos acotados y entregables identificables;
   \item mantener un \textit{Product Backlog} vivo, revisado conforme avanzaba el proyecto;
@@ -29,6 +28,8 @@ La adaptación adoptada se ha basado, por tanto, en los siguientes principios:
 \end{itemize}
 
 En cuanto al seguimiento, las reuniones con el tutor comenzaron a finales de 2025, aproximadamente entre octubre y noviembre, con una periodicidad quincenal, normalmente los martes. Una vez finalizado el primer cuatrimestre y superada la carga principal de exámenes, la cadencia pasó a ser semanal a partir de febrero y marzo de 2026, con el objetivo de acelerar el ritmo de desarrollo y acotar con mayor precisión el trabajo asociado a cada sprint. Este cambio de frecuencia reforzó el carácter iterativo del proyecto y facilitó una validación más cercana del backlog y de los entregables.
+
+La Figura~\ref{fig:scrum_tfm_cycle} resume visualmente este ciclo de trabajo adaptado a un desarrollo unipersonal, mostrando la relación entre backlog, planificación, ejecución y revisión periódica con el tutor.
 
 \begin{figure}[ht]
     \centering
@@ -63,7 +64,6 @@ En una primera aproximación, los elementos principales del backlog fueron los s
 Conforme avanzó el trabajo, este backlog se fue refinando en tareas más concretas. Algunos elementos inicialmente planteados como trabajo futuro pasaron a formar parte del desarrollo principal, mientras que otros quedaron aplazados para iteraciones posteriores. A fecha de redacción de esta memoria, la parte nuclear del simulador puede considerarse ya implementada, por lo que el backlog actual se concentra principalmente en consolidación documental, mejoras visuales y ampliaciones funcionales sobre una base ya operativa.
 
 Para facilitar su seguimiento, los elementos del backlog se agruparon en cuatro bloques:
-
 \begin{itemize}
   \item \textbf{Bloque funcional}: interfaz web, selección de viajes, cálculo de rutas, visualización de resultados y cuadro de información.
   \item \textbf{Bloque de integración de servicios}: despliegue y conexión de OSRM, OTP y GTFS dentro de una arquitectura reproducible.
@@ -71,10 +71,10 @@ Para facilitar su seguimiento, los elementos del backlog se agruparon en cuatro 
   \item \textbf{Bloque documental y de cierre}: trazabilidad del proyecto, redacción de memoria, mejora de la presentación y preparación de resultados.
 \end{itemize}
 
+
 \subsection{Priorización de items}
 
 La priorización del backlog no se realizó únicamente por orden técnico de implementación, sino por valor aportado al objetivo general del proyecto. En consecuencia, se siguió el siguiente criterio:
-
 \begin{itemize}
   \item \textbf{Prioridad alta}: elementos necesarios para disponer de un simulador funcional extremo a extremo, incluyendo mapa interactivo, rutas por modo, integración de transporte público y una primera versión operativa de la inferencia modal.
   \item \textbf{Prioridad media}: mejoras que aumentan la usabilidad, la claridad visual o la trazabilidad del sistema, pero que no bloquean el funcionamiento básico del MVP.
@@ -85,239 +85,173 @@ Este criterio explica el orden seguido durante el desarrollo. Primero se prioriz
 
 \section{Histórico de sprints ejecutados}
 
-En este apartado se resume el trabajo realizado en cada sprint. Dado que el proyecto no se inició con una planificación cerrada y que parte de la trazabilidad se ha reconstruido a partir de artefactos, versiones funcionales y reuniones de seguimiento, los periodos temporales y el esfuerzo asociado deben interpretarse como estimaciones razonables. Aun así, este registro resulta útil para mostrar la secuencia real de construcción del sistema, la lógica de priorización seguida y el peso relativo de cada bloque de trabajo.
+En este apartado se resume la secuencia principal de trabajo seguida durante el desarrollo del proyecto. Dado que el TFM no arrancó con una planificación completamente cerrada y que parte de la trazabilidad se ha reconstruido a partir de versiones funcionales, reuniones de seguimiento y artefactos generados, los periodos y esfuerzos indicados deben interpretarse como estimaciones razonables. Aun así, este histórico permite mostrar con claridad cómo evolucionó el proyecto desde la validación inicial de tecnologías hasta la integración final del simulador.
+
+La Figura~\ref{fig:sprints_timeline} muestra un diagrama de Gantt simplificado de los sprints ejecutados durante el desarrollo del proyecto. El diagrama refleja tanto la secuencia principal del desarrollo como la existencia de trabajo en paralelo, especialmente entre las fases de modelado y diseño web y en la redacción de la memoria.
 
 \begin{figure}[ht]
     \centering
     \includegraphics[width=\textwidth]{figs/sprints_timeline.png}
-    \caption{Línea temporal simplificada de los sprints ejecutados durante el desarrollo del proyecto. Elaboración propia.}
+    \caption{Cronograma aproximado de los sprints ejecutados durante el desarrollo del TFM, representado como diagrama de Gantt simplificado. Elaboración propia.}
     \label{fig:sprints_timeline}
 \end{figure}
 
-\subsection{Sprint 1: Prototipo OSRM remoto}
+\subsection{Sprint 1: Validación inicial de OSRM mediante servicios remotos}
 
-\textbf{Periodo aproximado}: primeros días de diciembre de 2025.
+\textbf{Periodo aproximado}: del 2 al 5 de diciembre de 2025.
 
 \textbf{Esfuerzo estimado}: 8--12 horas.
 
-\textbf{Objetivo}: validar el flujo mapa $\rightarrow$ backend $\rightarrow$ rutas por modo.
+Este sprint tuvo como objetivo investigar distintas herramientas de enrutado y, en particular, validar la viabilidad de OSRM dentro del proyecto mediante llamadas remotas desde una primera arquitectura cliente-servidor. El propósito no era todavía disponer de una solución definitiva, sino comprobar que el flujo completo entre mapa, backend y cálculo de rutas resultaba técnicamente factible.
 
-\textbf{Trabajo realizado}:
-\begin{itemize}
-  \item Arranque del frontend con React + Leaflet.
-  \item Backend FastAPI mínimo para cálculo de rutas.
-  \item Integración inicial con demoserver oficial de OSRM.
-\end{itemize}
+El principal resultado de esta iteración fue la construcción de un primer prototipo funcional y la identificación temprana de las limitaciones de los servicios remotos utilizados para las pruebas iniciales. Esta validación permitió confirmar el interés de OSRM como base del simulador, pero también puso de manifiesto la necesidad de avanzar hacia una infraestructura propia para garantizar comparabilidad real entre modos y mayor control experimental.
 
-\textbf{Problema detectado}: el demoserver devuelve siempre la ruta en coche, lo que no permitía comparación entre \texttt{driving}, \texttt{cycling} y \texttt{foot}.
+\subsection{Sprint 2: Despliegue del servicio OSRM local multi-perfil}
 
-\textbf{Entregables}: base funcional de la aplicación y validación temprana de arquitectura cliente-servidor.
-
-\subsection{Sprint 2: OSRM local multi-perfil}
-
-\textbf{Periodo aproximado}: primera semana de diciembre de 2025.
+\textbf{Periodo aproximado}: del 6 al 11 de diciembre de 2025.
 
 \textbf{Esfuerzo estimado}: 12--16 horas.
 
-\textbf{Objetivo}: obtener rutas diferenciadas y control total de infraestructura.
+Una vez validado el uso de OSRM para este trabajo, este sprint se orientó al despliegue de una instancia local que permitiera obtener rutas diferenciadas para distintos modos de desplazamiento y, al mismo tiempo, mantener un control total sobre la infraestructura. Este cambio era necesario para asegurar reproducibilidad, trazabilidad y estabilidad en las comparaciones realizadas por el simulador.
 
-\textbf{Trabajo realizado}:
-\begin{itemize}
-  \item Paso intermedio por instancias públicas de \texttt{routing.openstreetmap.de}.
-  \item Despliegue final de tres instancias OSRM locales en Docker.
-  \item Configuración de puertos: 5000 (coche), 5001 (bici), 5002 (a pie).
-  \item Consolidación del endpoint \texttt{/api/osrm/routes}.
-\end{itemize}
+Como resultado, el proyecto dejó de depender de servicios públicos externos y pasó a apoyarse en una base de cálculo local sobre la que posteriormente se construirían tanto la comparación modal como la integración con el resto de componentes del sistema.
 
-\textbf{Entregables}: comparación modal estable y reproducible en entorno local.
+\subsection{Sprint 3: Incorporación del GTFS urbano de Toledo}
 
-\subsection{Sprint 3: GTFS Toledo}
-
-\textbf{Periodo aproximado}: segunda semana de diciembre de 2025.
+\textbf{Periodo aproximado}: del 12 al 18 de diciembre de 2025.
 
 \textbf{Esfuerzo estimado}: 10--14 horas.
 
-\textbf{Objetivo}: incorporar red de transporte público urbano en la aplicación.
+El objetivo de esta iteración fue incorporar al proyecto la estructura básica de la red de transporte público urbano de Toledo a partir de los datos GTFS. Con ello se buscaba ampliar el alcance del simulador más allá de la red viaria y comenzar a trabajar con una representación operativa del servicio de autobuses urbanos.
 
-\textbf{Trabajo realizado}:
-\begin{itemize}
-  \item Carga y modelado del feed \texttt{GTFS\_Urbano\_Toledo}.
-  \item Endpoints para paradas, rutas y horarios.
-  \item Visualización de paradas y líneas en el frontend.
-\end{itemize}
+Este sprint permitió disponer de una primera capa de información de transporte público integrada en la aplicación y sentó la base necesaria para abordar posteriormente la planificación multimodal con OpenTripPlanner.
 
-\textbf{Entregables}: capa GTFS operativa para exploración de red y horarios.
+\subsection{Sprint 4: Integración de OpenTripPlanner para rutas multimodales}
 
-\subsection{Sprint 4: OTP multimodal}
-
-\textbf{Periodo aproximado}: entre diciembre de 2025 y febrero de 2026.
+\textbf{Periodo aproximado}: del 19 de diciembre de 2025 al 12 de febrero de 2026.
 
 \textbf{Esfuerzo estimado}: 16--24 horas.
 
-\textbf{Objetivo}: habilitar rutas puerta a puerta con transporte público.
+Tras la incorporación del GTFS, este sprint se centró en habilitar el cálculo de rutas de transporte público puerta a puerta mediante OpenTripPlanner. El objetivo era pasar de una visualización estática de red a una capacidad real de planificación multimodal, incorporando la combinación entre red peatonal y servicio de autobús urbano.
 
-\textbf{Trabajo realizado}:
-\begin{itemize}
-  \item Construcción del \texttt{graph.obj} con OSM + GTFS.
-  \item Endpoint \texttt{/api/otp/routes} con ordenación y paginación de itinerarios.
-  \item Segmentación de legs (WALK/BUS) y exposición de metadatos de línea.
-\end{itemize}
+Esta fase supuso un salto cualitativo dentro del proyecto, ya que permitió integrar en una misma aplicación los modos viarios y el modo tránsito, haciendo posible una comparación más completa entre alternativas de viaje en el contexto urbano de Toledo.
 
-\textbf{Entregables}: integración completa de modo tránsito con desglose por segmentos.
+\subsection{Sprint 5: Diseño de una aplicación web para visualización y comparación modal}
 
-\subsection{Sprint 5: Mejora visual y UX}
-
-\textbf{Periodo aproximado}: en paralelo a la consolidación de GTFS y OTP.
+\textbf{Periodo aproximado}: del 20 de diciembre de 2025 al 20 de febrero de 2026.
 
 \textbf{Esfuerzo estimado}: 8--12 horas.
 
-\textbf{Objetivo}: hacer más clara la comparación entre modos.
+Este sprint estuvo orientado al diseño de una aplicación web capaz de presentar de forma clara los distintos modos de viaje y sus resultados asociados. Más que introducir nueva lógica de cálculo, la prioridad fue transformar el prototipo inicial en una interfaz más interpretable, útil para explorar escenarios y coherente con el objetivo del TFM como aplicación final.
 
-\textbf{Trabajo realizado}:
-\begin{itemize}
-  \item Estilos diferenciados por modo (colores y trazos).
-  \item Visualización de segmentos OTP solo en modo tránsito.
-  \item Mejoras de panel de información y selección de líneas.
-\end{itemize}
+El resultado fue una mejora progresiva de la usabilidad y de la lectura comparada de resultados, reforzando el valor del simulador no solo como demostración técnica, sino como herramienta de análisis y apoyo a la toma de decisiones sobre movilidad.
 
-\textbf{Entregables}: interfaz más legible y usable para análisis de escenarios.
+\subsection{Sprint 6: Diseño de un modelo de clasificación de modo de viaje y procesado de datos}
 
-\subsection{Sprint 6: LPMC exploración y preprocesado}
-
-\textbf{Periodo aproximado}: segunda mitad de diciembre de 2025.
+\textbf{Periodo aproximado}: del 21 de diciembre de 2025 al 17 de enero de 2026.
 
 \textbf{Esfuerzo estimado}: 12--18 horas.
 
-\textbf{Objetivo}: investigar el dataset LPMC y los trabajos de referencia (papers adjuntos) para preparar una base sólida de modelado.
+Este sprint tuvo como finalidad preparar la base metodológica del módulo de inteligencia artificial del proyecto. Para ello se abordó el estudio del dataset LPMC, la revisión de trabajos de referencia y el diseño del proceso de preparación de datos necesario para entrenar modelos de clasificación de modo de viaje con un criterio reproducible.
 
-\textbf{Trabajo realizado}:
-\begin{itemize}
-  \item Revisión técnica del dataset LPMC y de los papers de referencia incluidos en la carpeta \texttt{papers}.
-  \item Scripts de exploración y preprocesado del dataset LPMC.
-  \item Codificación de variables categóricas y limpieza de columnas.
-  \item Split temporal train/test por \texttt{survey\_year}.
-\end{itemize}
+El trabajo realizado en esta fase no se orientó todavía a la integración en el simulador, sino a establecer una base sólida de modelado sobre la que poder entrenar, comparar y validar distintos enfoques en iteraciones posteriores.
 
-\textbf{Entregables}: datasets preprocesados reproducibles para entrenamiento de modelos.
+\subsection{Sprint 7: Entrenamiento y validación de los modelos de clasificación}
 
-\subsection{Sprint 7: XGBoost baseline}
-
-\textbf{Periodo aproximado}: entre finales de diciembre de 2025 y febrero de 2026.
+\textbf{Periodo aproximado}: del 18 de enero al 21 de febrero de 2026.
 
 \textbf{Esfuerzo estimado}: 14--20 horas.
 
-\textbf{Objetivo}: entrenar un primer modelo útil y evaluable.
+Una vez definida la base de datos y el proceso de preparación, este sprint se centró en entrenar y validar los primeros modelos de clasificación de modo de viaje. El objetivo fue disponer de una referencia cuantitativa útil, suficientemente estable como para servir de punto de partida a la integración del módulo de inferencia dentro del simulador.
 
-\textbf{Trabajo realizado}:
-\begin{itemize}
-  \item Entrenamiento de XGBoost multiclase.
-  \item Escalado de variables numéricas y persistencia de artefactos.
-  \item Validación por métricas de test e inspección de inferencias.
-\end{itemize}
+Como resultado, el proyecto avanzó desde una fase exploratoria sobre datos hacia una fase claramente aplicada, en la que ya era posible valorar el rendimiento de los modelos y decidir cuáles podían incorporarse al sistema de forma operativa.
 
-\textbf{Entregables}: \texttt{xgb\_lpmc\_baseline.joblib}, \texttt{xgb\_lpmc\_scaler.joblib} y resultados base para comparación.
+\subsection{Sprint 8: Escritura de la memoria y consolidación metodológica}
 
-\subsection{Sprint 8: Arranque de memoria y trazabilidad SCRUM}
+\textbf{Periodo aproximado}: del 27 de enero al 24 de marzo de 2026, en paralelo a varios sprints técnicos.
 
-\textbf{Periodo aproximado}: primera quincena de marzo de 2026.
+\textbf{Esfuerzo estimado}: 10--14 horas en su arranque, ampliado de forma continua durante la redacción final.
 
-\textbf{Esfuerzo estimado}: 10--14 horas.
+La escritura de la memoria no se desarrolló como una actividad aislada al final del proyecto, sino como una línea de trabajo paralela que fue ganando peso a medida que el simulador y el bloque de modelado alcanzaban mayor madurez. El objetivo de este sprint fue consolidar la estructura documental del TFM, fijar el enfoque metodológico y dejar trazabilidad suficiente de las decisiones adoptadas a lo largo del desarrollo.
 
-\textbf{Objetivo}: iniciar la redacción formal de la memoria y consolidar el registro estructurado del trabajo realizado.
+Su carácter transversal hace que este sprint deba interpretarse como una actividad de acompañamiento al resto del proyecto. En la práctica, sirvió para ordenar el material generado, depurar la narrativa técnica y conectar la evolución funcional del sistema con la justificación académica del trabajo.
 
-\textbf{Trabajo realizado}:
-\begin{itemize}
-  \item Inicio de la escritura de la memoria en LaTeX con estructura completa por capítulos.
-  \item Propuesta y consolidación del índice actual del TFM.
-  \item Registro del trabajo acumulado en formato SCRUM para seguimiento con tutor.
-  \item Redacción inicial del capítulo de estado del arte.
-\end{itemize}
+\subsection{Sprint 9: Integración del módulo de inferencia en el simulador}
 
-\textbf{Entregables}: base de memoria preparada para redacción iterativa y seguimiento SCRUM trazable.
-
-\subsection{Sprint 9: Integración de inferencia LPMC en simulador}
-
-\textbf{Periodo aproximado}: segunda mitad de febrero de 2026.
+\textbf{Periodo aproximado}: del 22 de febrero al 8 de marzo de 2026.
 
 \textbf{Esfuerzo estimado}: 14--20 horas.
 
-\textbf{Objetivo}: conectar el modelo de elección modal con backend y frontend para inferencia operativa por escenario.
+El objetivo de esta iteración fue integrar el módulo de inferencia modal dentro del simulador ya construido, conectando el bloque de modelado con la aplicación web y con la lógica general del backend. Con ello se buscaba que el sistema dejara de ser únicamente un comparador de rutas para incorporar también una capa predictiva sobre la elección de modo de viaje.
 
-\textbf{Trabajo realizado}:
-\begin{itemize}
-  \item Implementación de endpoint \texttt{/api/lpmc/predict} en FastAPI.
-  \item Implementación de endpoint \texttt{/api/lpmc/debug-features} para inspección del vector de entrada al modelo.
-  \item Integración en frontend de formulario de perfil usuario y visualización de probabilidades por modo.
-  \item Ajuste de la estrategia de \texttt{household\_id}: reentrenamiento de una variante de modelo sin esta variable como feature (\texttt{nohh}), usándola solo para agrupación de folds.
-  \item Conservación de artefactos legacy (con \texttt{household\_id}) como respaldo y conmutación por variable de entorno (\texttt{LPMC\_MODEL\_VARIANT}).
-  \item Correcciones de interfaz (castellano, orden de bloques y legibilidad de resultados).
-\end{itemize}
+Esta integración representó la convergencia de las dos grandes líneas del TFM: por un lado, la construcción del simulador de movilidad urbana; por otro, el diseño y validación de modelos de clasificación. A partir de este punto, el proyecto quedó configurado como una aplicación final capaz de combinar cálculo de rutas, visualización cartográfica e inferencia modal en un mismo entorno de trabajo.
 
-\textbf{Entregables}: flujo completo de inferencia (entrada de variables, cálculo de features de ruta, predicción y depuración de features).
 
-\section{Sprint reviews y retrospectivas}
 
-\subsection{Aprendizajes por iteración}
 
-\begin{itemize}
-  \item Validar pronto las limitaciones de servicios externos evita retrabajo (caso demoserver OSRM).
-  \item Mantener infraestructura local mejora reproducibilidad y control experimental.
-  \item Separar integración funcional y capa de IA reduce complejidad y facilita depuración.
-  \item Mantener trazabilidad escrita del proyecto es clave para retomar el trabajo con rapidez tras varias semanas de pausa.
-  \item Exponer endpoints de depuración acelera la validación del pipeline de inferencia en integración.
-\end{itemize}
+% \section{Sprint reviews y retrospectivas}
 
-\subsection{Acciones de mejora}
+% \subsection{Aprendizajes por iteración}
 
-\begin{itemize}
-  \item Integrar inferencia en backend sin bloquear el servidor.
-  \item Sustituir parámetros temporales hardcodeados de OTP por fecha/hora seleccionadas por usuario.
-  \item Revisar la coherencia entre oferta real de transporte público y espacio de decisión del modelo: en trayectos cortos donde OTP no devuelve tramo BUS (itinerario íntegramente WALK), no debe habilitarse la alternativa \texttt{pt} en inferencia.
-  \item Añadir trazabilidad explícita entre evidencias (scripts, notebooks, endpoints) y sprints.
-  \item Estandarizar formato de revisión al cierre de cada iteración.
-\end{itemize}
+% \begin{itemize}
+%   \item Validar pronto las limitaciones de servicios externos evita retrabajo (caso demoserver OSRM).
+%   \item Mantener infraestructura local mejora reproducibilidad y control experimental.
+%   \item Separar integración funcional y capa de IA reduce complejidad y facilita depuración.
+%   \item Mantener trazabilidad escrita del proyecto es clave para retomar el trabajo con rapidez tras varias semanas de pausa.
+%   \item Exponer endpoints de depuración acelera la validación del pipeline de inferencia en integración.
+% \end{itemize}
 
-\section{Seguimiento operativo}
+% \subsection{Acciones de mejora}
 
-\subsection{Registro en SCRUM\_LOG}
+% \begin{itemize}
+%   \item Integrar inferencia en backend sin bloquear el servidor.
+%   \item Sustituir parámetros temporales hardcodeados de OTP por fecha/hora seleccionadas por usuario.
+%   \item Revisar la coherencia entre oferta real de transporte público y espacio de decisión del modelo: en trayectos cortos donde OTP no devuelve tramo BUS (itinerario íntegramente WALK), no debe habilitarse la alternativa \texttt{pt} en inferencia.
+%   \item Añadir trazabilidad explícita entre evidencias (scripts, notebooks, endpoints) y sprints.
+%   \item Estandarizar formato de revisión al cierre de cada iteración.
+% \end{itemize}
 
-El seguimiento detallado se mantiene en el documento vivo \texttt{latex/SCRUM\_LOG.md}, donde se registran:
+% \section{Seguimiento operativo}
 
-\begin{itemize}
-  \item estado de cada sprint,
-  \item bloqueos,
-  \item evidencia técnica,
-  \item decisiones tomadas y próximos pasos.
-\end{itemize}
+% \subsection{Registro en SCRUM\_LOG}
 
-\subsection{Trazabilidad con el repositorio}
+% El seguimiento detallado se mantiene en el documento vivo \texttt{latex/SCRUM\_LOG.md}, donde se registran:
 
-Cada sprint debe poder vincularse con evidencias concretas:
+% \begin{itemize}
+%   \item estado de cada sprint,
+%   \item bloqueos,
+%   \item evidencia técnica,
+%   \item decisiones tomadas y próximos pasos.
+% \end{itemize}
 
-\begin{itemize}
-  \item archivos modificados,
-  \item scripts ejecutables,
-  \item artefactos de modelo,
-  \item endpoints funcionales,
-  \item resultados observables en interfaz.
-\end{itemize}
+% \subsection{Trazabilidad con el repositorio}
 
-\section{Próximo sprint propuesto}
+% Cada sprint debe poder vincularse con evidencias concretas:
 
-\subsection{Objetivo}
+% \begin{itemize}
+%   \item archivos modificados,
+%   \item scripts ejecutables,
+%   \item artefactos de modelo,
+%   \item endpoints funcionales,
+%   \item resultados observables en interfaz.
+% \end{itemize}
 
-Actualizar OTP y datos de transporte para 2026, eliminando el parche temporal de fecha/hora fija y utilizando fecha/hora de viaje seleccionadas por el usuario.
+% \section{Próximo sprint propuesto}
 
-\subsection{Alcance y criterio de cierre}
+% \subsection{Objetivo}
 
-\begin{itemize}
-  \item Feed GTFS actualizado (2026) y \texttt{graph.obj} regenerado.
-  \item Selector de fecha y hora de viaje integrado en frontend.
-  \item Paso de \texttt{date}/\texttt{time} desde UI hasta \texttt{\_build\_otp\_params} en backend.
-  \item Comprobación de itinerarios OTP con fecha/hora variable en Toledo.
-  \item Evidencia registrada en \texttt{SCRUM\_LOG.md} y en la memoria.
-\end{itemize}
+% Actualizar OTP y datos de transporte para 2026, eliminando el parche temporal de fecha/hora fija y utilizando fecha/hora de viaje seleccionadas por el usuario.
 
-\subsection{Plan a dos sprints vista}
+% \subsection{Alcance y criterio de cierre}
 
-La línea de investigación DNN (Keras/TensorFlow en CPU, ajuste de depth/width y dropout) se planifica para dos sprints posteriores al de actualización OTP, una vez estabilizado el flujo de rutas con fecha/hora seleccionables. En paralelo, se propone una tarea de robustez metodológica en inferencia modal: restringir el conjunto de alternativas a modos realmente disponibles en cada consulta. En particular, si el planificador no devuelve transporte público efectivo (sin tramo BUS), la elección debe realizarse solo entre \texttt{walk}, \texttt{cycle} y \texttt{drive}, evitando clasificar como \texttt{pt} desplazamientos que operativamente se resuelven andando.
+% \begin{itemize}
+%   \item Feed GTFS actualizado (2026) y \texttt{graph.obj} regenerado.
+%   \item Selector de fecha y hora de viaje integrado en frontend.
+%   \item Paso de \texttt{date}/\texttt{time} desde UI hasta \texttt{\_build\_otp\_params} en backend.
+%   \item Comprobación de itinerarios OTP con fecha/hora variable en Toledo.
+%   \item Evidencia registrada en \texttt{SCRUM\_LOG.md} y en la memoria.
+% \end{itemize}
+
+% \subsection{Plan a dos sprints vista}
+
+% La línea de investigación DNN (Keras/TensorFlow en CPU, ajuste de depth/width y dropout) se planifica para dos sprints posteriores al de actualización OTP, una vez estabilizado el flujo de rutas con fecha/hora seleccionables. En paralelo, se propone una tarea de robustez metodológica en inferencia modal: restringir el conjunto de alternativas a modos realmente disponibles en cada consulta. En particular, si el planificador no devuelve transporte público efectivo (sin tramo BUS), la elección debe realizarse solo entre \texttt{walk}, \texttt{cycle} y \texttt{drive}, evitando clasificar como \texttt{pt} desplazamientos que operativamente se resuelven andando.

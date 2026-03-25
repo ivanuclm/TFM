@@ -1,9 +1,11 @@
 :root {
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: "Space Grotesk", "Segoe UI", "Trebuchet MS", sans-serif;
   line-height: 1.5;
   font-weight: 400;
   color: #111827;
-  background-color: #e5e7eb;
+  background:
+    radial-gradient(circle at top left, #d9e6f2 0%, #b9cada 25%, #94a9bd 60%, #6f8395 100%);
+  color-scheme: light;
 }
 
 *,
@@ -12,14 +14,30 @@
   box-sizing: border-box;
 }
 
-body {
-  margin: 0;
+html,
+body,
+#root {
   min-height: 100vh;
 }
 
+body {
+  margin: 0;
+  overflow: hidden;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
 #root {
-  min-height: 100vh;
-  padding: 1.5rem 2rem 2rem;
-  /* max-width: 1400px;  */
-  margin: 0 auto;
+  margin: 0;
+}
+
+@media (max-width: 900px) {
+  body {
+    overflow: auto;
+  }
 }

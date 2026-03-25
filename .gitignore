@@ -13,6 +13,8 @@ __pycache__/
 # Virtual environments
 .venv/
 venv/
+**/.venv/
+**/venv/
 
 # Node
 node_modules/

@@ -2,41 +2,16 @@
 
 \section{Fundamentos y enfoques}
 
-
-% \subsection{Fundamentos y enfoques}
-
-% La simulación de movilidad urbana combina, de forma general, tres bloques: representación de la red de transporte, modelado de la demanda de viajes y asignación de rutas bajo distintos supuestos operativos. Este tipo de herramientas se utiliza para evaluar escenarios de política pública, cambios en la oferta de transporte y efectos de nuevas infraestructuras antes de su despliegue real.
-
-% En la práctica, los simuladores actuales suelen apoyarse en datos geoespaciales abiertos y en motores de enrutado especializados. Dos marcos ampliamente utilizados en investigación y planificación son MATSim y SUMO, que han consolidado metodologías reproducibles para experimentación en transporte a distintas escalas \cite{Horni2016MATSim,Lopez2018SUMO}.
-
-% Este TFM adopta una aproximación aplicada: en lugar de desarrollar un motor de simulación desde cero, integra componentes consolidados (OSRM y OTP) sobre datos abiertos (OSM y GTFS), con una capa web orientada a análisis de escenarios.
-
-% En esta línea, resulta especialmente relevante el enfoque de Hillel et al., donde la elección modal no se modela solo con el viaje observado, sino recreando el \textit{choice-set} disponible para cada desplazamiento (andar, bici, transporte público y coche) en el momento temporal correspondiente \cite{Hillel2018LPMC}. Este planteamiento de fusión de datos (encuesta de viajes + planificador de rutas + estimación de costes) es una base metodológica directa para proyectos que, como este TFM, combinan motor de rutas e IA de elección modal.
-
-% La documentación técnica del caso LPMC también refuerza su interés práctico: el conjunto final recoge 81\,086 viajes, 31\,954 individuos y 17\,616 hogares en Londres, con variables de nivel de servicio por modo (duraciones segmentadas, transbordos y costes), además de variables sociodemográficas \cite{CSLPMC2019}. Esta estructura explica por qué LPMC se ha consolidado como referencia para evaluar modelos predictivos y comportamentales en elección modal.
-
-% \subsubsection{Aplicaciones relevantes}
-
-% En el ámbito urbano, las aplicaciones más habituales de estos sistemas incluyen:
-% \begin{itemize}
-%   \item comparación de tiempos y distancias entre modos para un mismo desplazamiento;
-%   \item evaluación de accesibilidad bajo diferentes configuraciones de red;
-%   \item análisis de cambios en oferta de transporte público (líneas, frecuencias y transbordos);
-%   \item soporte a modelos de elección modal y análisis de impacto agregado.
-% \end{itemize}
-
-% La línea de trabajo de este proyecto se sitúa en este último punto: combinar métricas de red (rutas y tiempos) con un modelo de elección modal entrenado sobre datos observados (LPMC).
-
 La movilidad urbana se ha consolidado como un ámbito de estudio en el que confluyen la ingeniería del transporte, la analítica de datos y la inteligencia artificial. En este contexto, los simuladores actuales no se limitan a representar mapas o a calcular rutas aisladas, sino que actúan como herramientas para evaluar políticas y escenarios de movilidad, permitiendo analizar de forma anticipada cómo cambios en los costes, en la oferta de transporte o en las condiciones operativas pueden modificar el comportamiento de la población.
 
 Este tipo de sistemas exige combinar varias capas de conocimiento. Por un lado, la capa de datos, que determina la calidad y la trazabilidad de la información sobre la red de transporte y los servicios de transporte público asociados. Por otro, la capa de enrutado, que permite transformar un par origen-destino en variables de servicio observables (tiempo, distancia, segmentos de viaje, transbordos o coste aproximado). Finalmente, la capa de modelado, en la que dichas variables se integran con atributos sociodemográficos para estimar la elección modal y construir escenarios \textit{what-if}. Esta arquitectura en capas es coherente con la evolución reciente de herramientas de simulación en investigación y planificación \cite{Horni2016MATSim,Lopez2018SUMO}.
 
-\begin{figure}[ht]
-    \centering
-    \includegraphics[width=\textwidth]{figs/ch2_pipeline.png}
-    \caption{Esquema conceptual del flujo de información en un simulador de movilidad como el desarrollado en este TFM. Elaboración propia.}
-    \label{fig:ch2_pipeline}
-\end{figure}
+% \begin{figure}[h]
+%     \centering
+%     \includegraphics[width=\textwidth]{figs/ch2_pipeline2.png}
+%     \caption{Esquema conceptual del flujo de información en un simulador de movilidad como el desarrollado en este TFM. Elaboración propia.}
+%     \label{fig:ch2_pipeline}
+% \end{figure}
 
 \section{Datos abiertos para movilidad}
 
@@ -99,61 +74,25 @@ Además de Google Maps Platform, el ecosistema actual incluye otras alternativas
 
 También existen servicios intermedios como openrouteservice, que proporcionan API pública y, al mismo tiempo, opciones de despliegue propio \cite{OpenRouteServiceAPI,OpenRouteServiceRestrictions}. Este tipo de solución puede ser útil como puente entre experimentación rápida y control de infraestructura, aunque con sus propias restricciones de uso en modalidad pública.
 
+La tabla~\ref{tab:routing_comparison} resume esta comparación y la decisión tecnológica adoptada en el proyecto. Para un simulador académico orientado a experimentación, trazabilidad y ejecución repetida de escenarios, la combinación OSRM + OTP en infraestructura propia ofrece un equilibrio más adecuado que una API comercial gestionada, aunque implique una mayor complejidad de despliegue.
+
 \begin{table}[ht]
     \centering
     \caption{Comparación resumida de las soluciones de enrutado consideradas en este trabajo. Elaboración propia a partir de \cite{OSRMDocs,OTPDocs,GoogleRoutesAPI,GoogleMapsPricing}.}
     \label{tab:routing_comparison}
     \renewcommand{\arraystretch}{1.2}
-    \begin{tabular}{|L{2.3cm}|L{2.9cm}|L{2.0cm}|L{2.3cm}|L{2.6cm}|}
+    \begin{tabular}{|L{2.0cm}|L{2.8cm}|L{2.8cm}|L{4.0cm}|}
         \hline
-        \textbf{Solución} & \textbf{Tipo de red} & \textbf{Despliegue} & \textbf{Coste de uso} & \textbf{Adecuación al TFM} \\
+        \textbf{Solución} & \textbf{Tipo de red} & \textbf{Coste de uso} & \textbf{Adecuación al TFM} \\
         \hline
-        OSRM & Red viaria OSM, perfiles por modo & Propio & Infraestructura propia & Muy adecuado para consultas masivas y control experimental \\
+        OSRM & Red viaria OSM, perfiles por modo & Infraestructura propia & Muy adecuado para consultas masivas y control experimental \\
         \hline
-        OTP & Red multimodal OSM + GTFS & Propio & Infraestructura propia & Muy adecuado para transporte público y análisis puerta a puerta \\
+        OTP & Red multimodal OSM + GTFS & Infraestructura propia & Muy adecuado para transporte público y análisis puerta a puerta \\
         \hline
-        Google Maps Platform & API comercial multimodo gestionada & Tercero & Pago por petición y cuotas & Útil como referencia industrial, menos adecuado para reproducibilidad \\
+        Google Maps Platform & API comercial multimodo gestionada & Pago por petición y cuotas & Útil como referencia industrial, menos adecuado para reproducibilidad \\
         \hline
     \end{tabular}
 \end{table}
-
-Esta comparación resume la decisión tecnológica adoptada en el proyecto. Para un simulador académico orientado a experimentación, trazabilidad y ejecución repetida de escenarios, la combinación OSRM + OTP en infraestructura propia ofrece un equilibrio más adecuado que una API comercial gestionada, aunque implique una mayor complejidad de despliegue.
-
-% \section{Síntesis y criterio de selección tecnológica}
-
-% La revisión comparada permite distinguir dos estrategias: (i) consumo de plataformas gestionadas de terceros y (ii) operación de motores abiertos en infraestructura propia. Para un objetivo centrado en experimentación masiva y reproducibilidad, la segunda estrategia ofrece ventajas decisivas: control de versiones, congelación de datasets, trazabilidad de resultados y coste marginal más predecible al escalar consultas.
-
-% En consecuencia, la arquitectura base del proyecto se fundamenta en OSRM + OTP en local para cálculo de red, manteniendo a Google Maps Platform y otras soluciones comerciales como referencia de comparación y posible vía de evolución futura orientada a producto.
-
-
-% \section{Comparativa de soluciones}
-
-% \subsection{OSRM frente a Google Maps Platform}
-
-% Desde una perspectiva de ingeniería, la comparación entre OSRM y Google Maps Platform debe hacerse sobre criterios técnicos y operativos, no solo sobre calidad de ruta puntual.
-
-% \subsubsection{Criterios de comparación}
-
-% \textbf{Modelo de servicio}:
-% \begin{itemize}
-%   \item Google Maps Platform ofrece APIs gestionadas (por ejemplo, Routes API) \cite{GoogleRoutesAPI};
-%   \item OSRM requiere operación propia, pero proporciona control total de infraestructura y datos \cite{OSRMDocs}.
-% \end{itemize}
-
-% \textbf{Coste y escalabilidad económica}:
-% \begin{itemize}
-%   \item en servicios comerciales el coste crece con el volumen de peticiones \cite{GoogleMapsPricing};
-%   \item en despliegues propios el coste es principalmente de infraestructura y operación.
-% \end{itemize}
-
-% \textbf{Reproducibilidad y trazabilidad}:
-% \begin{itemize}
-%   \item con OSRM y OTP local se puede congelar dataset y configuración;
-%   \item esto facilita replicar resultados entre iteraciones de experimentación.
-% \end{itemize}
-
-% \textbf{Conclusión aplicada al TFM}: para un simulador académico con necesidad de control y trazabilidad, OSRM + OTP en local es una elección coherente, aun asumiendo mayor complejidad de operación.
-
 
 \section{Modelado de elección modal}
 
@@ -163,15 +102,15 @@ En la literatura reciente, una de las referencias más utilizadas para este tipo
 
 \subsection{Modelos de utilidad aleatoria}
 
-Este problema se ha abordado tradicionalmente mediante los denominados modelos de utilidad aleatoria (\textit{Random Utility Models}, RUM), ampliamente utilizados en transporte para analizar decisiones de elección discreta, como la elección del modo de transporte \cite[p.~14]{MartinBaos2023Thesis}. En este enfoque, el decisor elige una alternativa dentro de un conjunto de opciones mutuamente excluyentes, por ejemplo caminar, usar la bicicleta, utilizar transporte público o desplazarse en coche \cite{Train2009,McFadden1974}.
+Este problema se ha abordado tradicionalmente mediante los denominados modelos de utilidad aleatoria (\textit{Random Utility Models}, RUM), ampliamente utilizados en transporte para analizar decisiones de elección discreta, como la elección del modo de transporte. En este enfoque, el decisor elige una alternativa dentro de un conjunto de opciones mutuamente excluyentes, por ejemplo caminar, usar la bicicleta, utilizar transporte público o desplazarse en coche \cite{Train2009,McFadden1974}.
 
-La idea central de estos modelos es que cada viajero asocia una utilidad a cada alternativa disponible dentro de su conjunto de elección, y se asume que elegirá aquella que le proporcione una mayor utilidad. Sin embargo, dicha utilidad no puede observarse de forma completa, ya que parte de los factores que influyen en la decisión sí pueden ser medidos por el analista, mientras que otros permanecen ocultos o no observados. Por ello, la utilidad de una alternativa suele descomponerse en un término determinista y un término aleatorio \cite[p.~14]{MartinBaos2023Thesis,Train2009}:
+La idea central de estos modelos es que cada viajero asocia una utilidad a cada alternativa disponible dentro de su conjunto de elección, y se asume que elegirá aquella que le proporcione una mayor utilidad. Sin embargo, dicha utilidad no puede observarse de forma completa, ya que parte de los factores que influyen en la decisión sí pueden ser medidos por el analista, mientras que otros permanecen ocultos o no observados. Por ello, la utilidad de una alternativa suele descomponerse en un término determinista y un término aleatorio:
 \begin{equation}
 U_{in} = V_{in} + \varepsilon_{in}
 \end{equation}
 donde $U_{in}$ representa la utilidad total que el individuo $n$ asocia a la alternativa $i$, $V_{in}$ es la componente sistemática o determinista de dicha utilidad, y $\varepsilon_{in}$ recoge los factores no observados que también influyen en la decisión.
 
-Bajo este planteamiento, el viajero se considera racional en el sentido de que selecciona la alternativa que maximiza su utilidad. En consecuencia, la elección observada puede expresarse en términos probabilísticos como la probabilidad de que la utilidad de una alternativa sea mayor o igual que la del resto de alternativas disponibles \cite[p.~15]{MartinBaos2023Thesis,Train2009}:
+Bajo este planteamiento, el viajero se considera racional en el sentido de que selecciona la alternativa que maximiza su utilidad. En consecuencia, la elección observada puede expresarse en términos probabilísticos como la probabilidad de que la utilidad de una alternativa sea mayor o igual que la del resto de alternativas disponibles:
 \begin{equation}
 P_{in} = P(U_{in} \geq U_{jn}\ \forall j \in C)
 \end{equation}
@@ -179,18 +118,21 @@ donde $C$ representa el conjunto de alternativas consideradas. De este modo, los
 
 \subsection{Modelo Logit Multinomial}
 
-Entre los modelos derivados del enfoque RUM, el más extendido en el análisis de elección modal es el Modelo Logit Multinomial (\textit{Multinomial Logit}, MNL). Su popularidad se debe a que ofrece una formulación matemática sencilla, una interpretación clara de los parámetros y una estimación relativamente eficiente desde el punto de vista computacional. En el contexto del transporte, el MNL ha sido utilizado de forma recurrente para estudiar cómo variables como el tiempo de viaje, el coste, los transbordos o determinadas características sociodemográficas influyen en la probabilidad de elegir un modo de transporte frente a otro \cite{McFadden1974,Train2009,MartinBaos2023Thesis}.
+Entre los modelos derivados del enfoque RUM, el más extendido en el análisis de elección modal es el Modelo Logit Multinomial (\textit{Multinomial Logit}, MNL). Su popularidad se debe a que ofrece una formulación matemática sencilla, una interpretación clara de los parámetros y una estimación relativamente eficiente desde el punto de vista computacional. En el contexto del transporte, el MNL ha sido utilizado de forma recurrente para estudiar cómo variables como el tiempo de viaje, el coste, los transbordos o determinadas características sociodemográficas influyen en la probabilidad de elegir un modo de transporte frente a otro \cite{McFadden1974}.
 
-El modelo MNL se obtiene al asumir que el término aleatorio de la utilidad sigue una distribución Gumbel independiente e idénticamente distribuida para todas las alternativas. Bajo esta hipótesis, la probabilidad de que el individuo $n$ elija la alternativa $i$ puede expresarse de la siguiente forma \cite[p.~15]{MartinBaos2023Thesis,McFadden1974,Train2009}:
+El modelo MNL se obtiene al asumir que el término aleatorio de la utilidad sigue una distribución Gumbel independiente e idénticamente distribuida para todas las alternativas. Bajo esta hipótesis, la probabilidad de que el individuo $n$ elija la alternativa $i$ puede expresarse de la siguiente forma:
 \begin{equation}
 P_{in} = \frac{\exp(V_{in})}{\sum_{j=1}^{I}\exp(V_{jn})}
 \end{equation}
-donde $I$ es el número total de alternativas disponibles y $V_{in}$ representa la utilidad sistemática de la alternativa $i$ para el individuo $n$. Esta expresión da lugar a una función de probabilidad de tipo sigmoidal, de manera que pequeñas variaciones en la utilidad representativa tienen mayor efecto cuando la probabilidad de elección se encuentra en valores intermedios que cuando una alternativa ya es claramente dominante o claramente poco atractiva. Esta propiedad resulta especialmente útil para interpretar cambios marginales en los atributos del servicio, por ejemplo ante mejoras en tiempo o coste de una determinada alternativa \cite[p.~15]{MartinBaos2023Thesis,Train2009}.
+donde $I$ es el número total de alternativas disponibles y $V_{in}$ representa la utilidad sistemática de la alternativa $i$ para el individuo $n$. Esta expresión da lugar a una función de probabilidad de tipo sigmoidal, de manera que pequeñas variaciones en la utilidad representativa tienen mayor efecto cuando la probabilidad de elección se encuentra en valores intermedios que cuando una alternativa ya es claramente dominante o claramente poco atractiva. Esta propiedad resulta especialmente útil para interpretar cambios marginales en los atributos del servicio, por ejemplo ante mejoras en tiempo o coste de una determinada alternativa.
+
+La Figura~\ref{fig:mnl_sigmoid} ilustra de forma esquemática esta forma sigmoidal de la probabilidad de elección en el modelo MNL.
+
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=0.7\textwidth]{figs/mnl_sigmoid.png}
-    \caption{Forma sigmoidal ilustrativa de la probabilidad de elección en el modelo MNL. Elaboración propia a partir de \cite[p.~16]{MartinBaos2023Thesis,Train2009}.}
+    \includegraphics[width=0.6\textwidth]{figs/mnl_sigmoid.png}
+    \caption{Forma sigmoidal ilustrativa de la probabilidad de elección en el modelo MNL. Elaboración propia.}
     \label{fig:mnl_sigmoid}
 \end{figure}
 
@@ -198,13 +140,13 @@ En la práctica, la componente determinista de la utilidad suele especificarse c
 \begin{equation}
 V_{in} = \beta_{i0} + \sum_{k}\beta_{ik}x_{ink}
 \end{equation}
-donde $x_{ink}$ representa el valor del atributo $k$ asociado a la alternativa $i$ para el individuo $n$, $\beta_{ik}$ es el parámetro que mide la influencia de dicho atributo y $\beta_{i0}$ es una constante específica de la alternativa. Esta formulación permite cuantificar el efecto relativo de variables como el tiempo de viaje, el coste monetario, el número de transbordos o el acceso peatonal, entre otras. En términos interpretativos, los parámetros estimados indican cómo varía la utilidad de cada modo cuando cambian sus atributos observables \cite{Train2009,MartinBaos2023Thesis}.
+donde $x_{ink}$ representa el valor del atributo $k$ asociado a la alternativa $i$ para el individuo $n$, $\beta_{ik}$ es el parámetro que mide la influencia de dicho atributo y $\beta_{i0}$ es una constante específica de la alternativa. Esta formulación permite cuantificar el efecto relativo de variables como el tiempo de viaje, el coste monetario, el número de transbordos o el acceso peatonal, entre otras. En términos interpretativos, los parámetros estimados indican cómo varía la utilidad de cada modo cuando cambian sus atributos observables.
 
-La estimación de los parámetros del modelo se realiza habitualmente mediante máxima verosimilitud. Para ello, se define una función de verosimilitud que mide la probabilidad de observar las elecciones registradas en la muestra dadas unas determinadas estimaciones de los parámetros. El objetivo del proceso de ajuste consiste en encontrar los valores de $\beta$ que maximizan dicha verosimilitud, o de forma equivalente, que maximizan la log-verosimilitud del modelo. Este procedimiento constituye la base clásica de estimación de modelos de elección discreta y permite obtener un modelo interpretable y coherente con la teoría del comportamiento del viajero \cite{Train2009,MartinBaos2023Thesis}.
+La estimación de los parámetros del modelo se realiza habitualmente mediante máxima verosimilitud. Para ello, se define una función de verosimilitud que mide la probabilidad de observar las elecciones registradas en la muestra dadas unas determinadas estimaciones de los parámetros. El objetivo del proceso de ajuste consiste en encontrar los valores de $\beta$ que maximizan dicha verosimilitud, o de forma equivalente, que maximizan la log-verosimilitud del modelo. Este procedimiento constituye la base clásica de estimación de modelos de elección discreta y permite obtener un modelo interpretable y coherente con la teoría del comportamiento del viajero.
 
 En este TFM, el modelo MNL resulta relevante como referencia metodológica, ya que proporciona una base teórica sólida para representar la elección modal a partir de atributos del desplazamiento. Además, sirve como punto de comparación frente a enfoques más flexibles basados en aprendizaje automático, que se describen en los apartados siguientes.
 
-Una limitación conocida del modelo MNL es la hipótesis de independencia de alternativas irrelevantes (\textit{Independence of Irrelevant Alternatives}, IIA), derivada de la suposición de errores independientes e idénticamente distribuidos. Esta propiedad implica que la relación de sustitución entre dos alternativas no depende de la presencia o de las características del resto de modos, lo cual puede resultar restrictivo en problemas de movilidad donde algunas opciones están más correlacionadas entre sí que otras \cite[p.~15]{MartinBaos2023Thesis,McFadden1974,Train2009}. Aun así, el MNL sigue siendo el punto de partida más habitual en la literatura por su equilibrio entre simplicidad, interpretabilidad y capacidad descriptiva.
+Una limitación conocida del modelo MNL es la hipótesis de independencia de alternativas irrelevantes (\textit{Independence of Irrelevant Alternatives}, IIA), derivada de la suposición de errores independientes e idénticamente distribuidos. Esta propiedad implica que la relación de sustitución entre dos alternativas no depende de la presencia o de las características del resto de modos, lo cual puede resultar restrictivo en problemas de movilidad donde algunas opciones están más correlacionadas entre sí que otras \cite{McFadden1974,Train2009}. Aun así, el MNL sigue siendo el punto de partida más habitual en la literatura por su equilibrio entre simplicidad, interpretabilidad y capacidad descriptiva.
 
 
 
@@ -212,49 +154,52 @@ Una limitación conocida del modelo MNL es la hipótesis de independencia de alt
 
 A pesar de su amplia utilización en el análisis de elección modal, los modelos basados en utilidad aleatoria presentan ciertas limitaciones cuando se aplican a problemas complejos de movilidad. En primer lugar, requieren especificar de forma explícita la forma funcional de la utilidad sistemática, lo que implica que el analista debe decidir previamente qué variables incluir y cómo se relacionan con la utilidad de cada alternativa. En muchos casos, esta especificación se realiza mediante combinaciones lineales de atributos del viaje, lo que puede resultar restrictivo cuando las relaciones reales entre variables son no lineales o presentan interacciones complejas \cite[p.~20]{MartinBaos2023Thesis}.
 
-Otra limitación relevante es que los modelos clásicos suelen asumir estructuras relativamente simples en la distribución de los términos de error. En el caso del modelo Logit Multinomial, por ejemplo, la hipótesis de independencia de alternativas irrelevantes puede no reflejar adecuadamente situaciones en las que algunas alternativas presentan correlaciones más fuertes entre sí, como ocurre frecuentemente entre distintos modos de transporte público o entre modos motorizados \cite[p.~20]{MartinBaos2023Thesis}.
+Otra limitación relevante es que los modelos clásicos suelen asumir estructuras relativamente simples en la distribución de los términos de error. En el caso del modelo Logit Multinomial, por ejemplo, la hipótesis de independencia de alternativas irrelevantes puede no reflejar adecuadamente situaciones en las que algunas alternativas presentan correlaciones más fuertes entre sí, como ocurre frecuentemente entre distintos modos de transporte público o entre modos motorizados.
 
-Además, desde un punto de vista práctico, la especificación de modelos econométricos puede requerir un proceso iterativo de selección de variables, transformación de atributos y validación de supuestos teóricos. Aunque este enfoque proporciona modelos interpretables y coherentes con la teoría del comportamiento del viajero, puede resultar menos flexible cuando se trabaja con conjuntos de datos de alta dimensionalidad o con relaciones complejas entre variables \cite[p.~20]{MartinBaos2023Thesis}.
+Además, desde un punto de vista práctico, la especificación de modelos econométricos puede requerir un proceso iterativo de selección de variables, transformación de atributos y validación de supuestos teóricos. Aunque este enfoque proporciona modelos interpretables y coherentes con la teoría del comportamiento del viajero, puede resultar menos flexible cuando se trabaja con conjuntos de datos de alta dimensionalidad o con relaciones complejas entre variables.
+
 
 \subsection{Aprendizaje automático para elección modal}
 
-Con el aumento de la disponibilidad de datos y de la capacidad computacional, en los últimos años han ganado relevancia los enfoques basados en aprendizaje automático para el análisis de elección modal. Desde esta perspectiva, la elección de modo puede formularse también como un problema de clasificación supervisada, en el que el objetivo consiste en predecir la alternativa elegida a partir de un conjunto de variables explicativas relacionadas con el viaje y con las características del individuo \cite[p.~20]{MartinBaos2023Thesis}.
+Con el aumento de la disponibilidad de datos y de la capacidad computacional, en los últimos años han ganado relevancia los enfoques basados en aprendizaje automático para el análisis de elección modal. Desde esta perspectiva, la elección de modo puede formularse también como un problema de clasificación supervisada, en el que el objetivo consiste en predecir la alternativa elegida a partir de un conjunto de variables explicativas relacionadas con el viaje y con las características del individuo.
 
-A diferencia de los modelos clásicos de elección discreta, muchos algoritmos de aprendizaje automático no requieren especificar de forma explícita la forma funcional de la relación entre variables. En su lugar, aprenden patrones directamente a partir de los datos de entrenamiento, lo que les permite capturar relaciones no lineales, interacciones complejas entre atributos y estructuras de decisión difíciles de representar mediante modelos lineales tradicionales \cite[p.~21]{MartinBaos2023Thesis}.
+A diferencia de los modelos clásicos de elección discreta, muchos algoritmos de aprendizaje automático no requieren especificar de forma explícita la forma funcional de la relación entre variables. En su lugar, aprenden patrones directamente a partir de los datos de entrenamiento, lo que les permite capturar relaciones no lineales, interacciones complejas entre atributos y estructuras de decisión difíciles de representar mediante modelos lineales tradicionales.
 
-Entre las técnicas más utilizadas en este contexto destacan los métodos basados en árboles de decisión y sus variantes de ensamblado, como Random Forest o Gradient Boosting Decision Trees, así como modelos basados en redes neuronales profundas. Estos enfoques han mostrado un rendimiento predictivo competitivo en numerosos problemas de clasificación tabular, incluyendo aplicaciones en transporte y elección modal \cite{MartinBaos2023TRC,MartinBaos2023Thesis}.
+Entre las técnicas más utilizadas en este contexto destacan los métodos basados en árboles de decisión y los modelos de conjunto derivados de ellos, como Random Forest o Gradient Boosting Decision Trees, así como los modelos basados en redes neuronales profundas. Estos enfoques han mostrado un rendimiento predictivo competitivo en numerosos problemas de clasificación tabular, incluyendo aplicaciones en transporte y elección modal.
 
-En este trabajo se adopta esta perspectiva complementaria: el modelo Logit Multinomial se considera como referencia metodológica clásica, mientras que distintos modelos de aprendizaje automático se utilizan para explorar alternativas con mayor capacidad predictiva. En particular, la arquitectura del simulador se ha diseñado para permitir la integración de diferentes modelos de clasificación, entre ellos Random Forest, Gradient Boosting Decision Trees y redes neuronales profundas, de forma que puedan compararse sus resultados en el contexto del problema de elección modal analizado. Esta comparación resulta coherente con la evidencia reciente disponible para datasets reales de elección modal, entre ellos LPMC \cite{MartinBaos2023TRC,Hillel2018LPMC,CSLPMC2019}.
+En este trabajo se adopta esta perspectiva complementaria: el modelo Logit Multinomial se considera como referencia metodológica clásica, mientras que distintos modelos de aprendizaje automático se utilizan para explorar alternativas con mayor capacidad predictiva. En particular, la arquitectura del simulador se ha diseñado para permitir la integración de diferentes modelos de clasificación, entre ellos Random Forest, Gradient Boosting Decision Trees y redes neuronales profundas, de forma que puedan compararse sus resultados en el contexto del problema de elección modal analizado. Esta comparación resulta coherente con la evidencia reciente disponible para datasets reales de elección modal, entre ellos LPMC \cite{Hillel2018LPMC}.
 
 \subsection{Random Forests}
 
-Random Forest es un método de aprendizaje automático basado en el uso de múltiples árboles de decisión combinados mediante técnicas de ensamblado. El modelo fue propuesto por Breiman \cite{Breiman2001} como una extensión de los árboles de clasificación tradicionales, con el objetivo de mejorar su estabilidad y capacidad predictiva. En la revisión de Martín Baos, este tipo de modelos aparece además como una de las familias más utilizadas en comparativas recientes de elección modal \cite[p.~23]{MartinBaos2023Thesis}.
+Random Forest es un método de aprendizaje automático basado en la combinación de múltiples árboles de decisión entrenados sobre subconjuntos distintos de los datos. El modelo fue propuesto por Breiman \cite{Breiman2001} como una extensión de los árboles de clasificación tradicionales, con el objetivo de mejorar su estabilidad y capacidad predictiva. En diversas revisiones de la literatura, este tipo de modelos aparece además como una de las familias más utilizadas en comparativas recientes de elección modal.
 
-La idea fundamental consiste en entrenar un gran número de árboles de decisión sobre diferentes subconjuntos de los datos de entrenamiento. Cada árbol se construye utilizando una muestra aleatoria del conjunto de datos original (técnica conocida como \textit{bootstrap sampling}) y, además, en cada división del árbol se considera únicamente un subconjunto aleatorio de variables explicativas. Este doble proceso de aleatorización permite reducir la correlación entre árboles individuales y, en consecuencia, mejorar el rendimiento del modelo agregado \cite{Breiman2001,MartinBaos2023Thesis}.
+La idea fundamental consiste en entrenar un gran número de árboles de decisión sobre diferentes subconjuntos de los datos de entrenamiento. Cada árbol se construye utilizando una muestra aleatoria del conjunto de datos original (técnica conocida como \textit{bootstrap sampling}) y, además, en cada división del árbol se considera únicamente un subconjunto aleatorio de variables explicativas. Este doble proceso de aleatorización permite reducir la correlación entre árboles individuales y, en consecuencia, mejorar el rendimiento del modelo agregado.
 
-En problemas de clasificación, como el de elección modal, cada árbol produce una predicción independiente y la decisión final se obtiene mediante votación mayoritaria entre todos los árboles del bosque. Este mecanismo permite capturar relaciones no lineales entre variables y manejar de forma robusta conjuntos de datos con múltiples atributos \cite{Breiman2001}.
+En problemas de clasificación, como el de elección modal, cada árbol produce una predicción independiente y la decisión final se obtiene mediante votación mayoritaria entre todos los árboles del bosque. Este mecanismo permite capturar relaciones no lineales entre variables y manejar de forma robusta conjuntos de datos con múltiples atributos.
 
 En el ámbito del transporte, los modelos Random Forest se han utilizado en distintos trabajos para predecir la elección de modo de transporte, ya que ofrecen un buen equilibrio entre capacidad predictiva, robustez frente al sobreajuste y relativa facilidad de interpretación mediante medidas de importancia de variables. No obstante, la evidencia comparativa reciente sugiere que su rendimiento puede quedar por debajo del de otros métodos más potentes de boosting en algunos conjuntos de datos reales \cite{MartinBaos2023TRC}.
 
 \subsection{Gradient Boosting Decision Trees}
 
-Los modelos basados en \textit{Gradient Boosting Decision Trees} (GBDT) constituyen otra familia de métodos de aprendizaje automático ampliamente utilizados en problemas de clasificación con datos tabulares. A diferencia de los métodos basados en bagging, como Random Forest, el enfoque de boosting construye los árboles de decisión de forma secuencial, de modo que cada nuevo árbol intenta corregir los errores cometidos por el conjunto de árboles anteriores \cite{Friedman2001,MartinBaos2023Thesis}.
+Los modelos basados en \textit{Gradient Boosting Decision Trees} (GBDT) constituyen otra familia de métodos de aprendizaje automático ampliamente utilizados en problemas de clasificación con datos tabulares. A diferencia de los métodos basados en bagging, como Random Forest, el enfoque de boosting construye los árboles de decisión de forma secuencial, de modo que cada nuevo árbol intenta corregir los errores cometidos por el conjunto de árboles anteriores \cite{Friedman2001}.
 
-El proceso comienza entrenando un primer árbol de decisión sencillo sobre los datos de entrenamiento. A continuación, se construyen árboles adicionales que se ajustan sobre los residuos o errores del modelo previo. De este modo, el modelo final se obtiene como la suma ponderada de múltiples árboles débiles, cada uno de los cuales contribuye a mejorar gradualmente la predicción global \cite{Friedman2001}.
+El proceso comienza entrenando un primer árbol de decisión sencillo sobre los datos de entrenamiento. A continuación, se construyen árboles adicionales que se ajustan sobre los residuos o errores del modelo previo. De este modo, el modelo final se obtiene como la suma ponderada de múltiples árboles débiles, cada uno de los cuales contribuye a mejorar gradualmente la predicción global.
 
-Entre las implementaciones más conocidas de este enfoque se encuentra XGBoost (\textit{Extreme Gradient Boosting}), una biblioteca optimizada que introduce mejoras en eficiencia computacional, regularización del modelo y manejo de grandes conjuntos de datos \cite{Chen2016XGBoost}. Gracias a estas características, XGBoost se ha convertido en una de las técnicas más utilizadas en problemas de aprendizaje supervisado con datos estructurados y ha mostrado un comportamiento especialmente competitivo en comparativas recientes de elección modal \cite{MartinBaos2023TRC}.
+Entre las implementaciones más conocidas de este enfoque se encuentra XGBoost (\textit{Extreme Gradient Boosting}), una biblioteca optimizada que introduce mejoras en eficiencia computacional, regularización del modelo y manejo de grandes conjuntos de datos \cite{Chen2016XGBoost}. Gracias a estas características, XGBoost se ha convertido en una de las técnicas más utilizadas en problemas de aprendizaje supervisado con datos estructurados y ha mostrado un comportamiento especialmente competitivo en comparativas recientes de elección modal.
 
 En el contexto de este TFM, los modelos basados en Gradient Boosting resultan especialmente relevantes, ya que permiten capturar relaciones no lineales entre los atributos del viaje y la elección modal. Además, su buen rendimiento predictivo y su flexibilidad para manejar distintos tipos de variables los convierten en una herramienta adecuada para integrarse en el simulador de movilidad desarrollado en este trabajo.
 
 \subsection{Redes Neuronales Profundas}
 
-Las redes neuronales profundas (\textit{Deep Neural Networks}, DNN) constituyen otra familia de modelos de aprendizaje automático que ha experimentado un crecimiento significativo en los últimos años. Estas técnicas se basan en arquitecturas formadas por múltiples capas de neuronas artificiales que transforman progresivamente las variables de entrada mediante combinaciones lineales y funciones de activación no lineales \cite{Goodfellow2016,MartinBaos2023Thesis}.
+Las redes neuronales profundas (\textit{Deep Neural Networks}, DNN) constituyen otra familia de modelos de aprendizaje automático que ha experimentado un crecimiento significativo en los últimos años. Estas técnicas se basan en arquitecturas formadas por múltiples capas de neuronas artificiales que transforman progresivamente las variables de entrada mediante combinaciones lineales y funciones de activación no lineales \cite{Goodfellow2016}.
 
-A diferencia de los modelos basados en árboles, las redes neuronales permiten aprender representaciones internas de los datos a través de varias capas ocultas, lo que facilita capturar relaciones complejas entre variables. Esta capacidad de modelar interacciones no lineales ha motivado su aplicación en numerosos problemas de predicción y clasificación, incluyendo el análisis del comportamiento de los viajeros \cite{Goodfellow2016}.
+A diferencia de los modelos basados en árboles, las redes neuronales permiten aprender representaciones internas de los datos a través de varias capas ocultas, lo que facilita capturar relaciones complejas entre variables. Esta capacidad de modelar interacciones no lineales ha motivado su aplicación en numerosos problemas de predicción y clasificación, incluyendo el análisis del comportamiento de los viajeros.
 
-En problemas de elección modal, las redes neuronales profundas pueden utilizarse para estimar la probabilidad de seleccionar cada modo de transporte a partir de atributos del desplazamiento y características sociodemográficas del usuario. Aunque estos modelos suelen requerir mayor volumen de datos y un proceso de ajuste más cuidadoso que los métodos basados en árboles, también ofrecen una elevada flexibilidad para capturar patrones complejos presentes en los datos \cite{MartinBaos2023TRC,MartinBaos2023Thesis}.
+En problemas de elección modal, las redes neuronales profundas pueden utilizarse para estimar la probabilidad de seleccionar cada modo de transporte a partir de atributos del desplazamiento y características sociodemográficas del usuario. Aunque estos modelos suelen requerir mayor volumen de datos y un proceso de ajuste más cuidadoso que los métodos basados en árboles, también ofrecen una elevada flexibilidad para capturar patrones complejos presentes en los datos.
 
-En este trabajo, las redes neuronales profundas se consideran como una posible extensión del sistema de predicción implementado en el simulador de movilidad. La arquitectura del sistema permite integrar distintos modelos de clasificación, lo que abre la posibilidad de incorporar en futuras versiones modelos neuronales entrenados sobre los mismos atributos de viaje utilizados por los métodos basados en árboles.
+% En este trabajo, las redes neuronales profundas se consideran como una posible extensión del sistema de predicción implementado en el simulador de movilidad. La arquitectura del sistema permite integrar distintos modelos de clasificación, lo que abre la posibilidad de incorporar en futuras versiones modelos neuronales entrenados sobre los mismos atributos de viaje utilizados por los métodos basados en árboles.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % REVISAR COMENTARIO (3 o 4 carillas)
 

@@ -59,6 +59,7 @@ const destinationIcon = L.divIcon({
 });
 
 type UiMode = "driving" | "cycling" | "foot" | "transit";
+type BasemapMode = "light" | "color" | "relief" | "satellite";
 
 type Point = { lat: number; lon: number };
 
@@ -92,6 +93,7 @@ interface MapViewProps {
   setDestination: (p: Point) => void;
   routeGeometry: Point[];
   mode: UiMode;
+  basemap: BasemapMode;
   gtfsStops?: GtfsStop[];
   transitShape?: Point[];
   transitRouteStops?: GtfsStop[];
@@ -131,6 +133,7 @@ export function MapView({
   setDestination,
   routeGeometry,
   mode,
+  basemap,
   gtfsStops,
   transitShape,
   transitRouteStops,
@@ -138,6 +141,29 @@ export function MapView({
   onSelectTransitRoute,
   transitSegments,
 }: MapViewProps) {
+  const basemapConfig: Record<
+    BasemapMode,
+    { url: string; attribution: string }
+  > = {
+    light: {
+      url: "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+      attribution: "&copy; OpenStreetMap contributors &copy; CARTO",
+    },
+    color: {
+      url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+      attribution: "&copy; OpenStreetMap contributors",
+    },
+    relief: {
+      url: "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
+      attribution:
+        "&copy; OpenStreetMap contributors, SRTM | map style: &copy; OpenTopoMap",
+    },
+    satellite: {
+      url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+      attribution: "Tiles &copy; Esri",
+    },
+  };
+
   const osrmPolylinePositions = routeGeometry.map(
     (p) => [p.lat, p.lon] as [number, number]
   );
@@ -200,8 +226,8 @@ export function MapView({
   return (
     <MapContainer center={defaultCenter} zoom={13} className="map-container">
       <TileLayer
-        attribution='&copy; OpenStreetMap contributors'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        attribution={basemapConfig[basemap].attribution}
+        url={basemapConfig[basemap].url}
       />
 
       <ClickHandler setOrigin={setOrigin} setDestination={setDestination} />
@@ -268,8 +294,13 @@ export function MapView({
           <CircleMarker
             key={s.id}
             center={[s.lat, s.lon]}
-            radius={3}
-            pathOptions={{ color: "#2563eb" }}
+            radius={4}
+            pathOptions={{
+              color: "#0f172a",
+              weight: 1.2,
+              fillColor: "#38bdf8",
+              fillOpacity: 0.95,
+            }}
           >
             <Popup>
               <div>

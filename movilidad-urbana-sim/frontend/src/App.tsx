@@ -8,6 +8,7 @@ const API_BASE_URL =
 
 type Profile = "driving" | "cycling" | "foot";
 type UiMode = Profile | "transit";
+type BasemapMode = "light" | "color" | "relief" | "satellite";
 
 type Point = { lat: number; lon: number };
 
@@ -256,6 +257,72 @@ const DAY_OPTIONS: { value: number; label: string }[] = [
   { value: 7, label: "Domingo" },
 ];
 
+const BASEMAP_OPTIONS: { value: BasemapMode; label: string }[] = [
+  { value: "light", label: "Analítico" },
+  { value: "color", label: "Color" },
+  { value: "relief", label: "Relieve" },
+  { value: "satellite", label: "Satélite" },
+];
+
+const PROFILE_PRESETS: {
+  id: string;
+  label: string;
+  description: string;
+  values: LpmcUserProfile;
+}[] = [
+  {
+    id: "commuter",
+    label: "Commuter",
+    description: "Perfil laboral con coche disponible.",
+    values: {
+      purpose: "HBW",
+      fueltype: "Petrol",
+      day_of_week: 2,
+      start_time_linear: 8.25,
+      age: 36,
+      female: 0,
+      driving_license: 1,
+      car_ownership: 1,
+      cost_transit: 1.5,
+      cost_driving_total: 3.5,
+    },
+  },
+  {
+    id: "student",
+    label: "Estudiante",
+    description: "Perfil sensible al coste y predispuesto al bus.",
+    values: {
+      purpose: "HBE",
+      fueltype: "Average",
+      day_of_week: 3,
+      start_time_linear: 7.75,
+      age: 21,
+      female: 1,
+      driving_license: 0,
+      car_ownership: 0,
+      cost_transit: 0.95,
+      cost_driving_total: 2.2,
+    },
+  },
+  {
+    id: "family",
+    label: "Familiar",
+    description: "Viaje no laboral con mayor acceso a coche.",
+    values: {
+      purpose: "HBO",
+      fueltype: "Diesel",
+      day_of_week: 6,
+      start_time_linear: 11.5,
+      age: 44,
+      female: 1,
+      driving_license: 1,
+      car_ownership: 2,
+      cost_transit: 1.5,
+      cost_driving_total: 4.4,
+    },
+  },
+];
+
 const LPMC_MODE_LABELS: Record<LpmcPredictResponse["predicted_mode"], string> = {
   walk: "A pie",
   cycle: "Bicicleta",
@@ -315,6 +382,7 @@ function App() {
   });
 
   const [selectedMode, setSelectedMode] = useState<UiMode>("driving");
+  const [basemap, setBasemap] = useState<BasemapMode>("color");
   const [transitItineraryIndex, setTransitItineraryIndex] = useState(0);
 
   const [showGtfsStops, setShowGtfsStops] = useState(true);
@@ -454,6 +522,11 @@ function App() {
   const stripSeconds = (t?: string | null) =>
     t && t.length >= 5 ? t.slice(0, 5) : t ?? "";
 
+  const selectedPresetId =
+    PROFILE_PRESETS.find(
+      (preset) => JSON.stringify(preset.values) === JSON.stringify(lpmcProfile)
+    )?.id ?? null;
+
   return (
     <div className="app-root">
       <header className="app-header">
@@ -475,6 +548,7 @@ function App() {
             setDestination={setDestination}
             routeGeometry={displayedGeometry}
             mode={selectedMode}
+            basemap={basemap}
             gtfsStops={
               showGtfsStops && gtfsStopsQuery.data ? gtfsStopsQuery.data : []
             }
@@ -508,6 +582,33 @@ function App() {
             />
             Mostrar paradas de transporte público (GTFS Toledo)
           </label>
+
+          <div style={{ marginBottom: "0.85rem" }}>
+            <div
+              style={{
+                marginBottom: "0.35rem",
+                fontSize: "0.76rem",
+                fontWeight: 600,
+                color: "#334155",
+              }}
+            >
+              Mapa base
+            </div>
+            <div className="basemap-toolbar">
+              {BASEMAP_OPTIONS.map((option) => (
+                <button
+                  key={option.value}
+                  type="button"
+                  className={`basemap-chip${
+                    basemap === option.value ? " basemap-chip--active" : ""
+                  }`}
+                  onClick={() => setBasemap(option.value)}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
+          </div>
 
           {/* Selector de ruta GTFS */}
           <div style={{ marginBottom: "0.75rem" }}>
@@ -804,6 +905,27 @@ function App() {
             }}
           >
             <h2 className="section-title">Inferencia LPMC</h2>
+            <div className="model-toolbar">
+              <span className="status-pill">XGBoost activo</span>
+              <span className="status-note">
+                Preparado para perfiles rápidos y futuras variantes de modelo.
+              </span>
+            </div>
+            <div className="preset-grid">
+              {PROFILE_PRESETS.map((preset) => (
+                <button
+                  key={preset.id}
+                  type="button"
+                  className={`preset-card${
+                    selectedPresetId === preset.id ? " preset-card--active" : ""
+                  }`}
+                  onClick={() => setLpmcProfile(preset.values)}
+                >
+                  <strong>{preset.label}</strong>
+                  <span>{preset.description}</span>
+                </button>
+              ))}
+            </div>
             <p style={{ marginTop: "-0.25rem", fontSize: "0.8rem", color: "#4b5563" }}>
               Hora de inicio: hora aproximada del viaje (formato 24h).
             </p>
@@ -1066,9 +1188,9 @@ function App() {
             )}
           </div>
         </section>
-        <section className="card lineas-bus-card">
-          {/* Bloque de transporte público GTFS */}
-          {selectedTransitRouteId && (
+        {selectedTransitRouteId && (
+          <section className="card lineas-bus-card">
+            {/* Bloque de transporte público GTFS */}
             <div className="transit-summary">
               <h3>Transporte público (GTFS)</h3>
 
@@ -1187,8 +1309,8 @@ function App() {
                 </p>
               )}
             </div>
-          )}
-        </section>
+          </section>
+        )}
       </main>
     </div>
   );
