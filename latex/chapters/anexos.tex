@@ -140,7 +140,7 @@ La Tabla~\ref{tab:endpoints_api} del capítulo~\ref{ch:arquitectura} resume los 
 \label{anx:experimentos}
 % =======================================================
 
-Los hiperparámetros de los tres modelos se detallan en la sección~\ref{subsec:impl_lpmc_hiperparametros} (Tabla~\ref{tab:xgb_params} para XGBoost) y los resultados de validación cruzada y test en la sección~\ref{subsec:impl_lpmc_entrenamiento} (Tablas~\ref{tab:lpmc_train_results} y~\ref{tab:lpmc_test_results}). Este anexo reúne las condiciones que garantizan la reproducibilidad de esos experimentos:
+Los hiperparámetros de los tres modelos se detallan en la sección~\ref{subsec:impl_lpmc_hiperparametros} (Tablas~\ref{tab:rf_params},~\ref{tab:xgb_params} y~\ref{tab:dnn_params} para Random Forest, XGBoost y la red neuronal, respectivamente) y los resultados de validación cruzada y prueba en la sección~\ref{subsec:impl_lpmc_entrenamiento} (Tablas~\ref{tab:lpmc_train_results} y~\ref{tab:lpmc_test_results}). Este anexo reúne las condiciones que aseguran la reproducibilidad de esos experimentos:
 
 \begin{itemize}
   \item \textbf{Dataset}: London Passenger Mode Choice (LPMC), con división temporal no aleatoria (oleadas 1 y 2 para entrenamiento, oleada 3 para test).
@@ -150,6 +150,45 @@ Los hiperparámetros de los tres modelos se detallan en la sección~\ref{subsec:
   \item \textbf{Bibliotecas}: scikit-learn (Random Forest y escalado), XGBoost (\textit{gradient boosting}) y PyTorch (red neuronal profunda).
   \item \textbf{Métricas}: exactitud (\textit{accuracy}) y GMPCA (\textit{Geometric Mean Probability of Correct Alternative}).
 \end{itemize}
+
+La Tabla~\ref{tab:lpmc_features} detalla las variables de entrada del modelo, agrupadas según procedan de los servicios de enrutado (OSRM y OTP) o del perfil sociodemográfico aportado por el usuario, tal como se introdujo en la Sección~\ref{subsec:impl_lpmc_dataset}.
+
+\begin{table}[htbp]
+  \caption{Variables de entrada al modelo de elección modal. Las variables de ruta se derivan automáticamente de OSRM y OTP; las sociodemográficas las aporta el usuario a través de la interfaz.}
+  \label{tab:lpmc_features}
+  \centering
+  \begin{tabular}{llp{5.5cm}}
+    \toprule
+    \textbf{Variable} & \textbf{Tipo / Rango} & \textbf{Descripción} \\
+    \midrule
+    \multicolumn{3}{l}{\textit{Variables de ruta (derivadas de OSRM y OTP)}} \\
+    \midrule
+    \texttt{distance}              & float, m         & Distancia en coche (OSRM driving). \\
+    \texttt{dur\_driving}          & float, h         & Tiempo de conducción (OSRM driving). \\
+    \texttt{dur\_cycling}          & float, h         & Tiempo en bicicleta (OSRM cycling). \\
+    \texttt{dur\_walking}          & float, h         & Tiempo a pie hasta destino (OSRM foot). \\
+    \texttt{dur\_pt\_access}       & float, h         & Tiempo del primer tramo a pie hasta la parada (OTP). \\
+    \texttt{dur\_pt\_bus}          & float, h         & Tiempo acumulado en autobús (OTP). \\
+    \texttt{dur\_pt\_rail}         & float, h         & Tiempo acumulado en ferroviario (OTP). \\
+    \texttt{dur\_pt\_int\_waiting} & float, h         & Tiempo de espera en transbordos (OTP). \\
+    \texttt{dur\_pt\_int\_walking} & float, h         & Desplazamiento a pie entre transbordos (OTP). \\
+    \texttt{pt\_n\_interchanges}   & int, $\geq 0$    & Número de transbordos (OTP). \\
+    \midrule
+    \multicolumn{3}{l}{\textit{Variables sociodemográficas y contextuales (aportadas por el usuario)}} \\
+    \midrule
+    \texttt{age}                   & int, [16, 100]   & Edad del viajero. \\
+    \texttt{female}                & int, \{0, 1\}    & Sexo (1\,=\,mujer). \\
+    \texttt{driving\_license}      & int, \{0, 1\}    & Posesión de carnet de conducir. \\
+    \texttt{car\_ownership}        & int, [0, 3]      & Número de coches en el hogar. \\
+    \texttt{day\_of\_week}         & int, [1, 7]      & Día de la semana. \\
+    \texttt{start\_time\_linear}   & float, [0, 24]   & Hora de inicio del viaje (decimal). \\
+    \texttt{cost\_transit}         & float, $\geq 0$  & Coste del billete de transporte público. \\
+    \texttt{cost\_driving\_total}  & float, $\geq 0$  & Coste total estimado del viaje en coche. \\
+    \texttt{purpose}               & cat.\ (one-hot)  & Motivo del viaje: B, HBE, HBO, HBW, NHBO. \\
+    \texttt{fueltype}              & cat.\ (one-hot)  & Tipo de combustible: Average, Diesel, Hybrid, Petrol. \\
+    \bottomrule
+  \end{tabular}
+\end{table}
 
 % =======================================================
 \section{Evidencias de sprints}

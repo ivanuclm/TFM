@@ -1,0 +1,37 @@
+Leyendo train de: F:\TFM\lpmc\data\preprocessed\LPMC_train.csv
+Leyendo test  de: F:\TFM\lpmc\data\preprocessed\LPMC_test.csv
+
+Features totales: 27, a escalar: 16
+
+Configuración DNN: {'hidden': [256, 128, 64], 'dropout': [0.4, 0.3], 'lr': 0.003, 'weight_decay': 0.0001, 'batch_size': 512}
+
+5-fold GroupKFold CV (household_id como grupo)...
+  Fold 1/5... acc=0.7529  gmpca=0.5142
+  Fold 2/5... acc=0.7488  gmpca=0.5106
+  Fold 3/5... acc=0.7597  gmpca=0.5202
+  Fold 4/5... acc=0.7486  gmpca=0.5142
+  Fold 5/5... acc=0.7484  gmpca=0.5061
+
+CV medio  -> Accuracy: 75.17%  GMPCA: 51.31%
+
+Entrenando modelo final (max_epochs=100, batch_size=512)...
+Épocas entrenadas: 47
+Test      -> Accuracy: 74.35%  GMPCA: 50.36%
+
+Classification report (test):
+              precision    recall  f1-score   support
+
+        walk       0.70      0.62      0.66      4684
+       cycle       0.40      0.00      0.01       861
+          pt       0.76      0.76      0.76      9501
+       drive       0.74      0.84      0.79     11274
+
+    accuracy                           0.74     26320
+   macro avg       0.65      0.56      0.55     26320
+weighted avg       0.73      0.74      0.73     26320
+
+
+Modelo PyTorch guardado en : F:\TFM\lpmc\models\dnn_lpmc.pt
+Bundle joblib guardado en  : F:\TFM\lpmc\models\dnn_lpmc.joblib
+Scaler guardado en         : F:\TFM\lpmc\models\dnn_lpmc_scaler.joblib
+Métricas guardadas en      : F:\TFM\lpmc\artifacts\dnn_lpmc_metrics.json

@@ -1,14 +1,25 @@
 {
   "train_cv": {
-    "accuracy": 0.7521271802181783,
-    "gmpca": 0.5121507406234741
+    "accuracy": 0.7516707226209831,
+    "gmpca": 0.513051164150238
   },
   "test": {
-    "accuracy": 0.7427051671732523,
-    "gmpca": 0.5036952495574951
+    "accuracy": 0.7434650455927052,
+    "gmpca": 0.5035852789878845
   },
-  "architecture": "Input\u2192BN\u2192Linear(128,relu)\u2192Drop(0.3)\u2192Linear(64,relu)\u2192Drop(0.2)\u2192Linear(32,relu)\u2192Linear(4)",
-  "epochs_trained": 60,
+  "architecture": "Linear(n\u2192256)\u2192BN\u2192ReLU\u2192Drop(0.4)\u2192Linear(256\u2192128)\u2192BN\u2192ReLU\u2192Drop(0.3)\u2192Linear(128\u219264)\u2192BN\u2192ReLU\u2192Linear(64\u21924)",
+  "hidden": [
+    256,
+    128,
+    64
+  ],
+  "dropout": [
+    0.4,
+    0.3
+  ],
+  "lr": 0.003,
+  "weight_decay": 0.0001,
+  "epochs_trained": 47,
   "epochs_max": 100,
   "batch_size": 512,
   "cv_folds": 5

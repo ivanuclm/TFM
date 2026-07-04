@@ -96,7 +96,32 @@ def scale(X_tr: pd.DataFrame, X_val: pd.DataFrame, cols: list[str]):
     return Xts, Xvs, sc
 
 
-def build_model(n_features: int):
+# Configuración de la red. Por defecto, la mejor arquitectura encontrada por la
+# búsqueda propia (05_tune_dnn.py): tres bloques ocultos de 256, 128 y 64 neuronas,
+# dropout 0,4 y 0,3 en los dos primeros, Adam con lr=3e-3 y weight_decay=1e-4. Si
+# existe artifacts/lpmc_dnn_best_params.json, sobreescribe estos valores.
+DEFAULT_DNN_PARAMS: dict = {
+    "hidden": [256, 128, 64],
+    "dropout": [0.4, 0.3],
+    "lr": 3e-3,
+    "weight_decay": 1e-4,
+    "batch_size": 512,
+}
+
+
+def load_best_params() -> dict:
+    """Carga la configuración desde JSON si existe; si no, usa DEFAULT_DNN_PARAMS."""
+    params_path = ARTIFACTS_DIR / "lpmc_dnn_best_params.json"
+    if not params_path.exists():
+        return dict(DEFAULT_DNN_PARAMS)
+    with params_path.open() as f:
+        bundle = json.load(f)
+    params = dict(DEFAULT_DNN_PARAMS)
+    params.update(bundle.get("params", {}))
+    return params
+
+
+def build_model(n_features: int, hidden=None, dropout=None):
     """Construye la arquitectura de la red neuronal.
 
     Orden de capas por bloque: Linear → BatchNorm → ReLU → (Dropout opcional).
@@ -105,15 +130,19 @@ def build_model(n_features: int):
     de la capa anterior, lo cual resulta en magnitudes arbitrariamente grandes de
     los parámetros gamma de BN conforme avanza el entrenamiento.
 
-    No se aplica Dropout en el último bloque oculto (64→32) para evitar demasiada
+    No se aplica Dropout en el último bloque oculto para evitar demasiada
     regularización en la representación final antes de la capa de salida.
     """
     import torch.nn as nn
+    hidden = hidden or DEFAULT_DNN_PARAMS["hidden"]
+    dropout = dropout or DEFAULT_DNN_PARAMS["dropout"]
+    h1, h2, h3 = hidden
+    d1, d2 = dropout
     return nn.Sequential(
-        nn.Linear(n_features, 128), nn.BatchNorm1d(128), nn.ReLU(), nn.Dropout(0.3),
-        nn.Linear(128, 64),         nn.BatchNorm1d(64),  nn.ReLU(), nn.Dropout(0.2),
-        nn.Linear(64, 32),          nn.BatchNorm1d(32),  nn.ReLU(),
-        nn.Linear(32, 4),
+        nn.Linear(n_features, h1), nn.BatchNorm1d(h1), nn.ReLU(), nn.Dropout(d1),
+        nn.Linear(h1, h2),         nn.BatchNorm1d(h2), nn.ReLU(), nn.Dropout(d2),
+        nn.Linear(h2, h3),         nn.BatchNorm1d(h3), nn.ReLU(),
+        nn.Linear(h3, 4),
         # Sin softmax final: CrossEntropyLoss espera logits (los combina internamente
         # con LogSoftmax para mayor estabilidad numérica). En inferencia se aplica
         # softmax explícito para obtener probabilidades.
@@ -137,7 +166,8 @@ def predict_proba_torch(model, X_arr: np.ndarray) -> np.ndarray:
 
 def train_model(model, X_tr: np.ndarray, y_tr: np.ndarray,
                 X_val: np.ndarray, y_val: np.ndarray,
-                epochs: int, batch_size: int) -> int:
+                epochs: int, batch_size: int,
+                lr: float = 1e-3, weight_decay: float = 1e-3) -> int:
     """Entrena el modelo con early stopping y devuelve el número de épocas ejecutadas.
 
     Decisiones de diseño:
@@ -156,7 +186,7 @@ def train_model(model, X_tr: np.ndarray, y_tr: np.ndarray,
     import torch.nn as nn
     from torch.utils.data import DataLoader, TensorDataset
 
-    optimizer = torch.optim.Adam(model.parameters(), lr=1e-3, weight_decay=1e-3)
+    optimizer = torch.optim.Adam(model.parameters(), lr=lr, weight_decay=weight_decay)
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
         optimizer, factor=0.5, patience=5, min_lr=1e-5
     )
@@ -244,8 +274,15 @@ def main() -> None:
     n_features = len(feature_names)
     print(f"\nFeatures totales: {n_features}, a escalar: {len(scaled_features)}")
 
+    dnn_params = load_best_params()
+    hidden = list(dnn_params["hidden"])
+    dropout = list(dnn_params["dropout"])
+    lr = float(dnn_params["lr"])
+    weight_decay = float(dnn_params["weight_decay"])
+    print(f"\nConfiguración DNN: {dnn_params}")
+
     epochs = int(os.environ.get("DNN_EPOCHS", "100"))
-    batch_size = int(os.environ.get("DNN_BATCH_SIZE", "512"))
+    batch_size = int(os.environ.get("DNN_BATCH_SIZE", str(dnn_params["batch_size"])))
 
     # --- 5-fold GroupKFold CV ---
     cv_accs: list[float] = []
@@ -265,7 +302,7 @@ def main() -> None:
 
             Xf_tr_s, Xf_val_s, _ = scale(Xf_tr, Xf_val, scaled_features)
 
-            model_fold = build_model(n_features)
+            model_fold = build_model(n_features, hidden, dropout)
             # En CV, el fold de validación también actúa como conjunto de early stopping.
             # Esto es aceptable porque no se buscan hiperparámetros durante el CV;
             # solo se estiman métricas de generalización.
@@ -273,7 +310,7 @@ def main() -> None:
                 model_fold,
                 Xf_tr_s.values.astype(np.float32), yf_tr,
                 Xf_val_s.values.astype(np.float32), yf_val,
-                epochs, batch_size,
+                epochs, batch_size, lr, weight_decay,
             )
 
             proba_val = predict_proba_torch(model_fold, Xf_val_s.values.astype(np.float32))
@@ -305,9 +342,10 @@ def main() -> None:
     X_final_tr, X_final_val = X_train_arr[:-n_val], X_train_arr[-n_val:]
     y_final_tr, y_final_val = y_train[:-n_val], y_train[-n_val:]
 
-    model = build_model(n_features)
+    model = build_model(n_features, hidden, dropout)
     epochs_run = train_model(
-        model, X_final_tr, y_final_tr, X_final_val, y_final_val, epochs, batch_size
+        model, X_final_tr, y_final_tr, X_final_val, y_final_val,
+        epochs, batch_size, lr, weight_decay,
     )
     print(f"Épocas entrenadas: {epochs_run}")
 
@@ -325,18 +363,35 @@ def main() -> None:
     bundle_path = MODELS_DIR / "dnn_lpmc.joblib"
     scaler_path = MODELS_DIR / "dnn_lpmc_scaler.joblib"
 
-    # .pt: solo state_dict y n_features. El backend reconstruye la arquitectura
-    # en TorchModalWrapper._ensure_loaded() a partir de n_features.
-    torch.save({"state_dict": model.state_dict(), "n_features": n_features}, str(pt_path))
+    # .pt: state_dict, n_features y la arquitectura (hidden, dropout). El backend
+    # reconstruye la red a partir de estos campos, de modo que admite cualquier
+    # configuración de capas sin tener que codificarla en el wrapper.
+    torch.save(
+        {"state_dict": model.state_dict(), "n_features": n_features,
+         "hidden": hidden, "dropout": dropout},
+        str(pt_path),
+    )
     # .joblib: bundle ligero con la ruta al .pt. No duplica los pesos.
-    joblib.dump({"pt_path": str(pt_path), "n_features": n_features, "feature_names": feature_names}, bundle_path)
+    joblib.dump(
+        {"pt_path": str(pt_path), "n_features": n_features, "feature_names": feature_names,
+         "hidden": hidden, "dropout": dropout},
+        bundle_path,
+    )
     joblib.dump({"scaler": scaler, "scaled_features": scaled_features}, scaler_path)
 
+    h1, h2, h3 = hidden
+    d1, d2 = dropout
+    arch_str = (f"Linear(n→{h1})→BN→ReLU→Drop({d1})→Linear({h1}→{h2})→BN→ReLU→Drop({d2})"
+                f"→Linear({h2}→{h3})→BN→ReLU→Linear({h3}→4)")
     metrics_path = ARTIFACTS_DIR / "dnn_lpmc_metrics.json"
     metrics_payload = {
         "train_cv": {"accuracy": acc_cv, "gmpca": gmpca_cv},
         "test": {"accuracy": acc_test, "gmpca": gmpca_test},
-        "architecture": "Linear(n→128)→BN→ReLU→Drop(0.3)→Linear(128→64)→BN→ReLU→Drop(0.2)→Linear(64→32)→BN→ReLU→Linear(32→4)",
+        "architecture": arch_str,
+        "hidden": hidden,
+        "dropout": dropout,
+        "lr": lr,
+        "weight_decay": weight_decay,
         "epochs_trained": epochs_run,
         "epochs_max": epochs,
         "batch_size": batch_size,

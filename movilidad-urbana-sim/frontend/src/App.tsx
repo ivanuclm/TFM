@@ -1566,6 +1566,34 @@ function App() {
                     <p className="ia-od__hint">Origen y destino del viaje. Se editan en el panel Rutas o con clic derecho en el mapa.</p>
                   </div>
 
+                  {/* Tiempos y distancias por modo (informativo): variables de ruta que alimentan al modelo */}
+                  <div className="ia-routes">
+                    <span className="ia-routes__title">Tiempos y distancias por modo</span>
+                    {(osrmMutation.data || transitMutation.data) ? (
+                      <table className="ia-routes__table">
+                        <thead><tr><th>Modo</th><th>Distancia</th><th>Tiempo</th></tr></thead>
+                        <tbody>
+                          {osrmMutation.data?.results.map((r) => (
+                            <tr key={r.profile}>
+                              <td className="td-mode"><ModeIcon mode={r.profile} size={13} /> {PROFILE_LABELS[r.profile]}</td>
+                              <td>{(r.distance_m / 1000).toFixed(2)} km</td>
+                              <td>{(r.duration_s / 60).toFixed(0)} min</td>
+                            </tr>
+                          ))}
+                          {transitMutation.data && (
+                            <tr>
+                              <td className="td-mode"><ModeIcon mode="transit" size={13} /> <span>Bus</span></td>
+                              <td>{(transitMutation.data.distance_m / 1000).toFixed(2)} km</td>
+                              <td>{(transitMutation.data.duration_s / 60).toFixed(0)} min</td>
+                            </tr>
+                          )}
+                        </tbody>
+                      </table>
+                    ) : (
+                      <p className="ia-routes__empty">Calcula las rutas en el panel Rutas para ver aquí los tiempos por modo que recibe el modelo.</p>
+                    )}
+                  </div>
+
                   {/* Perfiles rápidos */}
                   <div className="preset-grid">
                     {PROFILE_PRESETS.map((preset) => (

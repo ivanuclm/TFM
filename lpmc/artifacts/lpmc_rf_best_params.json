@@ -1,0 +1,31 @@
+{
+  "source": "04_tune_rf.py (HyperOpt/TPE, 40 evals, muestra 25%, GroupKFold estratificado k=5)",
+  "description": "Mejor configuracion RF de nuestra busqueda propia. No existe referencia externa del tutor para RF.",
+  "params": {
+    "n_estimators": 600,
+    "max_depth": 20,
+    "min_samples_split": 9,
+    "min_samples_leaf": 5,
+    "max_features": "sqrt",
+    "n_jobs": -1,
+    "random_state": 481516
+  },
+  "scaled_features": [
+    "day_of_week",
+    "start_time_linear",
+    "age",
+    "car_ownership",
+    "distance",
+    "dur_walking",
+    "dur_cycling",
+    "dur_pt_access",
+    "dur_pt_rail",
+    "dur_pt_bus",
+    "dur_pt_int_waiting",
+    "dur_pt_int_walking",
+    "pt_n_interchanges",
+    "dur_driving",
+    "cost_transit",
+    "cost_driving_total"
+  ]
+}

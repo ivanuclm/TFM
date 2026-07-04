@@ -1,0 +1,41 @@
+Leyendo train de: F:\TFM\lpmc\data\preprocessed\LPMC_train.csv
+Leyendo test  de: F:\TFM\lpmc\data\preprocessed\LPMC_test.csv
+
+Columnas a escalar (16): ['day_of_week', 'start_time_linear', 'age', 'car_ownership', 'distance', 'dur_walking', 'dur_cycling', 'dur_pt_access', 'dur_pt_rail', 'dur_pt_bus', 'dur_pt_int_waiting', 'dur_pt_int_walking', 'pt_n_interchanges', 'dur_driving', 'cost_transit', 'cost_driving_total']
+
+Parámetros RF: {'n_estimators': 600, 'max_depth': 20, 'min_samples_split': 9, 'min_samples_leaf': 5, 'max_features': 'sqrt', 'n_jobs': -1, 'random_state': 481516}
+
+5-fold GroupKFold CV (household_id como grupo)...
+  Fold 1/5... acc=0.7447  gmpca=0.5151
+  Fold 2/5... acc=0.7550  gmpca=0.5166
+  Fold 3/5... acc=0.7577  gmpca=0.5208
+  Fold 4/5... acc=0.7497  gmpca=0.5182
+  Fold 5/5... C:\Users\ivanh\AppData\Roaming\Python\Python314\site-packages\sklearn\metrics\_classification.py:1833: UndefinedMetricWarning: Precision is ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, f"{metric.capitalize()} is", result.shape[0])
+C:\Users\ivanh\AppData\Roaming\Python\Python314\site-packages\sklearn\metrics\_classification.py:1833: UndefinedMetricWarning: Precision is ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, f"{metric.capitalize()} is", result.shape[0])
+C:\Users\ivanh\AppData\Roaming\Python\Python314\site-packages\sklearn\metrics\_classification.py:1833: UndefinedMetricWarning: Precision is ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, f"{metric.capitalize()} is", result.shape[0])
+acc=0.7405  gmpca=0.5051
+
+CV medio  -> Accuracy: 74.95%  GMPCA: 51.51%
+
+Entrenando modelo final sobre todo el train set...
+Test      -> Accuracy: 74.03%  GMPCA: 50.60%
+
+Classification report (test):
+              precision    recall  f1-score   support
+
+        walk       0.69      0.61      0.65      4684
+       cycle       0.00      0.00      0.00       861
+          pt       0.76      0.76      0.76      9501
+       drive       0.74      0.84      0.79     11274
+
+    accuracy                           0.74     26320
+   macro avg       0.55      0.55      0.55     26320
+weighted avg       0.71      0.74      0.73     26320
+
+
+Modelo guardado en    : F:\TFM\lpmc\models\rf_lpmc.joblib
+Scaler guardado en    : F:\TFM\lpmc\models\rf_lpmc_scaler.joblib
+Métricas guardadas en : F:\TFM\lpmc\artifacts\rf_lpmc_metrics.json

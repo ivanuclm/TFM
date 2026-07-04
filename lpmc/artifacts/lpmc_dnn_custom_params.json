@@ -1,0 +1,258 @@
+{
+  "source": "05_tune_dnn.py",
+  "cv": 3,
+  "n_configs": 12,
+  "max_epochs": 40,
+  "sample_frac": 0.5,
+  "best_cv_gmpca": 0.5101888396022637,
+  "params": {
+    "hidden": [
+      256,
+      128,
+      64
+    ],
+    "lr": 0.003,
+    "dropout": [
+      0.4,
+      0.3
+    ],
+    "weight_decay": 0.0001,
+    "batch_size": 512
+  },
+  "all_results": [
+    {
+      "cv_ce": 0.6729743480682373,
+      "cv_gmpca": 0.5101888396022637,
+      "cfg": {
+        "hidden": [
+          256,
+          128,
+          64
+        ],
+        "lr": 0.003,
+        "dropout": [
+          0.4,
+          0.3
+        ],
+        "weight_decay": 0.0001,
+        "batch_size": 512
+      }
+    },
+    {
+      "cv_ce": 0.677646537621816,
+      "cv_gmpca": 0.5078107005199123,
+      "cfg": {
+        "hidden": [
+          128,
+          64,
+          32
+        ],
+        "lr": 0.003,
+        "dropout": [
+          0.3,
+          0.2
+        ],
+        "weight_decay": 0.0001,
+        "batch_size": 256
+      }
+    },
+    {
+      "cv_ce": 0.6780203978220621,
+      "cv_gmpca": 0.5076208857940253,
+      "cfg": {
+        "hidden": [
+          256,
+          128,
+          64
+        ],
+        "lr": 0.001,
+        "dropout": [
+          0.3,
+          0.2
+        ],
+        "weight_decay": 0.001,
+        "batch_size": 256
+      }
+    },
+    {
+      "cv_ce": 0.6781659324963888,
+      "cv_gmpca": 0.507547014729261,
+      "cfg": {
+        "hidden": [
+          64,
+          32,
+          16
+        ],
+        "lr": 0.003,
+        "dropout": [
+          0.2,
+          0.1
+        ],
+        "weight_decay": 0.0001,
+        "batch_size": 256
+      }
+    },
+    {
+      "cv_ce": 0.6786615053812662,
+      "cv_gmpca": 0.5072955505055325,
+      "cfg": {
+        "hidden": [
+          128,
+          64,
+          32
+        ],
+        "lr": 0.001,
+        "dropout": [
+          0.3,
+          0.2
+        ],
+        "weight_decay": 0.0001,
+        "batch_size": 256
+      }
+    },
+    {
+      "cv_ce": 0.681668241818746,
+      "cv_gmpca": 0.505772537286322,
+      "cfg": {
+        "hidden": [
+          256,
+          128,
+          64
+        ],
+        "lr": 0.0005,
+        "dropout": [
+          0.4,
+          0.3
+        ],
+        "weight_decay": 0.001,
+        "batch_size": 512
+      }
+    },
+    {
+      "cv_ce": 0.6820664604504904,
+      "cv_gmpca": 0.505571169335446,
+      "cfg": {
+        "hidden": [
+          128,
+          64,
+          32
+        ],
+        "lr": 0.003,
+        "dropout": [
+          0.3,
+          0.2
+        ],
+        "weight_decay": 0.001,
+        "batch_size": 256
+      }
+    },
+    {
+      "cv_ce": 0.6832332213719686,
+      "cv_gmpca": 0.504981632643106,
+      "cfg": {
+        "hidden": [
+          128,
+          64,
+          32
+        ],
+        "lr": 0.0005,
+        "dropout": [
+          0.2,
+          0.1
+        ],
+        "weight_decay": 0.001,
+        "batch_size": 512
+      }
+    },
+    {
+      "cv_ce": 0.6854269901911417,
+      "cv_gmpca": 0.5038750339378293,
+      "cfg": {
+        "hidden": [
+          128,
+          64,
+          32
+        ],
+        "lr": 0.001,
+        "dropout": [
+          0.4,
+          0.3
+        ],
+        "weight_decay": 0.001,
+        "batch_size": 512
+      }
+    },
+    {
+      "cv_ce": 0.6871625979741415,
+      "cv_gmpca": 0.5030012629884386,
+      "cfg": {
+        "hidden": [
+          64,
+          32,
+          16
+        ],
+        "lr": 0.0005,
+        "dropout": [
+          0.2,
+          0.1
+        ],
+        "weight_decay": 0.0001,
+        "batch_size": 256
+      }
+    },
+    {
+      "cv_ce": 0.6906234820683798,
+      "cv_gmpca": 0.5012634428496118,
+      "cfg": {
+        "hidden": [
+          128,
+          64,
+          32
+        ],
+        "lr": 0.0005,
+        "dropout": [
+          0.4,
+          0.3
+        ],
+        "weight_decay": 0.0001,
+        "batch_size": 256
+      }
+    },
+    {
+      "cv_ce": 0.6998888651529948,
+      "cv_gmpca": 0.4966404947899362,
+      "cfg": {
+        "hidden": [
+          64,
+          32,
+          16
+        ],
+        "lr": 0.0005,
+        "dropout": [
+          0.3,
+          0.2
+        ],
+        "weight_decay": 0.0001,
+        "batch_size": 512
+      }
+    }
+  ],
+  "scaled_features": [
+    "day_of_week",
+    "start_time_linear",
+    "age",
+    "car_ownership",
+    "distance",
+    "dur_walking",
+    "dur_cycling",
+    "dur_pt_access",
+    "dur_pt_rail",
+    "dur_pt_bus",
+    "dur_pt_int_waiting",
+    "dur_pt_int_walking",
+    "pt_n_interchanges",
+    "dur_driving",
+    "cost_transit",
+    "cost_driving_total"
+  ]
+}

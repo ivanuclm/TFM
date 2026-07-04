@@ -137,14 +137,24 @@ class TorchModalWrapper:
                     )
                 pt_path = fallback
 
-            # Reconstruir la misma arquitectura que build_model() en 05_train_dnn.py.
-            model = nn.Sequential(
-                nn.Linear(self._n_features, 128), nn.BatchNorm1d(128), nn.ReLU(), nn.Dropout(0.3),
-                nn.Linear(128, 64),               nn.BatchNorm1d(64),  nn.ReLU(), nn.Dropout(0.2),
-                nn.Linear(64, 32),                nn.BatchNorm1d(32),  nn.ReLU(),
-                nn.Linear(32, 4),
-            )
             checkpoint = torch.load(str(pt_path), map_location="cpu", weights_only=True)
+
+            # Reconstruir la misma arquitectura que build_model() en 05_train_dnn.py.
+            # Los tamaños de capa y el dropout se leen del propio checkpoint, de modo
+            # que el wrapper admite cualquier configuración entrenada (p. ej. la
+            # hallada por la búsqueda de hiperparámetros) sin codificarla aquí. Si el
+            # checkpoint no los incluye (modelos antiguos), se usa la arquitectura
+            # original (128, 64, 32) por compatibilidad.
+            hidden = checkpoint.get("hidden", [128, 64, 32])
+            dropout = checkpoint.get("dropout", [0.3, 0.2])
+            h1, h2, h3 = hidden
+            d1, d2 = dropout
+            model = nn.Sequential(
+                nn.Linear(self._n_features, h1), nn.BatchNorm1d(h1), nn.ReLU(), nn.Dropout(d1),
+                nn.Linear(h1, h2),               nn.BatchNorm1d(h2), nn.ReLU(), nn.Dropout(d2),
+                nn.Linear(h2, h3),               nn.BatchNorm1d(h3), nn.ReLU(),
+                nn.Linear(h3, 4),
+            )
             model.load_state_dict(checkpoint["state_dict"])
             model.eval()
             self._model = model
