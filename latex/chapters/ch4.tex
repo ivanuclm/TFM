@@ -22,15 +22,45 @@ La Figura~\ref{fig:arch_general} muestra la arquitectura de alto nivel del siste
 El frontend expone la interfaz cartográfica al usuario y delega en el backend el cálculo de rutas, la consulta de horarios y la inferencia modal. El backend integra cuatro routers diferenciados: \texttt{/api/osrm} para rutas viarias por perfil de transporte, \texttt{/api/otp} para itinerarios de transporte público, \texttt{/api/gtfs} para información estática de la red de autobús, y \texttt{/api/lpmc} para la inferencia de elección modal. Cada router encapsula la lógica de comunicación con su servicio subyacente y expone al frontend una interfaz homogénea, independiente de los detalles de cada protocolo.
 
 % -------------------------------------------------------
-\section{Infraestructura y orquestación}
+\section{Infraestructura, orquestación y portabilidad}
 \label{sec:arch_infra}
 % -------------------------------------------------------
 
-La infraestructura del sistema se define íntegramente en un fichero \texttt{docker-compose.yml} en la raíz del repositorio. El despliegue completo se obtiene con un único comando (\texttt{docker compose up -{}-build}), que elimina dependencias de entorno en la máquina anfitriona y asegura reproducibilidad entre equipos de desarrollo y producción.
+La infraestructura del sistema se define íntegramente en un fichero \texttt{docker-compose.yml} en la raíz del repositorio. El despliegue completo se obtiene con un único comando (\texttt{docker compose up -{}-build}), que elimina dependencias de entorno en la máquina anfitriona y hace reproducible el sistema entre equipos de desarrollo y de producción. 
 
-Varios servicios requieren artefactos pesados generados a partir de los datos de origen: los grafos viarios de OSRM, el grafo multimodal de OpenTripPlanner y los modelos de aprendizaje automático entrenados. Estos ficheros se versionan mediante \textit{Git LFS} (\textit{Large File Storage}), una extensión de Git que almacena los ficheros de gran tamaño fuera del historial principal y los sustituye en el repositorio por punteros ligeros; de este modo, un clon del repositorio dispone de todos los artefactos sin necesidad de regenerarlos. Los ficheros almacenados en LFS son el extracto OSM de Castilla-La Mancha (\textasciitilde{}97~MB), el grafo OTP (\textasciitilde{}121~MB), el feed GTFS comprimido (\textasciitilde{}14~MB) y los modelos entrenados (XGBoost \textasciitilde{}17~MB, Random Forest \textasciitilde{}597~MB, red neuronal profunda \textasciitilde{}66~KB).
+\subsection{Versionado de artefactos pesados con Git LFS}
 
-Para cubrir el caso de un clon sin LFS o de una actualización de los datos de origen, la orquestación incorpora tres servicios de inicialización idempotentes que se ejecutan una sola vez antes de los servicios principales: \texttt{gtfs-init} descomprime el feed GTFS, \texttt{osrm-setup} compila los grafos viarios OSRM por perfil si no están presentes, y \texttt{otp-build} construye el grafo de OTP si no existe. El procedimiento completo, tanto automático como manual, se describe en el Anexo~\ref{anx:despliegue}.
+Varios servicios requieren artefactos pesados generados a partir de los datos de origen: los grafos viarios de OSRM, el grafo multimodal de OpenTripPlanner y los modelos de aprendizaje automático entrenados. Un repositorio Git convencional está pensado para ficheros de texto y penaliza los binarios grandes, ya que guarda una copia completa de cada versión en el historial. Para evitarlo, estos artefactos se versionan con \textit{Git LFS} (\textit{Large File Storage}), una extensión de Git que almacena los ficheros de gran tamaño en un servidor aparte y deja en el historial únicamente un puntero de texto ligero que los referencia. Así, un clon del repositorio recupera los artefactos ya construidos sin necesidad de regenerarlos y sin inflar el historial. La Tabla~\ref{tab:lfs_artefactos} recoge los artefactos versionados con LFS.
+
+\begin{table}[htbp]
+  \caption{Artefactos versionados mediante Git LFS.}
+  \label{tab:lfs_artefactos}
+  \centering
+  \begin{tabular}{llp{6.2cm}}
+    \hline
+    \textbf{Artefacto} & \textbf{Tamaño} & \textbf{Descripción} \\
+    \hline
+    \texttt{clm.osm.pbf}                  & \textasciitilde{}97~MB  & Extracto OSM de Castilla-La Mancha; red viaria para OSRM y OTP. \\
+    \texttt{graph.obj}                    & \textasciitilde{}117~MB & Grafo multimodal de OpenTripPlanner. \\
+    \texttt{GTFS\_Urbano\_Toledo\_2026.zip} & \textasciitilde{}14~MB  & Feed GTFS del autobús urbano de Toledo. \\
+    \texttt{xgb\_lpmc.joblib}             & \textasciitilde{}16~MB  & Modelo XGBoost entrenado. \\
+    \texttt{rf\_lpmc.joblib}              & \textasciitilde{}398~MB & Modelo Random Forest entrenado. \\
+    \texttt{dnn\_lpmc.pt}                 & \textasciitilde{}0,2~MB & Pesos de la red neuronal profunda. \\
+    \hline
+    \textbf{Total}                        & \textasciitilde{}642~MB & \\
+    \hline
+  \end{tabular}
+\end{table}
+
+El artefacto más pesado es, con diferencia, el modelo Random Forest (\textasciitilde{}398~MB), lo que llevó a valorar si excluirlo del repositorio y exigir su reentrenamiento tras el clonado. Se optó por incluirlo tras un análisis de coste sencillo. El plan gratuito de GitHub ofrece 10~GiB de almacenamiento y 10~GiB mensuales de transferencia para Git LFS \cite{GitHubLFSBilling}. El repositorio ocupa unos 0,64~GiB de artefactos LFS, muy por debajo del límite de almacenamiento, y esa misma cifra es lo que consume cada clonado completo, por lo que la cuota gratuita da margen para alrededor de quince clonados al mes. Superado ese punto, GitHub factura la transferencia adicional por uso, a razón de unos céntimos por clonado; como salvaguarda frente a un consumo inesperado, se configuró en la cuenta un límite de gasto de 5~€, que a ese precio deja margen para cientos de descargas. Incluir el modelo, por tanto, no supone coste apreciable y evita que quien clone el repositorio tenga que reentrenarlo. Si el número de descargas creciera de forma sostenida, la alternativa natural sería distribuir los modelos como \textit{release assets}, que no computan en la cuota de LFS.
+
+\subsection{Despliegue automatizado}
+
+El objetivo de diseño es que el sistema arranque de principio a fin con un único comando, sin pasos manuales. Para ello, además de los servicios de explotación, la orquestación define tres servicios de inicialización que se ejecutan una sola vez antes de los principales. \texttt{gtfs-init} descomprime el feed GTFS, \texttt{osrm-setup} compila los grafos viarios de OSRM por perfil y \texttt{otp-build} construye el grafo de OpenTripPlanner. Los tres son idempotentes: comprueban si su resultado ya existe y, en tal caso, terminan de inmediato sin rehacer el trabajo.
+
+Esta automatización actúa además como mecanismo de reserva (\textit{fallback}) del versionado con LFS. En un clon íntegro, los artefactos ya están presentes gracias a LFS y los servicios de inicialización no hacen nada. Pero si se clona sin LFS, o si se actualiza alguno de los datos de origen (por ejemplo, un feed GTFS más reciente), esos mismos servicios regeneran solo lo que falte. De este modo el sistema es reproducible tanto desde los artefactos versionados como desde cero, siempre con el mismo comando. Los pasos manuales equivalentes, útiles para regenerar un artefacto de forma puntual, se recogen en el Anexo~\ref{anx:despliegue}.
+
+\subsection{Servicios y contenedores}
 
 La Tabla~\ref{tab:servicios_docker} resume los servicios definidos, sus puertos expuestos y su función en el sistema. La Figura~\ref{fig:arch_docker} ilustra la topología de servicios, sus dependencias y los volúmenes compartidos.
 
@@ -65,8 +95,16 @@ La Tabla~\ref{tab:servicios_docker} resume los servicios definidos, sus puertos 
 
 La razón por la que OSRM se instancia tres veces en lugar de usar un único servidor multiperfil es que la imagen oficial de OSRM no admite perfiles simultáneos: cada proceso solo puede servir el grafo con el que fue preprocesado. Esta restricción motivó el cambio desde la solución inicial basada en el servidor de demostración público, que únicamente ofrecía el perfil de conducción, a la infraestructura local multiperfil descrita aquí.
 
+\subsection{Portabilidad}
+
+El sistema está pensado para ejecutarse sin cambios en cualquier máquina, con independencia del sistema operativo, algo que descansa sobre todo en cómo se resuelven las rutas de fichero y cómo se asignan los puertos.
+
+Ningún módulo codifica rutas absolutas del disco, que dependerían del equipo concreto. En su lugar, cada módulo deriva las rutas que necesita a partir de su propia ubicación mediante la biblioteca estándar \texttt{pathlib}, que abstrae el separador de directorios de cada sistema (la barra invertida de Windows frente a la barra de Linux). El módulo de inferencia, por ejemplo, asciende desde su propio fichero hasta la raíz del repositorio y compone desde ahí la ruta al directorio de modelos; el mismo código funciona en el entorno de desarrollo (Windows) y en el contenedor de ejecución (Linux), sin puntos de montaje fijos.
+
+Los puertos siguen un esquema parecido de independencia. Cada contenedor OSRM escucha internamente en el 5000, y el backend se comunica con ellos por nombre de servicio dentro de la red interna de Docker. Hacia el anfitrión, cada instancia se publica en un puerto distinto (5001, 5002 y 5003 para conducción, bicicleta y a pie, respectivamente) para poder verificarlas por separado. Se evita el 5000 del anfitrión porque lo reutilizan servicios habituales, como el receptor AirPlay de macOS, y provocaría conflictos en algunos equipos. Esta publicación de puertos es solo una comodidad de depuración, ya que en funcionamiento normal el backend es el único que habla con OSRM y OTP, siempre por la red interna.
+
 % -------------------------------------------------------
-\section{Backend: capa de orquestación}
+\section{Backend: API y routers}
 \label{sec:arch_backend}
 % -------------------------------------------------------
 
@@ -95,13 +133,13 @@ El backend está implementado con FastAPI sobre Python y se organiza en cuatro r
   \end{tabular}
 \end{table}
 
-El router \texttt{/api/osrm} recibe un par origen-destino con la lista de perfiles solicitados, consulta en paralelo las instancias OSRM correspondientes mediante \texttt{asyncio.gather} y devuelve al frontend las rutas con distancia, duración y geometría decodificada para su representación cartográfica.
+El de enrutado viario, \texttt{/api/osrm}, recibe un par origen-destino con la lista de perfiles solicitados, consulta en paralelo las instancias OSRM correspondientes mediante \texttt{asyncio.gather} y devuelve al frontend las rutas con distancia, duración y geometría decodificada para su representación cartográfica.
 
-El router \texttt{/api/otp} consulta OpenTripPlanner para obtener itinerarios de transporte público y gestiona la paginación entre las alternativas devueltas, hasta cinco por consulta. La respuesta incluye el desglose por tramos, con tipo de modo de transporte, geometría, paradas de inicio y fin, y agencia operadora cuando el tramo es en autobús. Los itinerarios se ordenan por duración; se selecciona automáticamente el primero que incluya al menos un tramo en autobús y, si ninguno lo incluye, el de menor duración total.
+Para el transporte público, \texttt{/api/otp} consulta OpenTripPlanner y gestiona la paginación entre las alternativas devueltas, hasta cinco por consulta. La respuesta incluye el desglose por tramos, con tipo de modo de transporte, geometría, paradas de inicio y fin, y agencia operadora cuando el tramo es en autobús. Los itinerarios se ordenan por duración; se selecciona automáticamente el primero que incluya al menos un tramo en autobús y, si ninguno lo incluye, el de menor duración total.
 
-El router \texttt{/api/gtfs} expone la información estática de la red de autobús a partir del feed GTFS cargado en memoria: listado de paradas con sus líneas asociadas, listado de líneas con sus sentidos, detalle de una línea con sus paradas ordenadas y trazado, y horarios por fecha. Estos datos son independientes de OpenTripPlanner, de modo que la red puede consultarse aunque el planificador no esté disponible.
+La información estática de la red la sirve \texttt{/api/gtfs} a partir del feed GTFS cargado en memoria: listado de paradas con sus líneas asociadas, listado de líneas con sus sentidos, detalle de una línea con sus paradas ordenadas y trazado, y horarios por fecha. Estos datos son independientes de OpenTripPlanner, de modo que la red puede consultarse aunque el planificador no esté disponible.
 
-El router \texttt{/api/lpmc} recibe las coordenadas de origen y destino junto con el perfil sociodemográfico del viajero, construye el vector de características consultando OSRM y OTP internamente, aplica el escalado y ejecuta la inferencia con el modelo activo. El endpoint \texttt{/compare} ejecuta los tres modelos de forma secuencial sobre el mismo escenario y devuelve sus probabilidades para cada modo de transporte; la ejecución secuencial evita comprometer el rendimiento de la CPU compartida entre contenedores.
+Por último, \texttt{/api/lpmc} recibe las coordenadas de origen y destino junto con el perfil sociodemográfico del viajero, construye el vector de características consultando OSRM y OTP internamente, aplica el escalado y ejecuta la inferencia con el modelo activo. El endpoint \texttt{/compare} ejecuta los tres modelos de forma secuencial sobre el mismo escenario y devuelve sus probabilidades para cada modo de transporte; la ejecución secuencial evita comprometer el rendimiento de la CPU compartida entre contenedores.
 
 % -------------------------------------------------------
 \section{Frontend: interfaz cartográfica}

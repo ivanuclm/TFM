@@ -120,7 +120,14 @@ Fdo.: \autor
 %\end{center}
 %\vskip0.5cm
 
-\lipsum[1]
+La descarbonización de las ciudades y la implantación de zonas de bajas emisiones han situado el reparto modal de los viajes en el centro de la política de movilidad urbana. Las decisiones sobre precios, recorridos o frecuencias del transporte público persiguen desplazar los viajes hacia modos más sostenibles, pero son costosas y difíciles de revertir, por lo que sus responsables necesitan anticipar cómo reaccionarán los ciudadanos antes de aplicarlas.
+
+Este Trabajo Fin de Máster presenta el diseño y la implementación de un simulador web de escenarios de movilidad urbana que aborda esa necesidad. La herramienta combina modelos de aprendizaje automático para la predicción de la elección modal, entrenados sobre el conjunto de datos London Passenger Mode Choice, con servicios de enrutado que proporcionan tiempos y costes realistas de cada modo de transporte: Open Source Routing Machine (OSRM) para los modos viarios y OpenTripPlanner junto con datos GTFS para el transporte público, tomando la ciudad de Toledo como caso de estudio. Sobre un mapa interactivo, el usuario define un viaje y un perfil de viajero, y el sistema estima la probabilidad de que se elija cada modo, permitiendo explorar escenarios \textit{what-if} de interés para la planificación de la movilidad.
+
+Se entrenaron y compararon tres modelos (Random Forest, XGBoost y una red neuronal profunda), de los que XGBoost se adoptó como modelo principal por su rendimiento y por su respuesta más robusta ante los ajustes de conocimiento experto del simulador. El sistema completo se despliega de forma reproducible mediante contenedores Docker y se desarrolló siguiendo una metodología ágil basada en Scrum.
+
+\vspace{0.5cm}
+\noindent\textbf{Palabras clave:} movilidad urbana, elección modal, aprendizaje automático, simulación de escenarios, datos abiertos, GTFS, OSRM, OpenTripPlanner.
 
 % -------------------------------
 % Agradecimientos

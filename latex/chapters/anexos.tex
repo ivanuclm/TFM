@@ -27,7 +27,6 @@ docker compose up --build
 \end{lstlisting}
 
 La orquestación define, además de los servicios de explotación, varios servicios de inicialización idempotentes que se ejecutan una sola vez antes de levantar el sistema y que se omiten si su resultado ya está presente:
-
 \begin{itemize}
   \item \texttt{gtfs-init}: descomprime el feed GTFS (\texttt{GTFS\_Urbano\_Toledo\_2026.zip}) en el directorio de datos del backend.
   \item \texttt{osrm-setup}: preprocesa los tres grafos viarios (perfiles de conducción, bicicleta y a pie) si no están ya generados.
@@ -140,7 +139,7 @@ La Tabla~\ref{tab:endpoints_api} del capítulo~\ref{ch:arquitectura} resume los 
 \label{anx:experimentos}
 % =======================================================
 
-Los hiperparámetros de los tres modelos se detallan en la sección~\ref{subsec:impl_lpmc_hiperparametros} (Tablas~\ref{tab:rf_params},~\ref{tab:xgb_params} y~\ref{tab:dnn_params} para Random Forest, XGBoost y la red neuronal, respectivamente) y los resultados de validación cruzada y prueba en la sección~\ref{subsec:impl_lpmc_entrenamiento} (Tablas~\ref{tab:lpmc_train_results} y~\ref{tab:lpmc_test_results}). Este anexo reúne las condiciones que aseguran la reproducibilidad de esos experimentos:
+Los hiperparámetros de los tres modelos se detallan en la Sección~\ref{subsec:impl_lpmc_hiperparametros}  (Tablas~\ref{tab:rf_params},~\ref{tab:xgb_params} y~\ref{tab:dnn_params} para Random Forest, XGBoost y la red neuronal, respectivamente) y los resultados de validación cruzada y test en la sección~\ref{subsec:impl_lpmc_entrenamiento} (Tablas~\ref{tab:lpmc_train_results} y~\ref{tab:lpmc_test_results}). Este anexo reúne las condiciones que aseguran la reproducibilidad de esos experimentos:
 
 \begin{itemize}
   \item \textbf{Dataset}: London Passenger Mode Choice (LPMC), con división temporal no aleatoria (oleadas 1 y 2 para entrenamiento, oleada 3 para test).
@@ -150,6 +149,7 @@ Los hiperparámetros de los tres modelos se detallan en la sección~\ref{subsec:
   \item \textbf{Bibliotecas}: scikit-learn (Random Forest y escalado), XGBoost (\textit{gradient boosting}) y PyTorch (red neuronal profunda).
   \item \textbf{Métricas}: exactitud (\textit{accuracy}) y GMPCA (\textit{Geometric Mean Probability of Correct Alternative}).
 \end{itemize}
+
 
 La Tabla~\ref{tab:lpmc_features} detalla las variables de entrada del modelo, agrupadas según procedan de los servicios de enrutado (OSRM y OTP) o del perfil sociodemográfico aportado por el usuario, tal como se introdujo en la Sección~\ref{subsec:impl_lpmc_dataset}.
 

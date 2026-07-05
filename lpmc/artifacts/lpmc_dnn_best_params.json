@@ -1,18 +1,17 @@
 {
-  "source": "05_tune_dnn.py (busqueda aleatoria, 12 configs, muestra 50%, GroupKFold k=3)",
-  "description": "Mejor configuracion DNN de nuestra busqueda propia.",
+  "source": "05_tune_dnn.py (busqueda aleatoria 30 configs, conjunto completo, GroupKFold k=3)",
   "params": {
     "hidden": [
-      256,
+      128,
       128,
       64
     ],
     "lr": 0.003,
     "dropout": [
-      0.4,
-      0.3
+      0.3,
+      0.2
     ],
     "weight_decay": 0.0001,
-    "batch_size": 512
+    "batch_size": 256
   }
 }

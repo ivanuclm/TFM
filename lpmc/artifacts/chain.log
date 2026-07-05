@@ -1,0 +1,147 @@
+[1/4] Reentrenando RF final...
+Leyendo train de: F:\TFM\lpmc\data\preprocessed\LPMC_train.csv
+Leyendo test  de: F:\TFM\lpmc\data\preprocessed\LPMC_test.csv
+
+Columnas a escalar (16): ['day_of_week', 'start_time_linear', 'age', 'car_ownership', 'distance', 'dur_walking', 'dur_cycling', 'dur_pt_access', 'dur_pt_rail', 'dur_pt_bus', 'dur_pt_int_waiting', 'dur_pt_int_walking', 'pt_n_interchanges', 'dur_driving', 'cost_transit', 'cost_driving_total']
+
+Parámetros RF: {'n_estimators': 500, 'max_depth': 20, 'min_samples_split': 15, 'min_samples_leaf': 6, 'max_features': 'sqrt', 'n_jobs': -1, 'random_state': 481516}
+
+5-fold GroupKFold CV (household_id como grupo)...
+  Fold 1/5... acc=0.7452  gmpca=0.5156
+  Fold 2/5... acc=0.7545  gmpca=0.5172
+  Fold 3/5... acc=0.7558  gmpca=0.5210
+  Fold 4/5... acc=0.7507  gmpca=0.5182
+  Fold 5/5... C:\Users\ivanh\AppData\Roaming\Python\Python314\site-packages\sklearn\metrics\_classification.py:1833: UndefinedMetricWarning: Precision is ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, f"{metric.capitalize()} is", result.shape[0])
+C:\Users\ivanh\AppData\Roaming\Python\Python314\site-packages\sklearn\metrics\_classification.py:1833: UndefinedMetricWarning: Precision is ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, f"{metric.capitalize()} is", result.shape[0])
+C:\Users\ivanh\AppData\Roaming\Python\Python314\site-packages\sklearn\metrics\_classification.py:1833: UndefinedMetricWarning: Precision is ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, f"{metric.capitalize()} is", result.shape[0])
+acc=0.7398  gmpca=0.5033
+
+CV medio  -> Accuracy: 74.92%  GMPCA: 51.50%
+
+Entrenando modelo final sobre todo el train set...
+Test      -> Accuracy: 74.05%  GMPCA: 50.62%
+
+Classification report (test):
+              precision    recall  f1-score   support
+
+        walk       0.70      0.61      0.65      4684
+       cycle       0.00      0.00      0.00       861
+          pt       0.75      0.76      0.76      9501
+       drive       0.74      0.84      0.79     11274
+
+    accuracy                           0.74     26320
+   macro avg       0.55      0.55      0.55     26320
+weighted avg       0.72      0.74      0.73     26320
+
+
+Modelo guardado en    : F:\TFM\lpmc\models\rf_lpmc.joblib
+Scaler guardado en    : F:\TFM\lpmc\models\rf_lpmc_scaler.joblib
+Métricas guardadas en : F:\TFM\lpmc\artifacts\rf_lpmc_metrics.json
+[2/4] Busqueda DNN (30 configs, full)...
+Muestra de búsqueda (100%): (54766, 27); configs=30, epochs=40
+  [1/30] CE=0.6800 GMPCA~=0.5066  {'hidden': (64, 32, 16), 'lr': 0.003, 'dropout': (0.3, 0.2), 'weight_decay': 0.001, 'batch_size': 256}
+  [2/30] CE=0.6840 GMPCA~=0.5046  {'hidden': (128, 64, 32), 'lr': 0.0005, 'dropout': (0.4, 0.3), 'weight_decay': 0.0001, 'batch_size': 512}
+  [3/30] CE=0.6768 GMPCA~=0.5083  {'hidden': (128, 64, 32), 'lr': 0.003, 'dropout': (0.4, 0.3), 'weight_decay': 0.001, 'batch_size': 256}
+  [4/30] CE=0.6784 GMPCA~=0.5074  {'hidden': (256, 128, 64), 'lr': 0.003, 'dropout': (0.2, 0.1), 'weight_decay': 0.0001, 'batch_size': 256}
+  [5/30] CE=0.6784 GMPCA~=0.5074  {'hidden': (128, 64, 32), 'lr': 0.0005, 'dropout': (0.2, 0.1), 'weight_decay': 0.0001, 'batch_size': 512}
+  [6/30] CE=0.6868 GMPCA~=0.5032  {'hidden': (64, 32, 16), 'lr': 0.001, 'dropout': (0.4, 0.3), 'weight_decay': 0.0001, 'batch_size': 256}
+  [7/30] CE=0.6770 GMPCA~=0.5082  {'hidden': (256, 128, 64), 'lr': 0.0005, 'dropout': (0.2, 0.1), 'weight_decay': 0.0001, 'batch_size': 256}
+  [8/30] CE=0.6795 GMPCA~=0.5069  {'hidden': (128, 64, 32), 'lr': 0.0005, 'dropout': (0.3, 0.2), 'weight_decay': 0.001, 'batch_size': 512}
+  [9/30] CE=0.6712 GMPCA~=0.5111  {'hidden': (128, 128, 64), 'lr': 0.003, 'dropout': (0.3, 0.2), 'weight_decay': 0.0001, 'batch_size': 256}
+  [10/30] CE=0.6787 GMPCA~=0.5073  {'hidden': (128, 128, 64), 'lr': 0.0005, 'dropout': (0.4, 0.3), 'weight_decay': 0.001, 'batch_size': 512}
+  [11/30] CE=0.6789 GMPCA~=0.5072  {'hidden': (128, 64, 32), 'lr': 0.0005, 'dropout': (0.4, 0.3), 'weight_decay': 0.001, 'batch_size': 256}
+  [12/30] CE=0.6720 GMPCA~=0.5107  {'hidden': (128, 128, 64), 'lr': 0.001, 'dropout': (0.3, 0.2), 'weight_decay': 0.0001, 'batch_size': 256}
+  [13/30] CE=0.6830 GMPCA~=0.5051  {'hidden': (128, 128, 64), 'lr': 0.003, 'dropout': (0.2, 0.1), 'weight_decay': 0.001, 'batch_size': 256}
+  [14/30] CE=0.6768 GMPCA~=0.5083  {'hidden': (256, 128, 64), 'lr': 0.0005, 'dropout': (0.2, 0.1), 'weight_decay': 0.0001, 'batch_size': 512}
+  [15/30] CE=0.6772 GMPCA~=0.5081  {'hidden': (128, 128, 64), 'lr': 0.0005, 'dropout': (0.4, 0.3), 'weight_decay': 0.0001, 'batch_size': 256}
+  [16/30] CE=0.6820 GMPCA~=0.5056  {'hidden': (64, 32, 16), 'lr': 0.001, 'dropout': (0.3, 0.2), 'weight_decay': 0.0001, 'batch_size': 256}
+  [17/30] CE=0.6862 GMPCA~=0.5035  {'hidden': (64, 32, 16), 'lr': 0.0005, 'dropout': (0.3, 0.2), 'weight_decay': 0.001, 'batch_size': 512}
+  [18/30] CE=0.6802 GMPCA~=0.5065  {'hidden': (256, 128, 64), 'lr': 0.003, 'dropout': (0.2, 0.1), 'weight_decay': 0.001, 'batch_size': 512}
+  [19/30] CE=0.6779 GMPCA~=0.5077  {'hidden': (128, 64, 32), 'lr': 0.003, 'dropout': (0.3, 0.2), 'weight_decay': 0.001, 'batch_size': 512}
+  [20/30] CE=0.6740 GMPCA~=0.5097  {'hidden': (128, 128, 64), 'lr': 0.003, 'dropout': (0.2, 0.1), 'weight_decay': 0.0001, 'batch_size': 512}
+  [21/30] CE=0.6757 GMPCA~=0.5088  {'hidden': (128, 64, 32), 'lr': 0.001, 'dropout': (0.4, 0.3), 'weight_decay': 0.001, 'batch_size': 256}
+  [22/30] CE=0.6769 GMPCA~=0.5082  {'hidden': (64, 32, 16), 'lr': 0.001, 'dropout': (0.2, 0.1), 'weight_decay': 0.0001, 'batch_size': 256}
+  [23/30] CE=0.6779 GMPCA~=0.5077  {'hidden': (256, 128, 64), 'lr': 0.003, 'dropout': (0.2, 0.1), 'weight_decay': 0.0001, 'batch_size': 512}
+  [24/30] CE=0.6732 GMPCA~=0.5101  {'hidden': (128, 64, 32), 'lr': 0.001, 'dropout': (0.3, 0.2), 'weight_decay': 0.0001, 'batch_size': 512}
+  [25/30] CE=0.6765 GMPCA~=0.5084  {'hidden': (256, 128, 64), 'lr': 0.0005, 'dropout': (0.3, 0.2), 'weight_decay': 0.001, 'batch_size': 512}
+  [26/30] CE=0.6752 GMPCA~=0.5091  {'hidden': (128, 128, 64), 'lr': 0.001, 'dropout': (0.2, 0.1), 'weight_decay': 0.0001, 'batch_size': 256}
+  [27/30] CE=0.6769 GMPCA~=0.5082  {'hidden': (128, 128, 64), 'lr': 0.0005, 'dropout': (0.3, 0.2), 'weight_decay': 0.001, 'batch_size': 512}
+  [28/30] CE=0.6795 GMPCA~=0.5068  {'hidden': (128, 128, 64), 'lr': 0.003, 'dropout': (0.3, 0.2), 'weight_decay': 0.001, 'batch_size': 512}
+  [29/30] CE=0.6780 GMPCA~=0.5076  {'hidden': (128, 128, 64), 'lr': 0.003, 'dropout': (0.4, 0.3), 'weight_decay': 0.001, 'batch_size': 512}
+  [30/30] CE=0.6755 GMPCA~=0.5089  {'hidden': (128, 128, 64), 'lr': 0.003, 'dropout': (0.3, 0.2), 'weight_decay': 0.001, 'batch_size': 256}
+
+Mejor configuración (CE=0.6712, GMPCA~=0.5111):
+  hidden: (128, 128, 64)
+  lr: 0.003
+  dropout: (0.3, 0.2)
+  weight_decay: 0.0001
+  batch_size: 256
+
+Hiperparámetros propios guardados en: F:\TFM\lpmc\artifacts\lpmc_dnn_custom_params.json
+[3/4] Reentrenando DNN final...
+Leyendo train de: F:\TFM\lpmc\data\preprocessed\LPMC_train.csv
+Leyendo test  de: F:\TFM\lpmc\data\preprocessed\LPMC_test.csv
+
+Features totales: 27, a escalar: 16
+
+Configuración DNN: {'hidden': [128, 128, 64], 'dropout': [0.3, 0.2], 'lr': 0.003, 'weight_decay': 0.0001, 'batch_size': 256}
+
+5-fold GroupKFold CV (household_id como grupo)...
+  Fold 1/5... acc=0.7531  gmpca=0.5147
+  Fold 2/5... acc=0.7532  gmpca=0.5109
+  Fold 3/5... acc=0.7590  gmpca=0.5193
+  Fold 4/5... acc=0.7456  gmpca=0.5150
+  Fold 5/5... acc=0.7476  gmpca=0.5050
+
+CV medio  -> Accuracy: 75.17%  GMPCA: 51.29%
+
+Entrenando modelo final (max_epochs=100, batch_size=256)...
+Épocas entrenadas: 56
+Test      -> Accuracy: 74.26%  GMPCA: 50.42%
+
+Classification report (test):
+              precision    recall  f1-score   support
+
+        walk       0.73      0.57      0.64      4684
+       cycle       0.18      0.00      0.01       861
+          pt       0.75      0.77      0.76      9501
+       drive       0.74      0.85      0.79     11274
+
+    accuracy                           0.74     26320
+   macro avg       0.60      0.55      0.55     26320
+weighted avg       0.72      0.74      0.73     26320
+
+
+Modelo PyTorch guardado en : F:\TFM\lpmc\models\dnn_lpmc.pt
+Bundle joblib guardado en  : F:\TFM\lpmc\models\dnn_lpmc.joblib
+Scaler guardado en         : F:\TFM\lpmc\models\dnn_lpmc_scaler.joblib
+Métricas guardadas en      : F:\TFM\lpmc\artifacts\dnn_lpmc_metrics.json
+[4/4] Busqueda XGB (100 evals, full)...
+C:\Users\ivanh\AppData\Roaming\Python\Python314\site-packages\hyperopt\atpe.py:19: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+Conjunto de búsqueda (100%): (54766, 27); 100 evals, 5-fold CV
+
+Lanzando búsqueda HyperOpt/TPE...
+  0%|          | 0/100 [00:00<?, ?trial/s, best loss=?]  1%|          | 1/100 [00:20<33:59, 20.60s/trial, best loss: 0.719562828540802]  2%|▏         | 2/100 [00:33<26:37, 16.30s/trial, best loss: 0.6515618562698364]  3%|▎         | 3/100 [00:56<30:40, 18.97s/trial, best loss: 0.6515618562698364]  4%|▍         | 4/100 [01:02<22:41, 14.19s/trial, best loss: 0.6433806419372559]  5%|▌         | 5/100 [01:15<21:43, 13.72s/trial, best loss: 0.6433806419372559]  6%|▌         | 6/100 [01:36<25:02, 15.98s/trial, best loss: 0.6433806419372559]  7%|▋         | 7/100 [01:44<21:07, 13.63s/trial, best loss: 0.641326904296875]   8%|▊         | 8/100 [02:16<29:35, 19.29s/trial, best loss: 0.641326904296875]  9%|▉         | 9/100 [02:29<26:07, 17.23s/trial, best loss: 0.641326904296875] 10%|█         | 10/100 [02:36<21:12, 14.14s/trial, best loss: 0.641326904296875] 11%|█         | 11/100 [02:46<19:08, 12.91s/trial, best loss: 0.641326904296875] 12%|█▏        | 12/100 [02:56<17:53, 12.20s/trial, best loss: 0.641326904296875] 13%|█▎        | 13/100 [03:12<19:17, 13.30s/trial, best loss: 0.641326904296875] 14%|█▍        | 14/100 [03:39<24:53, 17.37s/trial, best loss: 0.641326904296875] 15%|█▌        | 15/100 [03:50<21:39, 15.28s/trial, best loss: 0.641326904296875] 16%|█▌        | 16/100 [04:10<23:35, 16.86s/trial, best loss: 0.641326904296875] 17%|█▋        | 17/100 [04:16<18:50, 13.62s/trial, best loss: 0.641326904296875] 18%|█▊        | 18/100 [04:22<15:18, 11.21s/trial, best loss: 0.641326904296875] 19%|█▉        | 19/100 [04:30<13:57, 10.34s/trial, best loss: 0.641326904296875] 20%|██        | 20/100 [04:39<13:12,  9.91s/trial, best loss: 0.641326904296875] 21%|██        | 21/100 [04:54<14:55, 11.33s/trial, best loss: 0.641326904296875] 22%|██▏       | 22/100 [05:02<13:25, 10.33s/trial, best loss: 0.641326904296875] 23%|██▎       | 23/100 [05:11<12:50, 10.01s/trial, best loss: 0.641326904296875] 24%|██▍       | 24/100 [05:19<12:04,  9.53s/trial, best loss: 0.641326904296875] 25%|██▌       | 25/100 [05:28<11:28,  9.18s/trial, best loss: 0.641326904296875] 26%|██▌       | 26/100 [05:37<11:33,  9.38s/trial, best loss: 0.641326904296875] 27%|██▋       | 27/100 [05:50<12:42, 10.45s/trial, best loss: 0.641326904296875] 28%|██▊       | 28/100 [06:11<16:05, 13.41s/trial, best loss: 0.641326904296875] 29%|██▉       | 29/100 [06:20<14:33, 12.31s/trial, best loss: 0.641326904296875] 30%|███       | 30/100 [06:29<13:01, 11.17s/trial, best loss: 0.641326904296875] 31%|███       | 31/100 [06:39<12:27, 10.83s/trial, best loss: 0.641326904296875] 32%|███▏      | 32/100 [06:48<11:30, 10.16s/trial, best loss: 0.641326904296875] 33%|███▎      | 33/100 [07:01<12:30, 11.20s/trial, best loss: 0.641326904296875] 34%|███▍      | 34/100 [07:13<12:21, 11.23s/trial, best loss: 0.641326904296875] 35%|███▌      | 35/100 [07:26<12:56, 11.94s/trial, best loss: 0.641326904296875] 36%|███▌      | 36/100 [07:41<13:42, 12.85s/trial, best loss: 0.641326904296875] 37%|███▋      | 37/100 [07:51<12:29, 11.90s/trial, best loss: 0.641326904296875] 38%|███▊      | 38/100 [08:05<12:55, 12.51s/trial, best loss: 0.641326904296875] 39%|███▉      | 39/100 [08:21<13:42, 13.49s/trial, best loss: 0.641326904296875] 40%|████      | 40/100 [08:27<11:26, 11.44s/trial, best loss: 0.641326904296875] 41%|████      | 41/100 [08:33<09:26,  9.61s/trial, best loss: 0.641326904296875] 42%|████▏     | 42/100 [08:44<09:48, 10.15s/trial, best loss: 0.641326904296875] 43%|████▎     | 43/100 [08:56<10:16, 10.81s/trial, best loss: 0.641326904296875] 44%|████▍     | 44/100 [09:06<09:40, 10.37s/trial, best loss: 0.641326904296875] 45%|████▌     | 45/100 [09:18<09:59, 10.90s/trial, best loss: 0.641326904296875] 46%|████▌     | 46/100 [09:26<09:04, 10.09s/trial, best loss: 0.641326904296875] 47%|████▋     | 47/100 [09:40<09:59, 11.30s/trial, best loss: 0.641326904296875] 48%|████▊     | 48/100 [09:54<10:26, 12.05s/trial, best loss: 0.641326904296875] 49%|████▉     | 49/100 [10:05<10:06, 11.89s/trial, best loss: 0.641326904296875] 50%|█████     | 50/100 [10:16<09:29, 11.39s/trial, best loss: 0.641326904296875] 51%|█████     | 51/100 [10:28<09:25, 11.55s/trial, best loss: 0.641326904296875] 52%|█████▏    | 52/100 [10:38<08:59, 11.25s/trial, best loss: 0.641326904296875] 53%|█████▎    | 53/100 [10:58<10:51, 13.87s/trial, best loss: 0.641326904296875] 54%|█████▍    | 54/100 [11:12<10:36, 13.83s/trial, best loss: 0.641326904296875] 55%|█████▌    | 55/100 [11:18<08:41, 11.58s/trial, best loss: 0.641326904296875] 56%|█████▌    | 56/100 [11:27<07:55, 10.80s/trial, best loss: 0.641326904296875] 57%|█████▋    | 57/100 [11:45<09:16, 12.93s/trial, best loss: 0.641326904296875] 58%|█████▊    | 58/100 [11:59<09:19, 13.31s/trial, best loss: 0.641326904296875] 59%|█████▉    | 59/100 [12:14<09:18, 13.62s/trial, best loss: 0.641326904296875] 60%|██████    | 60/100 [12:30<09:33, 14.35s/trial, best loss: 0.641326904296875] 61%|██████    | 61/100 [12:40<08:32, 13.13s/trial, best loss: 0.641326904296875] 62%|██████▏   | 62/100 [12:54<08:34, 13.55s/trial, best loss: 0.641326904296875] 63%|██████▎   | 63/100 [12:59<06:38, 10.77s/trial, best loss: 0.641326904296875] 64%|██████▍   | 64/100 [13:05<05:38,  9.41s/trial, best loss: 0.641326904296875] 65%|██████▌   | 65/100 [13:20<06:31, 11.19s/trial, best loss: 0.641326904296875] 66%|██████▌   | 66/100 [13:34<06:48, 12.03s/trial, best loss: 0.641326904296875] 67%|██████▋   | 67/100 [13:51<07:21, 13.37s/trial, best loss: 0.641326904296875] 68%|██████▊   | 68/100 [14:06<07:24, 13.91s/trial, best loss: 0.641326904296875] 69%|██████▉   | 69/100 [14:17<06:45, 13.07s/trial, best loss: 0.641326904296875] 70%|███████   | 70/100 [14:34<07:08, 14.30s/trial, best loss: 0.641326904296875] 71%|███████   | 71/100 [14:45<06:28, 13.39s/trial, best loss: 0.641326904296875] 72%|███████▏  | 72/100 [14:58<06:11, 13.26s/trial, best loss: 0.641326904296875] 73%|███████▎  | 73/100 [15:17<06:38, 14.75s/trial, best loss: 0.641326904296875] 74%|███████▍  | 74/100 [15:26<05:41, 13.15s/trial, best loss: 0.641326904296875] 75%|███████▌  | 75/100 [15:34<04:50, 11.60s/trial, best loss: 0.641326904296875] 76%|███████▌  | 76/100 [15:46<04:41, 11.73s/trial, best loss: 0.641326904296875] 77%|███████▋  | 77/100 [16:03<05:03, 13.21s/trial, best loss: 0.641326904296875] 78%|███████▊  | 78/100 [16:13<04:31, 12.35s/trial, best loss: 0.641326904296875] 79%|███████▉  | 79/100 [16:30<04:50, 13.82s/trial, best loss: 0.641326904296875] 80%|████████  | 80/100 [16:41<04:16, 12.85s/trial, best loss: 0.641326904296875] 81%|████████  | 81/100 [16:59<04:34, 14.47s/trial, best loss: 0.641326904296875] 82%|████████▏ | 82/100 [17:05<03:35, 11.95s/trial, best loss: 0.641326904296875] 83%|████████▎ | 83/100 [17:15<03:10, 11.21s/trial, best loss: 0.641326904296875] 84%|████████▍ | 84/100 [17:23<02:44, 10.25s/trial, best loss: 0.641326904296875] 85%|████████▌ | 85/100 [17:40<03:06, 12.46s/trial, best loss: 0.641326904296875] 86%|████████▌ | 86/100 [17:52<02:50, 12.18s/trial, best loss: 0.641326904296875] 87%|████████▋ | 87/100 [18:02<02:31, 11.64s/trial, best loss: 0.641326904296875] 88%|████████▊ | 88/100 [18:17<02:29, 12.47s/trial, best loss: 0.641326904296875] 89%|████████▉ | 89/100 [18:29<02:17, 12.52s/trial, best loss: 0.641326904296875] 90%|█████████ | 90/100 [18:36<01:48, 10.84s/trial, best loss: 0.641326904296875] 91%|█████████ | 91/100 [18:42<01:22,  9.19s/trial, best loss: 0.641326904296875] 92%|█████████▏| 92/100 [18:50<01:11,  8.97s/trial, best loss: 0.641326904296875] 93%|█████████▎| 93/100 [18:57<00:58,  8.32s/trial, best loss: 0.641326904296875] 94%|█████████▍| 94/100 [19:03<00:46,  7.69s/trial, best loss: 0.641326904296875] 95%|█████████▌| 95/100 [19:11<00:38,  7.66s/trial, best loss: 0.641326904296875] 96%|█████████▌| 96/100 [19:16<00:27,  6.82s/trial, best loss: 0.641326904296875] 97%|█████████▋| 97/100 [19:23<00:21,  7.14s/trial, best loss: 0.641326904296875] 98%|█████████▊| 98/100 [19:30<00:13,  6.91s/trial, best loss: 0.641326904296875] 99%|█████████▉| 99/100 [19:40<00:08,  8.05s/trial, best loss: 0.641326904296875]100%|██████████| 100/100 [19:47<00:00,  7.60s/trial, best loss: 0.641326904296875]100%|██████████| 100/100 [19:47<00:00, 11.88s/trial, best loss: 0.641326904296875]
+
+Mejor CE=0.6413  GMPCA~=0.5266
+  max_depth: 5
+  gamma: 0.02629358881966828
+  min_child_weight: 45
+  subsample: 0.7343301812191535
+  colsample_bytree: 0.6645450199679037
+  reg_alpha: 0.004262125952456165
+  reg_lambda: 0.008454442656463525
+  n_estimators: 500
+  learning_rate: 0.03953464088120462
+  objective: multi:softprob
+  eval_metric: mlogloss
+  num_class: 4
+  n_jobs: -1
+  random_state: 481516
+
+Guardado en: F:\TFM\lpmc\artifacts\lpmc_xgb_custom_params.json
+=== CADENA COMPLETA ===

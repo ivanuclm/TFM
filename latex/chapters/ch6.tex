@@ -1,25 +1,31 @@
 \chapter{Conclusiones y trabajo futuro}
-
-\section{Conclusiones técnicas}
-% \subsection{Aportaciones principales}
-% \subsubsection{Impacto en el proyecto}
+\label{ch:conclusiones}
 
 \section{Cumplimiento de objetivos}
-% \subsection{Objetivos alcanzados}
-% \subsubsection{Objetivos parcialmente alcanzados}
+
+El objetivo general del trabajo, desarrollar un prototipo de simulador web de movilidad urbana que integre modelos de aprendizaje automático y servicios de enrutado para analizar el impacto de las políticas de transporte en el reparto modal, se ha alcanzado. El resultado es una aplicación completa y funcional, desplegable con un único comando, que permite definir viajes sobre un mapa, predecir la elección modal de un viajero y explorar escenarios \textit{what-if}. A continuación se revisa el cumplimiento de cada objetivo específico, indicando los sprints (Capítulo~\ref{ch:metodologia}) en los que se materializó.
+
+\textbf{Entrenamiento y validación de modelos de elección modal.} Se entrenaron y validaron tres modelos de aprendizaje automático (Random Forest, XGBoost y una red neuronal profunda) sobre el conjunto London Passenger Mode Choice, con una metodología de validación cruzada agrupada por hogar y una división temporal que evita la fuga de datos. La exploración y el preprocesado del dataset se abordaron en el Sprint~6, el entrenamiento y la validación del primer modelo en el Sprint~7, y la incorporación de los modelos adicionales con su comparativa en el Sprint~11. Los tres alcanzan un rendimiento muy similar, en torno al 74\,\% de exactitud sobre el conjunto de prueba; XGBoost se adoptó como modelo principal por su ligera ventaja en calibración y, sobre todo, por su respuesta más robusta ante los ajustes de conocimiento experto del simulador. Se confirma así que los modelos predicen la elección modal de forma coherente y fiable.
+
+\textbf{Integración de servicios de enrutado.} Se integraron los servicios de enrutado que aportan los tiempos y costes realistas de cada modo de transporte. El enrutado viario multiperfil con OSRM se resolvió en los Sprints~1 y~2, la incorporación del feed GTFS urbano de Toledo en el Sprint~3, y la planificación multimodal con OpenTripPlanner en el Sprint~4. El backend orquesta estas consultas y las combina con las variables del viajero para construir la entrada de los modelos.
+
+\textbf{Aplicación web interactiva.} Se desarrolló una interfaz web sobre un mapa que permite definir origen y destino, calcular y visualizar rutas por modo, explorar la red de transporte público y lanzar la inferencia. Su diseño inicial y la codificación visual por modo se abordaron en el Sprint~5, la integración del módulo de inferencia en el Sprint~9, y su consolidación y pulido en los Sprints~12 a~14. Todo el sistema se despliega de forma reproducible mediante contenedores Docker orquestados con Docker Compose, cuya arquitectura y automatización se consolidaron en los Sprints~10 y~13.
+
+\textbf{Análisis de escenarios \textit{what-if}.} El panel de predicción de la interfaz constituye el módulo de análisis de escenarios: el usuario ajusta las variables del viajero y del entorno (perfil sociodemográfico, coste del billete, coste del coche, día y hora) y obtiene la probabilidad de elección de cada modo, pudiendo comparar el resultado entre los tres modelos. Trabajar con la probabilidad de cada modo, y no solo con la elección final, es especialmente valioso en un simulador: permite observar de forma gradual cómo un cambio en el escenario (por ejemplo, una bajada del precio del autobús) desplaza el reparto entre modos para un perfil dado. Este módulo se materializó con la integración de la inferencia en el Sprint~9 y se refinó en los Sprints~12 a~14.
+
+\section{Conclusiones y limitaciones}
+
+El prototipo demuestra que es viable combinar datos abiertos, servicios de enrutado y modelos de aprendizaje automático en una herramienta interactiva y accesible para anticipar el comportamiento de los viajeros. No obstante, conviene señalar su principal limitación, que marca a su vez la dirección del trabajo futuro: los modelos se han \textbf{entrenado con datos de Londres} (el conjunto LPMC) y se \textbf{aplican sobre Toledo}. Aunque el enfoque metodológico es plenamente trasladable, las preferencias de movilidad de ambas ciudades no tienen por qué coincidir, por lo que las predicciones deben interpretarse como una demostración del sistema más que como un estudio calibrado para Toledo.
 
 \section{Trabajo futuro}
 
-% Modulo scraping actualizar GTFS
-% \subsection{Integración completa IA-web}
-% \subsubsection{Endpoint y visualización de probabilidades}
+A partir de la limitación anterior y del estado actual del simulador, se identifican varias líneas de continuación:
 
-% \subsection{Mejoras de modelado}
-% \subsubsection{Comparativa ampliada con DNN}
-
-% \subsection{Evolución del simulador}
-% \subsubsection{Escalado y nuevas funcionalidades}
-
-% Trabajar con la probabilidad permite posteriormente obtener cuotas de mercado que pueden ser muy interesantes para el simulador, porque con el simulador quieres ver si modificas algo en el sistema, como cambian las cutoas del mercado (porcentaje de usuarios de cada medio de transporte). Con el simulador haces una simulación de cambiar los valores de los atributos del usuario (cambios en precio de bus, predecir el comportamietno de como esos aspectos afectan a la cuota de mercado de esos perfils de usuario). Trabajar con las probabilidad en vez de con la elección final puedes trabajar mejor.
-
-% Cerrar capitulo con ejemplos pantallazo, o incluso una sección adicional de mini-demo.
+\begin{itemize}
+  \item \textbf{Adecuación geográfica del modelo.} Para obtener predicciones representativas de una ciudad concreta, se podría entrenar el modelo con datos de esa ciudad. Una opción es reproducir el sistema sobre Londres (sustituyendo el extracto de OpenStreetMap por el correspondiente y localizando un feed GTFS de la ciudad), de modo que datos y modelo compartan territorio. La alternativa, más ambiciosa, sería realizar una encuesta de movilidad en Toledo que permitiera construir un conjunto de datos local con el que reentrenar los modelos.
+  \item \textbf{Experimentación masiva de escenarios.} El simulador infiere hoy viaje a viaje. Una evolución natural es automatizar la ejecución de cientos de escenarios (distintos perfiles y pares origen-destino) para obtener tendencias agregadas y representarlas sobre el mapa como áreas coloreadas según el reparto modal previsto, revelando patrones espaciales del comportamiento. Este análisis a gran escala queda fuera del alcance de este trabajo y constituye una línea de investigación en sí misma, aprovechable por futuros estudiantes.
+  \item \textbf{Cuotas de mercado y sensibilidad.} Trabajar con las probabilidades de elección habilita el cálculo de cuotas de mercado por modo y su sensibilidad ante cambios en las políticas, una métrica de gran valor para la planificación que el simulador ya deja al alcance.
+  \item \textbf{Métricas de impacto ambiental.} A partir del reparto modal previsto y de las distancias de cada viaje se podrían derivar métricas de impacto como el tiempo medio de viaje o una estimación de las emisiones de CO\textsubscript{2}, asignando a cada modo un factor de emisión por kilómetro. Estas métricas cuantificarían el efecto ambiental de cada escenario y reforzarían el valor del simulador como herramienta de apoyo a las políticas de descarbonización.
+  \item \textbf{Actualización automática de datos.} Incorporar un módulo que descargue y actualice periódicamente el feed GTFS desde el Punto de Acceso Nacional mantendría el simulador al día sin intervención manual.
+  \item \textbf{Enriquecimiento de la interfaz.} Añadir un buscador de lugares y puntos de interés sobre el mapa facilitaría la definición de escenarios sin necesidad de conocer las coordenadas exactas.
+\end{itemize}

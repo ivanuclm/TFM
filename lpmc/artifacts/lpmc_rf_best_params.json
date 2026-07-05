@@ -1,11 +1,11 @@
 {
-  "source": "04_tune_rf.py (HyperOpt/TPE, 40 evals, muestra 25%, GroupKFold estratificado k=5)",
-  "description": "Mejor configuracion RF de nuestra busqueda propia. No existe referencia externa del tutor para RF.",
+  "source": "04_tune_rf.py (HyperOpt/TPE, 100 evals, conjunto de entrenamiento completo, GroupKFold estratificado k=5)",
+  "description": "Mejor configuracion RF de nuestra busqueda propia.",
   "params": {
-    "n_estimators": 600,
+    "n_estimators": 500,
     "max_depth": 20,
-    "min_samples_split": 9,
-    "min_samples_leaf": 5,
+    "min_samples_split": 15,
+    "min_samples_leaf": 6,
     "max_features": "sqrt",
     "n_jobs": -1,
     "random_state": 481516
