@@ -146,7 +146,8 @@ Responder a preguntas como ``¿qué líneas pasan por esta parada?'' o ``¿cuál
 
 \begin{figure}[htbp]
   \centering
-  \missingfigure{Diagrama de los seis ficheros GTFS como cajas (\texttt{stops}, \texttt{stop\_times}, \texttt{trips}, \texttt{routes}, \texttt{shapes}, \texttt{calendar\_dates}) con flechas que muestran los cruces por clave: \texttt{stops}\,--\,\texttt{stop\_times} (stop\_id), \texttt{stop\_times}\,--\,\texttt{trips} (trip\_id), \texttt{trips}\,--\,\texttt{routes} (route\_id), \texttt{trips}\,--\,\texttt{shapes} (shape\_id) y \texttt{trips}\,--\,\texttt{calendar\_dates} (service\_id). Resaltar la cadena stops$\to$stop\_times$\to$trips$\to$routes que resuelve ``líneas por parada''.}
+  % \missingfigure{Diagrama de los seis ficheros GTFS como cajas (\texttt{stops}, \texttt{stop\_times}, \texttt{trips}, \texttt{routes}, \texttt{shapes}, \texttt{calendar\_dates}) con flechas que muestran los cruces por clave: \texttt{stops}\,--\,\texttt{stop\_times} (stop\_id), \texttt{stop\_times}\,--\,\texttt{trips} (trip\_id), \texttt{trips}\,--\,\texttt{routes} (route\_id), \texttt{trips}\,--\,\texttt{shapes} (shape\_id) y \texttt{trips}\,--\,\texttt{calendar\_dates} (service\_id). Resaltar la cadena stops$\to$stop\_times$\to$trips$\to$routes que resuelve ``líneas por parada''.}
+  \includegraphics[width=1.0\textwidth]{figs/_borrador_gtfs_joins.png}
   \caption{Cruces entre los ficheros del feed GTFS para resolver las consultas de la capa estática.}
   \label{fig:gtfs_joins}
 \end{figure}
@@ -175,7 +176,8 @@ La separación en módulos permite desarrollar, probar y documentar cada router 
 
 \begin{figure}[htbp]
   \centering
-  \missingfigure{Captura de la documentación OpenAPI automática (\texttt{/docs}) del backend FastAPI, mostrando los cuatro grupos de endpoints (/api/osrm, /api/otp, /api/gtfs, /api/lpmc) con sus rutas, métodos HTTP y esquemas de petición y respuesta.}
+  % \missingfigure{Captura de la documentación OpenAPI automática (\texttt{/docs}) del backend FastAPI, mostrando los cuatro grupos de endpoints (/api/osrm, /api/otp, /api/gtfs, /api/lpmc) con sus rutas, métodos HTTP y esquemas de petición y respuesta.}
+  \includegraphics[width=1.0\textwidth]{figs/FastAPI_Docs4.jpeg}
   \caption{Documentación OpenAPI generada automáticamente por FastAPI.}
   \label{fig:fastapi_docs}
 \end{figure}
@@ -274,7 +276,8 @@ La maquetación es adaptable (\textit{responsive}): el mapa ocupa siempre el esp
 
 \begin{figure}[htbp]
   \centering
-  \missingfigure{Captura general de la aplicación mostrando el mapa de Toledo con los cuatro modos de ruta dibujados simultáneamente, las paradas de bus visibles, el panel de Rutas abierto con el detalle de un itinerario OTP y el control de fecha/hora global en la esquina superior izquierda.}
+  % \missingfigure{Captura general de la aplicación mostrando el mapa de Toledo con los cuatro modos de ruta dibujados simultáneamente, las paradas de bus visibles, el panel de Rutas abierto con el detalle de un itinerario OTP y el control de fecha/hora global en la esquina superior izquierda.}
+  \includegraphics[width=1.0\textwidth]{figs/FRONTEND_VistaGeneral2.jpeg}
   \caption{Vista general de la interfaz del simulador de movilidad urbana.}
   \label{fig:app_general}
 \end{figure}
@@ -293,7 +296,7 @@ Los botones de selección de modo de transporte no son mutuamente excluyentes: u
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=1.0\textwidth]{figs/RutasSoloOSRM.jpeg}
+  \includegraphics[width=1.0\textwidth]{figs/FRONTEND_RutasOSRM.jpeg}
   \caption{Rutas OSRM para los tres perfiles de transporte sobre Toledo.}
   \label{fig:osrm_rutas}
 \end{figure}
@@ -308,17 +311,17 @@ La Figura~\ref{fig:otp_itinerario} muestra un itinerario multimodal con el desgl
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=1.0\textwidth]{figs/ItinerarioMultimodalZoom.png}
+  \includegraphics[width=1.0\textwidth]{figs/FRONTEND_RutasOTP.jpeg}
   \caption{Itinerario multimodal OTP con desglose de tramos en la interfaz.}
   \label{fig:otp_itinerario}
 \end{figure}
 
-\begin{figure}[htbp]
-  \centering
-  \missingfigure{Captura del panel Rutas con la tabla de resultados OSRM para los tres modos activos y el itinerario OTP desplegado mostrando el diagrama de paradas de un tramo en autobús.}
-  \caption{Panel Rutas con resultados OSRM e itinerario OTP.}
-  \label{fig:panel_rutas}
-\end{figure}
+% \begin{figure}[htbp]
+%   \centering
+%   \missingfigure{Captura del panel Rutas con la tabla de resultados OSRM para los tres modos activos y el itinerario OTP desplegado mostrando el diagrama de paradas de un tramo en autobús.}
+%   \caption{Panel Rutas con resultados OSRM e itinerario OTP.}
+%   \label{fig:panel_rutas}
+% \end{figure}
 
 \subsection{Panel Red GTFS}
 \label{subsec:impl_frontend_red}
@@ -353,7 +356,8 @@ Los horarios se presentan agrupados por hora: una columna con la hora y, a su de
 
 \begin{figure}[htbp]
   \centering
-  \missingfigure{Captura del panel Red GTFS con el acordeón de líneas, una línea seleccionada con su diagrama de paradas y la tabla de horarios con la próxima salida destacada en negrita.}
+  % \missingfigure{Captura del panel Red GTFS con el acordeón de líneas, una línea seleccionada con su diagrama de paradas y la tabla de horarios con la próxima salida destacada en negrita.}
+  \includegraphics[width=1.0\textwidth]{figs/FRONTEND_GTFS_Horarios.jpg}
   \caption{Panel Red GTFS con trazado, paradas y horarios de una línea.}
   \label{fig:panel_red}
 \end{figure}
@@ -365,7 +369,8 @@ El panel Predicción IA, que muestra la Figura~\ref{fig:panel_ia}, permite obten
 
 \begin{figure}[htbp]
   \centering
-  \missingfigure{Captura del panel Predicción IA mostrando, de arriba abajo: el par origen-destino en solo lectura, la tabla de tiempos y distancias por modo, el día y hora del viaje, los tres perfiles predefinidos, el formulario sociodemográfico y el resultado de la inferencia con la probabilidad de cada modo y el modo más probable destacado.}
+  % \missingfigure{Captura del panel Predicción IA mostrando, de arriba abajo: el par origen-destino en solo lectura, la tabla de tiempos y distancias por modo, el día y hora del viaje, los tres perfiles predefinidos, el formulario sociodemográfico y el resultado de la inferencia con la probabilidad de cada modo y el modo más probable destacado.}
+  \includegraphics[width=1.0\textwidth]{figs/FRONTEND_IA.jpg}
   \caption{Panel Predicción IA con el formulario y el resultado de la inferencia.}
   \label{fig:panel_ia}
 \end{figure}
@@ -380,21 +385,7 @@ Para facilitar la exploración del simulador, el panel ofrece tres perfiles soci
 
 El perfil activo por defecto es \textit{Commuter}. El indicador de perfil activo desaparece en cuanto el usuario modifica algún campo del formulario, eliminando la ambigüedad sobre qué valores se están usando. Aunque los perfiles rellenan automáticamente todos los campos sociodemográficos (edad, género, carnet, vehículos en el hogar, motivo del viaje, tipo de combustible, costes), cada uno puede modificarse manualmente para ajustar el escenario al gusto. La inferencia se lanza con el botón ``Inferir modo'', que muestra junto a su rótulo el nombre del modelo activo. El resultado es un conjunto de probabilidades para los cuatro modos de transporte (a pie, bicicleta, transporte público y conducción), con el modo de mayor probabilidad destacado visualmente.
 
-Tras la inferencia, bajo el botón aparecen las probabilidades de los cuatro modos en forma de barras y, solo entonces, se habilitan dos acciones secundarias para profundizar en el resultado. La primera, ``Comparar modelos'', llama a \texttt{POST /api/lpmc/compare} y presenta una tabla con las probabilidades de los tres modelos (XGBoost, Random Forest y red neuronal) para el mismo escenario, lo que permite ver hasta qué punto coinciden (Figura~\ref{fig:panel_comparacion}). La segunda, ``Ver variables'', llama a \texttt{POST /api/lpmc/debug-features} y abre una ventana modal con el vector de características completo, en sus valores originales y tras el escalado, útil para inspeccionar con qué datos exactos se ha inferido (Figura~\ref{fig:debug_features}).
-
-\begin{figure}[htbp]
-  \centering
-  \missingfigure{Captura del panel de comparación de los tres modelos (XGBoost, Random Forest, DNN) mostrando las probabilidades de elección para los cuatro modos (a pie, bicicleta, transporte público y coche) ante el mismo par origen-destino y perfil de usuario. Mostrar un caso con clara concordancia entre modelos y el modo más probable destacado.}
-  \caption{Panel de comparación de probabilidades de los tres modelos de elección modal.}
-  \label{fig:panel_comparacion}
-\end{figure}
-
-\begin{figure}[htbp]
-  \centering
-  \missingfigure{Captura de la ventana modal ``Ver variables'' (debug-features) con la tabla del vector de características completo: cada variable con su valor original y su valor tras el escalado estándar, incluyendo las variables de ruta de OSRM/OTP y las sociodemográficas.}
-  \caption{Ventana de depuración del vector de características que recibe el modelo.}
-  \label{fig:debug_features}
-\end{figure}
+Tras la inferencia, bajo el botón aparecen las probabilidades de los cuatro modos en forma de barras y, solo entonces, se habilitan dos acciones secundarias para profundizar en el resultado. La primera, ``Comparar modelos'', llama a \texttt{POST /api/lpmc/compare} y presenta una tabla con las probabilidades de los tres modelos (XGBoost, Random Forest y red neuronal) para el mismo escenario, lo que permite ver hasta qué punto coinciden; el resultado es visible en la parte inferior de la Figura~\ref{fig:panel_ia}. La segunda, ``Ver variables'', llama a \texttt{POST /api/lpmc/debug-features} y abre una ventana modal con el vector de características completo, en sus valores originales y tras el escalado, útil para inspeccionar con qué datos exactos se ha inferido.
 
 \subsection{Panel Capas}
 \label{subsec:impl_frontend_capas}
@@ -410,8 +401,15 @@ El panel Capas permite seleccionar la capa de fondo del mapa entre seis opciones
   \item \textbf{PNOA} (Plan Nacional de Ortofotografía Aérea, IGN España): ortofoto servida mediante el protocolo WMTS por el Instituto Geográfico Nacional; cubre el territorio español con resolución de 25~cm en zonas urbanas y no requiere token de autenticación.
 \end{itemize}
 
-Como el zoom admite valores decimales (Sección~\ref{subsec:impl_frontend_mapa}), al cambiar de capa puede ocurrir que el nivel activo no sea entero y que el nuevo proveedor no sirva teselas en niveles fraccionarios. Un componente auxiliar (\texttt{BasemapZoomSnapper}) se ocupa de ello: cuando se cambia de capa, redondea el zoom al entero más próximo para evitar errores de carga.
+Como el zoom admite valores decimales (Sección~\ref{subsec:impl_frontend_mapa}), al cambiar de capa puede ocurrir que el nivel activo no sea entero y que el nuevo proveedor no sirva teselas en niveles fraccionarios. Un componente auxiliar (\texttt{BasemapZoomSnapper}) se ocupa de ello: cuando se cambia de capa, redondea el zoom al entero más próximo para evitar errores de carga. La Figura~\ref{fig:panel_capas} muestra el panel con las seis capas disponibles y la capa de fondo "Satélite" seleccionada.
 
+\begin{figure}[htbp]
+  \centering
+  % \missingfigure{Captura del panel Capas mostrando las seis capas de fondo disponibles y la capa "Satélite" seleccionada.}
+  \includegraphics[width=1\textwidth]{figs/FRONTEND_Capas2.jpeg}
+  \caption{Panel Capas con seis opciones de fondo para el mapa.}
+  \label{fig:panel_capas}
+\end{figure}
 \subsection{Panel Ajustes}
 \label{subsec:impl_frontend_ajustes}
 
@@ -421,7 +419,8 @@ La Figura~\ref{fig:panel_ajustes} muestra el panel con los tres modelos incluido
 
 \begin{figure}[htbp]
   \centering
-  \missingfigure{Captura del panel Ajustes mostrando: (1) checkbox de paradas de bus, (2) selector de modelo activo con los tres modelos disponibles (XGBoost, Random Forest, DNN) y la etiqueta ``Activo'' junto al seleccionado, (3) bloque de instrucciones colapsable para añadir modelos personalizados.}
+  % \missingfigure{Captura del panel Ajustes mostrando: (1) checkbox de paradas de bus, (2) selector de modelo activo con los tres modelos disponibles (XGBoost, Random Forest, DNN) y la etiqueta ``Activo'' junto al seleccionado, (3) bloque de instrucciones colapsable para añadir modelos personalizados.}
+  \includegraphics[width=1.0\textwidth]{figs/FRONTEND_Ajustes.jpg}
   \caption{Panel de ajustes con selector de modelo activo y documentación de extensión.}
   \label{fig:panel_ajustes}
 \end{figure}
@@ -564,7 +563,8 @@ El orden de estas operaciones importa: la normalización se aplica después de l
 
 \begin{figure}[htbp]
   \centering
-  \missingfigure{Diagrama de la arquitectura de la red neuronal: vector de entrada de n características → bloque 1 [Linear(128) → BatchNorm → ReLU → Dropout 0,3] → bloque 2 [Linear(128) → BatchNorm → ReLU → Dropout 0,2] → bloque 3 [Linear(64) → BatchNorm → ReLU] → capa de salida Linear(4) → softmax → probabilidades de walk, cycle, pt, drive.}
+  % \missingfigure{Diagrama de la arquitectura de la red neuronal: vector de entrada de n características → bloque 1 [Linear(128) → BatchNorm → ReLU → Dropout 0,3] → bloque 2 [Linear(128) → BatchNorm → ReLU → Dropout 0,2] → bloque 3 [Linear(64) → BatchNorm → ReLU] → capa de salida Linear(4) → softmax → probabilidades de walk, cycle, pt, drive.}
+  \includegraphics[width=1.0\textwidth]{figs/_borrador_dnn.png}
   \caption{Arquitectura de la red neuronal profunda de elección modal.}
   \label{fig:dnn_arch}
 \end{figure}

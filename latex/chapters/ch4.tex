@@ -88,7 +88,8 @@ La Tabla~\ref{tab:servicios_docker} resume los servicios definidos, sus puertos 
 
 \begin{figure}[htbp]
   \centering
-  \missingfigure{Diagrama de servicios Docker Compose: servicios de aplicación (frontend :5173, backend :8000, osrm-car :5001, osrm-bike :5002, osrm-foot :5003, otp :8080) y servicios de inicialización (gtfs-init, osrm-setup, otp-build, sin puerto expuesto). Dependencias entre servicios (service\_completed\_successfully) y volúmenes montados en los contenedores OSRM y OTP.}
+  % \missingfigure{Diagrama de servicios Docker Compose: servicios de aplicación (frontend :5173, backend :8000, osrm-car :5001, osrm-bike :5002, osrm-foot :5003, otp :8080) y servicios de inicialización (gtfs-init, osrm-setup, otp-build, sin puerto expuesto). Dependencias entre servicios (service\_completed\_successfully) y volúmenes montados en los contenedores OSRM y OTP.}
+  \includegraphics[width=\textwidth]{figs/_borrador_docker.png}
   \caption{Servicios Docker Compose del simulador: dependencias y puertos expuestos.}
   \label{fig:arch_docker}
 \end{figure}

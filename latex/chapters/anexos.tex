@@ -113,6 +113,7 @@ La Tabla~\ref{tab:endpoints_api} del capítulo~\ref{ch:arquitectura} resume los 
       {"mode": "WALK", "distance_m": 220.0, "duration_s": 180.0, "geometry": [...]}
     ] } }
 \end{lstlisting}
+\newpage
 
 \subsection{Inferencia de elección modal (\texttt{POST /api/lpmc/predict})}
 
@@ -133,6 +134,22 @@ La Tabla~\ref{tab:endpoints_api} del capítulo~\ref{ch:arquitectura} resume los 
   "route_features": {"distance": 4120.5, "dur_driving": 0.17, "dur_pt_bus": 0.21, ...},
   "model_info": {"model_path": "...", "pt_available": true, "short_trip": false} }
 \end{lstlisting}
+
+% =======================================================
+\section{Cronograma de sprints}
+\label{anx:sprints}
+% =======================================================
+
+La planificación y el desarrollo siguieron un proceso Scrum adaptado, descrito en el capítulo~\ref{ch:metodologia}, donde se detallan los sprints con sus objetivos, fechas y resultados. La trazabilidad fina del trabajo (tareas, decisiones técnicas y artefactos) queda registrada en el historial de control de versiones del repositorio público del proyecto (\url{https://github.com/ivanuclm/movilidad-urbana}), cuyos mensajes de \textit{commit} documentan la evolución incremental del sistema sprint a sprint.
+
+La Figura~\ref{fig:sprints_timeline} muestra el cronograma de los sprints ejecutados a lo largo del proyecto, desde la fase inicial de planificación (noviembre de 2025) hasta el cierre del desarrollo (julio de 2026). Las barras reflejan la secuencia y el solapamiento entre sprints, y están codificadas por color según su naturaleza: infraestructura y servicios (azul), Machine Learning e IA (verde), memoria (naranja) y consolidación y entrega (teal).
+
+\begin{figure}[p]
+    \centering
+    \includegraphics[width=\textwidth]{figs/sprints_timeline.pdf}
+    \caption{Cronograma de los sprints del TFM, representado como diagrama de Gantt. Elaboración propia con Python y Matplotlib.}
+    \label{fig:sprints_timeline}
+\end{figure}
 
 % =======================================================
 \section{Configuración experimental y reproducibilidad}
@@ -190,9 +207,4 @@ La Tabla~\ref{tab:lpmc_features} detalla las variables de entrada del modelo, ag
   \end{tabular}
 \end{table}
 
-% =======================================================
-\section{Evidencias de sprints}
-\label{anx:sprints}
-% =======================================================
 
-La planificación y el desarrollo siguieron un proceso Scrum adaptado, descrito en el capítulo~\ref{ch:metodologia}, donde se detallan los sprints con sus objetivos, fechas y resultados. La trazabilidad fina del trabajo (tareas, decisiones técnicas y artefactos) queda registrada en el historial de control de versiones del repositorio público del proyecto (\url{https://github.com/ivanuclm/movilidad-urbana}), cuyos mensajes de \textit{commit} documentan la evolución incremental del sistema sprint a sprint.

@@ -28,18 +28,19 @@ La metodología seguida en este trabajo se ha apoyado en los siguientes principi
   \item orientar cada sprint a la obtención de un incremento funcional o documental del proyecto.
 \end{itemize}
 
-En cuanto al seguimiento, las reuniones con el tutor comenzaron a finales de 2025, aproximadamente entre octubre y noviembre, con una periodicidad quincenal, normalmente los martes. Una vez finalizado el primer cuatrimestre y superada la carga principal de exámenes, la cadencia pasó a ser semanal a partir de febrero y marzo de 2026, con el objetivo de acelerar el ritmo de desarrollo y acotar con mayor precisión el trabajo asociado a cada sprint. Este cambio de frecuencia reforzó el carácter iterativo del proyecto y facilitó una validación más cercana del backlog y de los entregables.
+En cuanto al seguimiento, las reuniones con el tutor comenzaron el 6 de noviembre de 2025 con la reunión de inicio del proyecto, con una cadencia aproximadamente quincenal durante el primer cuatrimestre. Tras una pausa en enero de 2026 coincidiendo con los exámenes, la frecuencia se intensificó a semanal a partir de febrero, con 19 sesiones celebradas entre enero y julio de 2026. Este ritmo de revisión periódica reforzó el carácter iterativo del proyecto y permitió alinear el trabajo de cada sprint con la retroalimentación del tutor, en particular durante los meses de mayor intensidad de desarrollo y escritura.
 
 La Figura~\ref{fig:scrum_tfm_cycle} resume visualmente este ciclo de trabajo adaptado a un desarrollo unipersonal, mostrando la relación entre backlog, planificación, ejecución y revisión periódica con el tutor.
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=0.78\textwidth]{figs/scrum_tfm_cycle.png}
+    \includegraphics[width=1.1\textwidth]{figs/CicloSCRUMunipersonal.pdf}
     \caption{Esquema del ciclo de trabajo SCRUM adaptado al desarrollo unipersonal del proyecto. Elaboración propia.}
     \label{fig:scrum_tfm_cycle}
 \end{figure}
 
 Esta metodología ha encajado bien con la naturaleza del proyecto. Por una parte, ha permitido avanzar de manera incremental desde un prototipo inicial de rutas hasta un MVP funcional con integración de OSRM, OTP, GTFS y un modelo de elección modal. Por otra, ha facilitado documentar de forma ordenada tanto el trabajo ya completado como las líneas de evolución previstas, incluyendo mejoras visuales, ampliación de modelos y posibles análisis adicionales de simulación. A partir de este marco general, en los apartados siguientes se presenta el backlog del proyecto y el histórico de sprints ejecutados.
+\newpage
 
 \section{Product Backlog}
 
@@ -63,6 +64,7 @@ En una primera aproximación, los elementos principales del backlog fueron los s
 \end{enumerate}
 
 Conforme avanzó el trabajo, este backlog se fue refinando en tareas más concretas. Algunos elementos inicialmente planteados como trabajo futuro pasaron a formar parte del desarrollo principal, mientras que otros quedaron aplazados para iteraciones posteriores. A fecha de redacción de esta memoria, la parte nuclear del simulador puede considerarse ya implementada, por lo que el backlog actual se concentra principalmente en consolidación documental, mejoras visuales y ampliaciones funcionales sobre una base ya operativa.
+\newpage
 
 Para facilitar su seguimiento, los elementos del backlog se agruparon en cuatro bloques:
 \begin{itemize}
@@ -83,23 +85,29 @@ La priorización del backlog no se realizó únicamente por orden técnico de im
 \end{itemize}
 
 Este criterio explica el orden seguido durante el desarrollo. Primero se priorizó la infraestructura mínima para obtener rutas y visualizar resultados reales sobre el mapa; después se incorporó el bloque de modelado e inferencia; y finalmente se abordaron tareas de consolidación, mejora y documentación. De esta forma, cada sprint pudo orientarse a producir incrementos útiles sobre una base ya validada, en lugar de avanzar en paralelo sobre demasiados frentes abiertos.
+\newpage
 
 \section{Histórico de sprints ejecutados}
 
-En este apartado se resume la secuencia principal de trabajo seguida durante el desarrollo del proyecto. Dado que el TFM no arrancó con una planificación completamente cerrada y que parte de la trazabilidad se ha reconstruido a partir de versiones funcionales, reuniones de seguimiento y artefactos generados, los periodos y esfuerzos indicados deben interpretarse como estimaciones razonables. Aun así, este histórico permite mostrar con claridad cómo evolucionó el proyecto desde la validación inicial de tecnologías hasta la integración final del simulador.
+En este apartado se resume la secuencia principal de trabajo seguida durante el desarrollo del proyecto. Los periodos y esfuerzos indicados se corresponden con la trazabilidad del historial de versiones, las reuniones de seguimiento y los artefactos generados, y deben interpretarse como estimaciones razonables. La carga de trabajo total del TFM asciende a 300 horas, correspondientes a los 12 ECTS del módulo; de ellas, aproximadamente 180 horas se orientaron al desarrollo técnico, 105 a la redacción de la memoria, 9 a las tutorías y 6 a la preparación de la defensa.
 
-La Figura~\ref{fig:sprints_timeline} muestra un diagrama de Gantt simplificado de los sprints ejecutados durante el desarrollo del proyecto. El diagrama refleja tanto la secuencia principal del desarrollo como la existencia de trabajo en paralelo, especialmente entre las fases de modelado y diseño web y en la redacción de la memoria.
+El cronograma completo en forma de diagrama de Gantt se recoge en el Anexo~\ref{anx:sprints}.
 
-\begin{figure}[ht]
-    \centering
-    \includegraphics[width=\textwidth]{figs/sprints_timeline.png}
-    \caption{Cronograma aproximado de los sprints ejecutados durante el desarrollo del TFM, representado como diagrama de Gantt simplificado. Elaboración propia.}
-    \label{fig:sprints_timeline}
-\end{figure}
+\subsection{Fase inicial: planificación y revisión del estado del arte}
+
+\textbf{Fechas}: del 6 de noviembre al 19 de diciembre de 2025.
+
+\textbf{Esfuerzo estimado}: 10--14 horas, incluyendo tutorías y trabajo exploratorio previo al primer sprint.
+
+Antes de iniciar el desarrollo técnico se celebraron seis reuniones con el tutor que sirvieron para definir el alcance del proyecto, revisar el estado del arte y acordar la estructura metodológica. La reunión de inicio (6 de noviembre, 80 minutos) estableció el marco general: un simulador web de movilidad urbana centrado en Toledo, con OSRM y OTP como motores de enrutado, GTFS como fuente de la red de transporte público y un modelo de elección modal entrenado sobre el dataset LPMC, proporcionado por el tutor. Las dos sesiones siguientes (14 y 24 de noviembre) sirvieron para revisar trabajos de referencia sobre modelado de elección discreta y aprendizaje automático aplicado a movilidad, y para explorar las opciones de pila tecnológica disponibles.
+
+La reunión del 4 de diciembre coincidió con la primera sesión de estado del arte formal y también con los primeros commits del repositorio: un PoC inicial con FastAPI y React que ya incluía integración con OSRM remoto y visualización de rutas en el mapa. Las reuniones del 11 de diciembre (metodología) y el 19 de diciembre (planificación) cerraron esta fase con el acuerdo sobre el proceso de desarrollo mediante SCRUM adaptado y la definición de los primeros bloques de trabajo del backlog.
+
+El resultado de esta fase fue, por tanto, doble: por un lado, la validación técnica preliminar de las tecnologías clave a través del PoC; por otro, la definición del alcance, la metodología y la estructura iterativa que guió los catorce sprints posteriores.
 
 \subsection{Sprint 1: Validación inicial de OSRM mediante servicios remotos}
 
-\textbf{Fechas}: del 2 al 5 de diciembre de 2025.
+\textbf{Fechas}: del 4 al 9 de diciembre de 2025.
 
 \textbf{Esfuerzo estimado}: 8--12 horas.
 
@@ -109,7 +117,7 @@ El principal resultado de esta iteración fue la construcción de un primer prot
 
 \subsection{Sprint 2: Despliegue del servicio OSRM local multi-perfil}
 
-\textbf{Fechas}: del 6 al 11 de diciembre de 2025.
+\textbf{Fechas}: del 4 al 10 de diciembre de 2025.
 
 \textbf{Esfuerzo estimado}: 12--16 horas.
 
@@ -119,7 +127,7 @@ Como resultado, el proyecto dejó de depender de servicios públicos externos y 
 
 \subsection{Sprint 3: Incorporación del GTFS urbano de Toledo}
 
-\textbf{Fechas}: del 12 al 18 de diciembre de 2025.
+\textbf{Fechas}: del 11 al 14 de diciembre de 2025.
 
 \textbf{Esfuerzo estimado}: 10--14 horas.
 
@@ -129,7 +137,7 @@ En la capa de visualización se añadieron las paradas como marcadores circulare
 
 \subsection{Sprint 4: Integración de OpenTripPlanner para rutas multimodales}
 
-\textbf{Fechas}: del 19 de diciembre de 2025 al 12 de febrero de 2026.
+\textbf{Fechas}: del 11 de diciembre de 2025 al 12 de febrero de 2026.
 
 \textbf{Esfuerzo estimado}: 16--24 horas.
 
@@ -139,7 +147,7 @@ Esta fase supuso un salto cualitativo dentro del proyecto, ya que permitió inte
 
 \subsection{Sprint 5: Diseño de la interfaz web y codificación visual por modo}
 
-\textbf{Fechas}: del 20 de diciembre de 2025 al 20 de febrero de 2026.
+\textbf{Fechas}: del 11 de diciembre de 2025 al 20 de febrero de 2026.
 
 \textbf{Esfuerzo estimado}: 8--12 horas.
 
@@ -169,17 +177,17 @@ Como resultado, el proyecto avanzó desde una fase exploratoria sobre datos haci
 
 \subsection{Sprint 8: Escritura de la memoria y consolidación metodológica}
 
-\textbf{Fechas}: del 27 de enero al 24 de marzo de 2026, en paralelo a varios sprints técnicos.
+\textbf{Fechas}: del 27 de enero al 23 de junio de 2026, en paralelo al resto de sprints técnicos.
 
-\textbf{Esfuerzo estimado}: 10--14 horas en su arranque, ampliado de forma continua durante la redacción final.
+\textbf{Esfuerzo estimado}: 60--80 horas distribuidas a lo largo de los cinco meses de redacción activa.
 
-La escritura de la memoria no se desarrolló como una actividad aislada al final del proyecto, sino como una línea de trabajo paralela que fue ganando peso a medida que el simulador y el bloque de modelado alcanzaban mayor madurez. El objetivo de este sprint fue consolidar la estructura documental del TFM, fijar el enfoque metodológico y dejar trazabilidad suficiente de las decisiones adoptadas a lo largo del desarrollo.
+La escritura de la memoria no se desarrolló como una actividad aislada al final del proyecto, sino como una línea de trabajo transversal que se extendió de forma continua desde el inicio del segundo cuatrimestre hasta la semana previa al depósito. En su arranque (enero--marzo de 2026) el objetivo fue consolidar la estructura documental del TFM y fijar el enfoque de cada capítulo; en su fase de desarrollo (abril--mayo), alinear la narración con las decisiones técnicas adoptadas en cada iteración; y en su cierre (junio), completar y revisar el conjunto de la memoria antes de la preparación del depósito.
 
-Su carácter transversal hace que este sprint deba interpretarse como una actividad de acompañamiento al resto del proyecto. En la práctica, sirvió para ordenar el material generado, depurar la narrativa técnica y conectar la evolución funcional del sistema con la justificación académica del trabajo.
+La redacción estuvo estrechamente ligada al calendario de reuniones con el tutor: las sesiones de revisión de memoria de abril y mayo de 2026 marcaron las entregas parciales de los capítulos 4 y 5, mientras que las revisiones de junio sirvieron para contrastar el texto con el estado definitivo de la aplicación y corregir las incoherencias detectadas. Este sprint debe interpretarse, por tanto, como un esfuerzo acumulativo distribuido y no como una fase puntual de escritura.
 
 \subsection{Sprint 9: Integración del módulo de inferencia en el simulador}
 
-\textbf{Fechas}: del 22 de febrero al 8 de marzo de 2026.
+\textbf{Fechas}: del 21 de febrero al 8 de marzo de 2026.
 
 \textbf{Esfuerzo estimado}: 14--20 horas.
 
@@ -219,23 +227,25 @@ Por otro lado, la interfaz recibió su primer rediseño estructural: se sustituy
 
 \subsection{Sprint 13: Consolidación de la interfaz y preparación del repositorio para entrega}
 
-\textbf{Fechas}: del 11 al 19 de junio de 2026.
+\textbf{Fechas}: del 11 al 25 de junio de 2026.
 
-\textbf{Esfuerzo estimado}: 22--30 horas.
+\textbf{Esfuerzo estimado}: 30--40 horas.
 
-Este sprint agrupó un conjunto de mejoras de interfaz y de infraestructura orientadas a dejar el sistema en el estado que se presenta en la defensa. En la parte visual, el panel de la red GTFS fue rediseñado por completo: las líneas se agrupan por nombre corto en un acordeón desplegable con un diagrama de paradas al estilo de un cartel de línea, y se garantizan colores únicos asignando una paleta de 26 tonos a las 25 líneas del feed de Toledo por índice alfabético. Se añadió un panel de Ajustes con un selector de modelo activo que carga las opciones dinámicamente desde la API sin necesidad de reiniciar el contenedor, resolviendo una dependencia que hasta entonces requería edición manual de la variable de entorno. Se sustituyeron también los controles de zoom nativos de Leaflet por componentes React con lógica de limpieza de rutas, se instaló la librería Lucide React para la iconografía de la interfaz y se añadió un panel de Inicio con la descripción del proyecto y los créditos.
+Este sprint agrupó dos semanas de mejoras de interfaz, infraestructura y documentación orientadas a dejar el sistema en el estado que se presenta en la defensa. En la parte visual, el panel de la red GTFS fue rediseñado por completo: las líneas se agrupan por nombre corto en un acordeón desplegable con un diagrama de paradas al estilo de un cartel de línea, y se garantizan colores únicos asignando una paleta de 26 tonos a las 25 líneas del feed de Toledo por índice alfabético. Se añadió un panel de Ajustes con un selector de modelo activo que carga las opciones dinámicamente desde la API sin necesidad de reiniciar el contenedor, resolviendo una dependencia que hasta entonces requería edición manual de la variable de entorno. Se sustituyeron también los controles de zoom nativos de Leaflet por componentes React con lógica de limpieza de rutas, se instaló la librería Lucide React para la iconografía de la interfaz y se añadió un panel de Inicio con la descripción del proyecto y los créditos.
 
 En cuanto a la infraestructura, el repositorio se reorganizó para la entrega pública: se configuró Git LFS para los artefactos pesados (grafos OSRM, grafo OTP, fichero GTFS ZIP y modelos ML), se añadieron servicios de inicialización idempotentes en Docker Compose para que el sistema arranque correctamente en cualquier máquina sin pasos manuales, y se redactaron los ficheros README en inglés y español. El repositorio fue renombrado a \texttt{movilidad-urbana} en GitHub.
 
+En los últimos días del sprint (24--25 de junio) se cerraron además varios flecos técnicos y documentales relevantes. Se resolvió un error de resolución de la línea de bus en el panel Rutas causado por el prefijo del feedId que OTP añade al route\_id (ej. \texttt{1:50011}); las insignias de color ahora resuelven la ruta por id exacto, sin prefijo, o por nombre corto. Se reconstruyó el grafo de OTP con el feed GTFS\_Urbano\_Toledo\_2026 (22 de febrero a 22 de mayo de 2026), eliminando el feed de diciembre de 2025 que causaba incoherencia entre el planificador y el panel de red estática. Se unificó el control de fecha y hora del viaje en un único elemento permanente sobre el mapa, eliminando los controles independientes que existían en tres paneles distintos. Se corrigió también un error de zona horaria en las horas mostradas, que se debía a que el campo de tiempo de OTP se expresaba en UTC y no se aplicaba el desplazamiento de la agencia. Los puertos de los servicios OSRM en el host se actualizaron de 5000/5001/5002 a 5001/5002/5003 para evitar el conflicto con AirPlay en macOS. Y se realizó una primera revisión integral de los capítulos 4 y 5 contrastándolos con el estado final de la aplicación, junto con la creación de los cuatro anexos de la memoria (manual de despliegue, contratos de la API, configuración experimental y evidencias de sprints).
+
 \subsection{Sprint 14: Pulido final de la aplicación y revisión integral de la memoria}
 
-\textbf{Fechas}: del 24 al 25 de junio de 2026.
+\textbf{Fechas}: del 28 de junio al 6 de julio de 2026.
 
 \textbf{Esfuerzo estimado}: 20--26 horas.
 
-Los dos últimos días de desarrollo activo sirvieron para cerrar los flecos técnicos pendientes y dejar la memoria en estado de depósito. En la aplicación se resolvieron varios problemas acumulados: el prefijo del feedId de OTP impedía identificar la línea de bus en el catálogo GTFS, por lo que las insignias de color del panel Rutas mostraban un tono incorrecto; la fecha y hora del viaje estaban repartidas en tres controles distintos de la interfaz que no siempre estaban sincronizados; y el grafo de OTP había sido construido con el feed de diciembre de 2025, mientras que el panel de la red usaba el feed de 2026, lo que generaba una inconsistencia estructural: consultar una fecha de 2026 en el planificador devolvía únicamente itinerarios a pie mientras el panel de red mostraba horarios correctamente. Se reconstruyó el grafo con el feed de 2026 (22 de febrero a 22 de mayo), se unificó el control de fecha y hora en un único elemento permanente sobre el mapa y se corrigió un error de zona horaria en los horarios mostrados. Se añadieron también la edición directa de coordenadas de origen y destino, la copia de coordenadas al portapapeles y el recálculo automático de rutas al modificar un extremo del viaje.
+El último sprint del proyecto concentró el trabajo de revisión final y cierre previo al depósito. La semana del 28 de junio al 6 de julio incluyó dos pasadas de revisión estructural de la memoria. En la segunda pasada (30 de junio) se añadieron las búsquedas de hiperparámetros propias para los modelos Random Forest y DNN, implementadas respectivamente en \texttt{lpmc/04\_tune\_rf.py} (HyperOpt/TPE, 100 evaluaciones) y \texttt{lpmc/05\_tune\_dnn.py} (búsqueda aleatoria, 30 configuraciones), y se retrenaron ambos modelos con los parámetros hallados: RF final con 500 árboles, profundidad máxima 20, mínimo 15 muestras por nodo interno y 6 por hoja; DNN final con capas ocultas 128-128-64, tasa de aprendizaje $3\times10^{-3}$ y dropout 0.3/0.2. El módulo \texttt{TorchModalWrapper} del backend se actualizó para reconstruir la arquitectura de la red directamente desde los metadatos del checkpoint, eliminando la configuración hardcodeada anterior. En la tercera pasada (también 30 de junio) se realizó una reorganización estructural del capítulo 4 (\S4.2 renombrada a ``Infraestructura, orquestación y portabilidad''; \S4.3 a ``Backend: API y routers'') y del capítulo 5 (\S5.2 reordenada y renombrada; \S5.3 eliminada por absorción en \S5.2; nueva \S5.6.5 sobre ajustes y conocimiento experto). Tras estas revisiones la memoria compilaba limpia con XeLaTeX en 115 páginas.
 
-En la memoria se revisaron exhaustivamente los capítulos 4 y 5 contrastándolos con el estado final de la aplicación, se crearon los cuatro anexos (manual de despliegue, contratos de la API, configuración experimental y reproducibilidad, y evidencias de sprints) y se corrigieron cuatro referencias al anexo de despliegue que estaban rotas por la ausencia de su etiqueta \texttt{\textbackslash label}. Los puertos de los servicios OSRM en el host se cambiaron de 5000/5001/5002 a 5001/5002/5003 para evitar el conflicto con el servicio AirPlay/Control Center en macOS.
+La reunión del 1 de julio sirvió para revisar el estado del depósito y la lista de elementos pendientes: redacción de los agradecimientos, resumen en inglés y las capturas de pantalla finales de la interfaz. Los días 5 y 6 de julio se completó una primera revisión integral de todo el documento, con correcciones de contenido en los capítulos 1, 3 y los anexos, y la actualización del diagrama de Gantt y de las figuras vectoriales del capítulo 3.
 
 
 \section{Retrospectiva del ciclo de desarrollo}
@@ -272,7 +282,7 @@ En respuesta a los aprendizajes anteriores, se tomaron las siguientes acciones c
 \section{Cierre del ciclo de desarrollo}
 \label{sec:scrum_cierre}
 
-La secuencia de catorce sprints descrita en este capítulo llevó el proyecto desde una primera validación de tecnologías de enrutado hasta un simulador funcional completo, con integración de rutas viarias, transporte público multimodal, red GTFS estática, inferencia de elección modal mediante tres modelos de aprendizaje automático y una interfaz de usuario lista para su presentación.
+El proceso comenzó con una fase inicial de planificación y revisión del estado del arte que abarcó de noviembre a diciembre de 2025, seguida de la secuencia de catorce sprints descrita en este capítulo. El conjunto llevó el proyecto desde la validación tecnológica inicial hasta un simulador funcional completo, con integración de rutas viarias, transporte público multimodal, red GTFS estática, inferencia de elección modal mediante tres modelos de aprendizaje automático y una interfaz de usuario lista para su presentación.
 
 El desarrollo puede dividirse en tres fases diferenciadas. Una primera fase de infraestructura y validación tecnológica (sprints 1 a 5) orientada a demostrar la viabilidad del sistema y establecer la arquitectura de integración de servicios. Una segunda fase de desarrollo del bloque de inteligencia artificial (sprints 6, 7, 9 y 11), centrada en el procesamiento del dataset LPMC, el entrenamiento de tres modelos de clasificación y su integración en la API del sistema. Una tercera fase de consolidación, pulido visual y documentación (sprints 8, 10, 12, 13 y 14), en la que el simulador alcanzó su forma definitiva y la memoria fue redactada y revisada. Las fases primera y segunda se solapan temporalmente en varios meses, reflejo del carácter iterativo del desarrollo y de la necesidad de avanzar en paralelo sobre la infraestructura y el bloque de modelado.
 

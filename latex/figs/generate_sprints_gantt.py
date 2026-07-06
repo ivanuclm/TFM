@@ -1,96 +1,213 @@
+# -*- coding: utf-8 -*-
+"""
+Gantt de sprints del TFM -- 15 filas (Fase inicial + S1-S14), nov 2025 -- jul 2026.
+Nombres de sprint en el eje Y (no dentro de las barras) para maximizar legibilidad
+cuando la figura se escala a textwidth en el PDF final.
+Exporta sprints_timeline.pdf (vectorial) y sprints_timeline.png (220 dpi).
+"""
 from __future__ import annotations
 
+import matplotlib
+matplotlib.use("Agg")
+
+import matplotlib.dates as mdates
+import matplotlib.font_manager as fm
+import matplotlib.patches as mpatches
+import matplotlib.pyplot as plt
+import matplotlib.ticker
 from dataclasses import dataclass
 from datetime import date, datetime
 from pathlib import Path
 
-import matplotlib
 
-matplotlib.use("Agg")
+# -- Fuente ------------------------------------------------------------------
+def _setup_font() -> None:
+    available = {f.name for f in fm.fontManager.ttflist}
+    for name in ("Calibri", "Arial", "Helvetica Neue", "DejaVu Sans"):
+        if name in available:
+            matplotlib.rcParams.update({
+                "font.family": "sans-serif",
+                "font.sans-serif": [name],
+            })
+            return
 
-import matplotlib.dates as mdates
-import matplotlib.pyplot as plt
+
+# -- Paleta ------------------------------------------------------------------
+COLORS = {
+    "planificacion": "#9AA0A6",   # gris
+    "infra":         "#1A73E8",   # azul
+    "ml":            "#188038",   # verde
+    "memoria":       "#E37400",   # naranja
+    "consolidacion": "#00897B",   # teal
+}
+
+LEGEND_LABELS = {
+    "planificacion": "Fase inicial de planificación",
+    "infra":         "Infraestructura y servicios",
+    "ml":            "Machine Learning e IA",
+    "memoria":       "Memoria (transversal)",
+    "consolidacion": "Consolidación y entrega",
+}
+
+ES_MES = {
+    1: "Ene", 2: "Feb", 3: "Mar", 4: "Abr",
+    5: "May", 6: "Jun", 7: "Jul", 8: "Ago",
+    9: "Sep", 10: "Oct", 11: "Nov", 12: "Dic",
+}
 
 
+# -- Datos -------------------------------------------------------------------
 @dataclass(frozen=True)
 class Sprint:
-    code: str
-    label: str
+    num: int
+    label: str      # texto abreviado para el eje Y
     start: date
     end: date
-    color: str
+    group: str
 
 
-SPRINTS = [
-    Sprint("Sprint 1", "OSRM remoto", date(2025, 12, 2), date(2025, 12, 5), "#3b82f6"),
-    Sprint("Sprint 2", "OSRM local", date(2025, 12, 6), date(2025, 12, 11), "#2563eb"),
-    Sprint("Sprint 3", "GTFS Toledo", date(2025, 12, 12), date(2025, 12, 18), "#0ea5e9"),
-    Sprint("Sprint 4", "OTP multimodal", date(2025, 12, 19), date(2026, 2, 12), "#06b6d4"),
-    Sprint("Sprint 5", "Diseño web", date(2025, 12, 20), date(2026, 2, 20), "#14b8a6"),
-    Sprint("Sprint 6", "LPMC y datos", date(2025, 12, 21), date(2026, 1, 17), "#22c55e"),
-    Sprint("Sprint 7", "Modelos y validación", date(2026, 1, 18), date(2026, 2, 21), "#84cc16"),
-    Sprint("Sprint 8", "Memoria", date(2026, 1, 27), date(2026, 3, 24), "#f59e0b"),
-    Sprint("Sprint 9", "Integración inferencia", date(2026, 2, 22), date(2026, 3, 8), "#f97316"),
+SPRINTS: list[Sprint] = [
+    Sprint( 0, "Fase inicial",       date(2025, 11,  6), date(2025, 12,  3), "planificacion"),
+    Sprint( 1, "OSRM remoto",        date(2025, 12,  4), date(2025, 12,  9), "infra"),
+    Sprint( 2, "OSRM local",         date(2025, 12,  4), date(2025, 12, 10), "infra"),
+    Sprint( 3, "GTFS Toledo",        date(2025, 12, 11), date(2025, 12, 14), "infra"),
+    Sprint( 4, "OTP multimodal",     date(2025, 12, 11), date(2026,  2, 12), "infra"),
+    Sprint( 5, "Diseño web",       date(2025, 12, 11), date(2026,  2, 20), "infra"),
+    Sprint( 6, "LPMC y datos",         date(2025, 12, 21), date(2026,  1, 17), "ml"),
+    Sprint( 7, "Entrenamiento ML",     date(2026,  1, 18), date(2026,  2, 21), "ml"),
+    Sprint( 8, "Memoria",              date(2026,  1, 27), date(2026,  6, 23), "memoria"),
+    Sprint( 9, "Integración ML",  date(2026,  2, 21), date(2026,  3,  8), "ml"),
+    Sprint(10, "Arquitectura",         date(2026,  3, 17), date(2026,  4, 15), "consolidacion"),
+    Sprint(11, "RF + DNN",             date(2026,  4, 28), date(2026,  5,  6), "ml"),
+    Sprint(12, "Cap. 5 + UI",          date(2026,  5, 19), date(2026,  6, 10), "consolidacion"),
+    Sprint(13, "Consolidación",   date(2026,  6, 11), date(2026,  6, 25), "consolidacion"),
+    Sprint(14, "Pulido final",       date(2026,  6, 28), date(2026,  7,  6), "consolidacion"),
 ]
 
-OUTPUT = Path(__file__).with_name("sprints_timeline.png")
+HERE    = Path(__file__).parent
+OUT_PDF = HERE / "sprints_timeline.pdf"
+OUT_PNG = HERE / "sprints_timeline.png"
+
+DATE_START = date(2025, 11, 1)
+DATE_END   = date(2026, 7, 14)
 
 
-def build_chart() -> None:
-    plt.rcParams["font.family"] = "DejaVu Sans"
+def _num(d: date) -> float:
+    return mdates.date2num(datetime(d.year, d.month, d.day))
 
-    fig, ax = plt.subplots(figsize=(16, 8.2), dpi=220)
+
+def _ytick(sp: Sprint) -> str:
+    """Etiqueta del eje Y: 'S1  OSRM remoto' o 'Fase inicial' para S0."""
+    if sp.num == 0:
+        return "Fase inicial"
+    return f"S{sp.num:<2}  {sp.label}"
+
+
+# -- Construccion del grafico ------------------------------------------------
+def build() -> None:
+    _setup_font()
+
+    n = len(SPRINTS)   # 15
+    ROW_H  = 0.62
+    FIG_W  = 10        # ancho reducido: escalado en LaTeX ~0.61 → fuentes 16pt → ~10pt final
+    FIG_H  = 12
+
+    fig, ax = plt.subplots(figsize=(FIG_W, FIG_H))
     fig.patch.set_facecolor("white")
-    ax.set_facecolor("#f8fafc")
+    ax.set_facecolor("white")
 
-    ordered = list(reversed(SPRINTS))
-    for row, sprint in enumerate(ordered):
-        left = mdates.date2num(datetime.combine(sprint.start, datetime.min.time()))
-        right = mdates.date2num(datetime.combine(sprint.end, datetime.min.time()))
-        width = max(1.0, right - left)
+    # Amplio margen izquierdo para las etiquetas del eje Y (nombres de sprint)
+    plt.subplots_adjust(left=0.30, right=0.99, top=0.97, bottom=0.07)
+
+    # -- Franjas zebra de fondo
+    x0 = _num(DATE_START)
+    x1 = _num(DATE_END)
+    for i in range(n):
+        if i % 2 == 0:
+            ax.fill_betweenx(
+                [i - 0.5, i + 0.5], x0, x1,
+                color="#F8F9FA", zorder=0,
+            )
+
+    # -- Barras (sin texto dentro; los nombres van en el eje Y)
+    for idx, sp in enumerate(SPRINTS):
+        row   = n - 1 - idx        # S0 arriba (fila 14), S14 abajo (fila 0)
+        left  = _num(sp.start)
+        right = _num(sp.end)
+        width = max(10.0, right - left)   # minimo 10 dias para visibilidad
+        color = COLORS[sp.group]
 
         ax.barh(
-            row,
-            width,
-            left=left,
-            height=0.64,
-            color=sprint.color,
-            edgecolor="#0f172a",
+            row, width, left=left,
+            height=ROW_H,
+            color=color,
+            edgecolor="white",
             linewidth=0.8,
-        )
-        ax.text(
-            left + 1.5,
-            row,
-            f"{sprint.code}  {sprint.label}",
-            va="center",
-            ha="left",
-            fontsize=12.6,
-            color="#0f172a",
-            fontweight="bold",
+            zorder=2,
         )
 
-    min_start = min(s.start for s in SPRINTS)
-    max_end = max(s.end for s in SPRINTS)
+    # -- Eje Y: sprint ID + nombre
+    ytick_labels = [_ytick(SPRINTS[n - 1 - i]) for i in range(n)]
+    ax.set_yticks(range(n))
+    ax.set_yticklabels(
+        ytick_labels,
+        fontsize=16, fontweight="bold", color="#202124",
+    )
+    ax.tick_params(axis="y", left=False, pad=5)
 
-    ax.set_yticks([])
+    # -- Eje X: gridlines mensuales, labels cada 2 meses
+    ax.set_xlim(_num(DATE_START), _num(DATE_END))
+    ax.set_ylim(-0.6, n - 0.4)
+
     ax.xaxis.set_major_locator(mdates.MonthLocator())
-    ax.xaxis.set_major_formatter(mdates.DateFormatter("%b %Y"))
-    ax.xaxis.set_minor_locator(mdates.WeekdayLocator(interval=2))
-    ax.tick_params(axis="x", labelsize=12)
-    ax.grid(axis="x", which="major", linestyle="--", linewidth=0.8, color="#94a3b8", alpha=0.6)
-    ax.grid(axis="x", which="minor", linestyle=":", linewidth=0.4, color="#cbd5e1", alpha=0.6)
-    ax.set_xlim(
-        mdates.date2num(datetime(min_start.year, min_start.month, 1)),
-        mdates.date2num(datetime(max_end.year, max_end.month, max_end.day + 4)),
+
+    def _fmt_mes(x, _pos=None) -> str:
+        dt = mdates.num2date(x)
+        m, y = dt.month, dt.year
+        if m not in (11, 1, 3, 5, 7):
+            return ""
+        name = ES_MES[m]
+        if y == 2025 or (y == 2026 and m == 1) or (y == 2026 and m == 7):
+            return f"{name}\n{y}"
+        return name
+
+    ax.xaxis.set_major_formatter(matplotlib.ticker.FuncFormatter(_fmt_mes))
+    ax.tick_params(axis="x", labelsize=14, colors="#5F6368", pad=4)
+
+    ax.grid(
+        axis="x", which="major",
+        linestyle="--", linewidth=0.65,
+        color="#DADCE0", alpha=0.9, zorder=1,
     )
 
-    for spine in ("top", "right", "left"):
-        ax.spines[spine].set_visible(False)
-    ax.spines["bottom"].set_color("#94a3b8")
+    # -- Bordes
+    for side in ("top", "right", "left"):
+        ax.spines[side].set_visible(False)
+    ax.spines["bottom"].set_color("#DADCE0")
+    ax.spines["bottom"].set_linewidth(0.8)
 
-    plt.tight_layout()
-    plt.savefig(OUTPUT, bbox_inches="tight", pad_inches=0.08)
+    # -- Leyenda
+    patches = [
+        mpatches.Patch(color=COLORS[g], label=LEGEND_LABELS[g])
+        for g in ("planificacion", "infra", "ml", "memoria", "consolidacion")
+    ]
+    ax.legend(
+        handles=patches,
+        loc="upper right",
+        ncol=1,
+        fontsize=12,
+        frameon=True,
+        framealpha=0.97,
+        edgecolor="#DADCE0",
+        handlelength=1.4,
+        handleheight=1.0,
+    )
+
+    fig.savefig(OUT_PDF, bbox_inches="tight", pad_inches=0.06)
+    fig.savefig(OUT_PNG, dpi=220, bbox_inches="tight", pad_inches=0.06)
+    print("OK: " + str(OUT_PDF))
+    print("OK: " + str(OUT_PNG))
 
 
 if __name__ == "__main__":
-    build_chart()
+    build()
