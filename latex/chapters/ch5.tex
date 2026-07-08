@@ -1,68 +1,65 @@
 \chapter{Implementación y resultados}
 \label{ch:implementacion}
 
-Este capítulo detalla el proceso de construcción del simulador: las decisiones técnicas concretas tomadas en cada componente, los problemas que surgieron durante el desarrollo y la solución adoptada en cada caso, así como los resultados del entrenamiento y evaluación de los modelos de elección modal.
+Este capítulo detalla el proceso de construcción del simulador: las decisiones técnicas concretas tomadas en cada componente, los problemas que surgieron durante el desarrollo y la solución adoptada en cada caso, así como los resultados del entrenamiento y evaluación de los modelos de elección modal.\newline
 
 El sistema implementado está disponible como código abierto en \url{https://github.com/ivanuclm/movilidad-urbana}, y permite su reproducción, extensión y reutilización en futuros trabajos de investigación o divulgación sobre movilidad urbana. El procedimiento de despliegue para reproducir el entorno local se detalla en el Anexo~\ref{anx:despliegue}.
 % -------------------------------------------------------
-\section{Infraestructura de enrutado viario: OSRM}
+\section[Infraestructura de enrutado viario: OSRM]{Infraestructura de enrutado viario: \gls{osrm}}
 \label{sec:impl_osrm}
 % -------------------------------------------------------
 
-\subsection{Origen y características del extracto OSM}
+\subsection[Origen y características del extracto OSM]{Origen y características del extracto \gls{osm}}
 \label{subsec:impl_osrm_origen}
 
-Open Source Routing Machine (OSRM) trabaja sobre un extracto de OpenStreetMap (OSM), un fichero binario con extensión \texttt{.osm.pbf} que contiene la geometría de calles, carreteras y caminos de un territorio junto con sus atributos de velocidad, sentido y accesibilidad por modo de transporte. Geofabrik \cite{GeofabrikDownloads} distribuye estos extractos por jerarquía geográfica, desde continentes hasta comunidades autónomas.
+\gls{osrm} trabaja sobre un extracto de \acrlong{osm}, un fichero binario con extensión \texttt{.osm.pbf} que contiene la geometría de calles, carreteras y caminos de un territorio junto con sus atributos de velocidad, sentido y accesibilidad por modo de transporte. Geofabrik \cite{GeofabrikDownloads} distribuye estos extractos por jerarquía geográfica, desde continentes hasta comunidades autónomas.\newline
 
-Se utilizó el extracto de Castilla-La Mancha al ser la región en la que se enmarca el proyecto, con Toledo como caso de estudio, tal como se detalla en la Sección~\ref{sec:impl_otp}. OpenTripPlanner reutiliza el mismo extracto para la red viaria peatonal, de modo que un único fichero sirve a dos servicios del sistema. La Tabla~\ref{tab:osm_extractos} resume los extractos de OSM evaluados durante el desarrollo.
+Se utilizó el extracto de Castilla-La Mancha al ser la región en la que se enmarca el proyecto, con Toledo como caso de estudio, tal como se detalla en la Sección~\ref{sec:impl_otp}. \gls{otp} reutiliza el mismo extracto para la red viaria peatonal, de modo que un único fichero sirve a dos servicios del sistema. La Tabla~\ref{tab:osm_extractos} resume los extractos de \gls{osm} evaluados durante el desarrollo.
 
 \begin{table}[H]
-  \caption{Comparativa de extractos OSM disponibles en Geofabrik.}
+  \caption{Comparativa de extractos \gls{osm} disponibles en Geofabrik.}
   \label{tab:osm_extractos}
   \centering
   \begin{tabular}{lrl}
     \toprule
     \textbf{Extracto} & \textbf{Tamaño (.osm.pbf)} & \textbf{Uso en el proyecto} \\
     \midrule
-    Castilla-La Mancha  & \textasciitilde{}98 MB     & Producción (OSRM y OTP) \\
+    Castilla-La Mancha  & \textasciitilde{}98 MB     & Producción (\gls{osrm} y \gls{otp}) \\
     % Comunidad Valenciana & \textasciitilde{}131 MB     & Pruebas iniciales con feed EMT Valencia \\
-    Comunidad de Madrid & \textasciitilde{}79 MB     & Pruebas con feed EMT Madrid \\
-    España              & \textasciitilde{}1{,}3 GB  & Evaluado, descartado por tamaño \\
-    Europa              & \textasciitilde{}32{,}0 GB & Descartado por tamaño \\
+    Comunidad de Madrid & \textasciitilde{}79 MB     & Pruebas con feed \acrshort{emtmad} \\
+    España              & \textasciitilde{}\numprint{1.3}~GB  & Evaluado, descartado por tamaño \\
+    Europa              & \textasciitilde{}\numprint{32}~GB & Descartado por tamaño \\
     \bottomrule
   \end{tabular}
 \end{table}
-
-\subsection{Evolución del despliegue}
+\vspace{-12mm}
+\subsection[Evolución del despliegue de OSRM]{Evolución del despliegue de \gls{osrm}}
 \label{subsec:impl_osrm_evolucion}
+\textbf{Fase 1: servidor de demostración oficial.} La primera implementación utilizó el servidor de demostración público del proyecto \gls{osrm} (\texttt{router.project-osrm.org}) \cite{OSRMDocs}. Este servidor ofrece acceso gratuito a la API de enrutado sin necesidad de infraestructura local y está pensado para pruebas rápidas de integración. El problema es que solo procesa el perfil de conducción independientemente del indicado en la URL \cite{OSRMIssue4034}; cambiar el perfil en la petición no tiene efecto, de modo que la comparación multiperfil que el simulador requiere resultaba inviable.\newline
 
-El despliegue de OSRM pasó por tres iteraciones antes de alcanzar la configuración definitiva.
+\textbf{Fase 2: instancias públicas \acrshort{fossgis}.} Las instancias públicas mantenidas por \gls{fossgis} \cite{FOSSGISRouting} sí devuelven rutas diferenciadas por perfil mediante endpoints independientes (\texttt{/routed-car}, \texttt{/routed-bike}, \texttt{/routed-foot}), lo que permitió confirmar que el esquema de tres perfiles independientes funcionaba y ajustar la integración del backend. El inconveniente es que aplican limitaciones de uso (\textit{rate limiting}), presentan latencia variable y no permiten fijar la versión de los datos, comprometiendo así la reproducibilidad.\newline
 
-\textbf{Fase 1: servidor de demostración oficial.} La primera implementación utilizó el servidor de demostración público del proyecto OSRM (\texttt{router.project-osrm.org}) \cite{OSRMDocs}. Este servidor ofrece acceso gratuito a la API de enrutado sin necesidad de infraestructura local y está pensado para pruebas rápidas de integración. El problema es que solo procesa el perfil de conducción independientemente del indicado en la URL \cite{OSRMIssue4034}; cambiar el perfil en la petición no tiene efecto, de modo que la comparación multiperfil que el simulador requiere resultaba inviable.
-
-\textbf{Fase 2: instancias públicas FOSSGIS.} Las instancias públicas mantenidas por FOSSGIS \cite{FOSSGISRouting} sí devuelven rutas diferenciadas por perfil mediante endpoints independientes (\texttt{/routed-car}, \texttt{/routed-bike}, \texttt{/routed-foot}), lo que permitió confirmar que el esquema de tres perfiles independientes funcionaba y ajustar la integración del backend. El inconveniente es que aplican limitaciones de uso (\textit{rate limiting}), presentan latencia variable y no permiten fijar la versión de los datos, comprometiendo así la reproducibilidad.
-
-\textbf{Fase 3: instancia local con Docker.} La solución definitiva fue desplegar OSRM localmente mediante la imagen oficial \texttt{osrm/osrm-backend} \cite{OSRMGitHub}, con un contenedor independiente por modo de transporte (conducción, bicicleta y a pie). OSRM solo admite un perfil por proceso: cada instancia se preprocesa con un fichero de reglas distinto y sirve únicamente ese modo, de ahí la necesidad de tres contenedores independientes. El transporte público en autobús es responsabilidad de OpenTripPlanner. Esta arquitectura elimina la dependencia de servicios externos en tiempo de ejecución, asegura reproducibilidad y suprime los límites de cuota. El preprocesado de los grafos, que originalmente se ejecutaba a mano, se automatizó como un paso de inicialización de la orquestación Docker Compose (Sección~\ref{sec:arch_infra}), de modo que el despliegue completo no requiere ningún comando manual adicional.
+\textbf{Fase 3: instancia local con Docker.} La solución definitiva fue desplegar \gls{osrm} localmente mediante la imagen oficial \texttt{osrm/osrm-backend} \cite{OSRMGitHub}, con un contenedor independiente por modo de transporte (conducción, bicicleta y a pie). \gls{osrm} solo admite un perfil por proceso: cada instancia se preprocesa con un fichero de reglas distinto y sirve únicamente ese modo, de ahí la necesidad de tres contenedores independientes. El transporte público en autobús es responsabilidad de \gls{otp}. Esta arquitectura elimina la dependencia de servicios externos en tiempo de ejecución, asegura reproducibilidad y suprime los límites de cuota. El preprocesado de los grafos, que originalmente se ejecutaba a mano, se automatizó como un paso de inicialización de la orquestación Docker Compose (Sección~\ref{sec:arch_infra}), de modo que el despliegue completo no requiere ningún comando manual adicional.
 
 
 
 \subsection{Pipeline de preprocesado por perfil}
 \label{subsec:impl_osrm_pipeline}
 
-Para que OSRM pueda calcular rutas, el extracto \texttt{.osm.pbf} debe transformarse en una estructura de datos interna optimizada para ejecutar consultas y obtener el camino mínimo entre dos puntos del mapa. Este preprocesado se ejecuta una sola vez por perfil y solo hay que repetirlo si se actualiza el extracto de OSM.
+Para que \gls{osrm} pueda calcular rutas, el extracto \texttt{.osm.pbf} debe transformarse en una estructura de datos interna optimizada para ejecutar consultas y obtener el camino mínimo entre dos puntos del mapa. Este preprocesado se ejecuta una sola vez por perfil y solo hay que repetirlo si se actualiza el extracto de \gls{osm}.\newline
 
 
-Cada perfil define las reglas de movilidad del modo correspondiente, esto es, qué tipos de vía son accesibles, a qué velocidad y con qué restricciones de giro. Los perfiles se escriben en Lua, el lenguaje de script utilizado por OSRM para describir las reglas de cada modo de transporte. Los tres ficheros de perfil estándar (\texttt{car.lua}, \texttt{bicycle.lua} y \texttt{foot.lua}) están incluidos en la imagen oficial de Docker \texttt{osrm/osrm-backend} en \texttt{/opt/}, por lo que no es necesario descargarlos ni configurarlos externamente. Todas las etapas del preprocesado se ejecutan con esa misma imagen, asegurando la reproducibilidad en cualquier entorno de ejecución.
+Cada perfil define las reglas de movilidad del modo correspondiente, esto es, qué tipos de vía son accesibles, a qué velocidad y con qué restricciones de giro. Los perfiles se escriben en Lua, el lenguaje de script utilizado por \gls{osrm} para describir las reglas de cada modo de transporte. Los tres ficheros de perfil estándar (\texttt{car.lua}, \texttt{bicycle.lua} y \texttt{foot.lua}) están incluidos en la imagen oficial de Docker \texttt{osrm/osrm-backend} en \texttt{/opt/}, por lo que no es necesario descargarlos ni configurarlos externamente. Todas las etapas del preprocesado se ejecutan con esa misma imagen, asegurando la reproducibilidad en cualquier entorno de ejecución.
 
 \begin{enumerate}
   \item \textbf{Extracción} (\texttt{osrm-extract}): lee el \texttt{.osm.pbf} y construye el grafo viario interno aplicando las reglas del perfil Lua indicado: qué vías son transitables, a qué velocidad y con qué restricciones. El resultado es el fichero \texttt{.osrm} junto con varios ficheros auxiliares de índice.
-  \item \textbf{Particionado} (\texttt{osrm-partition}): divide el grafo en celdas jerárquicas para el algoritmo Multi-Level Dijkstra (MLD) \cite{Geisberger2008CH}. Esta partición es la que permite calcular rutas de larga distancia en milisegundos, al limitar la búsqueda a fronteras entre celdas en lugar de explorar el grafo completo.
+  \item \textbf{Particionado} (\texttt{osrm-partition}): divide el grafo en celdas jerárquicas para el algoritmo \acrfull{mld} \cite{Geisberger2008CH}. Esta partición es la que permite calcular rutas de larga distancia en milisegundos, al limitar la búsqueda a fronteras entre celdas en lugar de explorar el grafo completo.
   \item \textbf{Personalización} (\texttt{osrm-customize}): asigna los pesos finales de cada arista sobre la estructura de celdas anterior, produciendo el grafo listo para servir peticiones de ruta.
 \end{enumerate}
 
-Las tres etapas generan los ficheros \texttt{clm.osrm} y sus auxiliares, almacenados en directorios separados por perfil (\texttt{osrm-clm/car/}, \texttt{osrm-clm/bike/}, \texttt{osrm-clm/foot/}). Por su tamaño, estos artefactos se versionan mediante \textit{Git LFS} (véase la Sección~\ref{sec:arch_infra}), de modo que un clon del repositorio dispone de los grafos sin necesidad de regenerarlos.
+Las tres etapas generan los ficheros \texttt{clm.osrm} y sus auxiliares, almacenados en directorios separados por perfil (\texttt{osrm-clm/car/}, \texttt{osrm-clm/bike/}, \texttt{osrm-clm/foot/}). Por su tamaño, estos artefactos se versionan mediante Git \gls{lfs} (véase la Sección~\ref{sec:arch_infra}), de modo que un clon del repositorio dispone de los grafos sin necesidad de regenerarlos.
 
-El preprocesado completo de los tres perfiles sobre el extracto de Castilla-La Mancha tarda alrededor de 100 segundos en la máquina de desarrollo. Los artefactos generados ocupan en total unos 2,1~GB: el perfil de conducción produce 291~MB porque solo incorpora la red viaria accesible al tráfico rodado, mientras que los perfiles de bicicleta y peatonal alcanzan los 911~MB cada uno al incluir además senderos, caminos rurales y zonas de acceso restringido al tráfico.
+El preprocesado completo de los tres perfiles sobre el extracto de Castilla-La Mancha tarda alrededor de 100 segundos en la máquina de desarrollo. Los artefactos generados ocupan en total unos \numprint{2.1}~GB: el perfil de conducción produce 291~MB porque solo incorpora la red viaria accesible al tráfico rodado, mientras que los perfiles de bicicleta y peatonal alcanzan los 911~MB cada uno al incluir además senderos, caminos rurales y zonas de acceso restringido al tráfico.
 
 \begin{figure}[htbp]
   \centering
@@ -76,25 +73,30 @@ El preprocesado completo de los tres perfiles sobre el extracto de Castilla-La M
 \subsection{Despliegue y verificación}
 \label{subsec:impl_osrm_despliegue}
 
-Cada uno de los tres contenedores OSRM ejecuta el servidor de enrutado sobre su grafo preprocesado con el algoritmo MLD (Figura~\ref{fig:osrm_pipeline}):
+Cada uno de los tres contenedores \gls{osrm} ejecuta el servidor de enrutado sobre su grafo preprocesado con el algoritmo \gls{mld} (Figura~\ref{fig:osrm_pipeline}):\newline
+
 \begin{lstlisting}[language=bash]
 osrm-routed --algorithm mld /data/clm.osrm
 \end{lstlisting}
-Los tres contenedores comparten imagen y comando de arranque. Cada uno monta el directorio de artefactos de su perfil (\texttt{osrm-clm/car}, \texttt{osrm-clm/bike}, \texttt{osrm-clm/foot}). Dentro de la red interna de Docker Compose, el proceso \texttt{osrm-routed} escucha siempre en el puerto 5000 en todos los contenedores, y el backend los referencia por nombre de servicio (\texttt{osrm-car}, \texttt{osrm-bike}, \texttt{osrm-foot}) en ese mismo puerto. Para verificar las instancias directamente desde el terminal del anfitrión, cada contenedor expone un puerto distinto (5001, 5002 y 5003, respectivamente para los perfiles de conducción, bicicleta y a pie); la elección de esos puertos y el motivo de evitar el 5000 se explican en la Sección~\ref{sec:arch_infra}. Esta publicación de puertos se usa solo para depuración, ya que el backend se comunica con OSRM por la red interna.
 
-Una respuesta válida devuelve \texttt{"code": "Ok"} junto con la distancia en metros, la duración en segundos y la geometría en formato de polilínea codificada~\cite{GooglePolyline}, una cadena de texto compacta que representa la secuencia de coordenadas de la ruta. En lugar de guardar cada punto con sus coordenadas absolutas, almacena el incremento respecto al punto anterior y lo comprime en caracteres imprimibles, con lo que la geometría ocupa mucho menos. El backend la decodifica antes de enviar las coordenadas al frontend. Si el grafo está incompleto o el par origen-destino cae parcialmente fuera del extracto de Castilla-La Mancha, OSRM devuelve \texttt{"code": "NoRoute"} o una ruta incompleta, detectable al comparar visualmente los tres trazados en la interfaz.
+Los tres contenedores comparten imagen y comando de arranque. Cada uno monta el directorio de artefactos de su perfil (\texttt{osrm-clm/car}, \texttt{osrm-clm/bike}, \texttt{osrm-clm/foot}). Dentro de la red interna de Docker Compose, el proceso \texttt{osrm-routed} escucha siempre en el puerto 5000 en todos los contenedores, y el backend los referencia por nombre de servicio (\texttt{osrm-car}, \texttt{osrm-bike}, \texttt{osrm-foot}) en ese mismo puerto. Para verificar las instancias directamente desde el terminal del anfitrión, cada contenedor expone un puerto distinto (5001, 5002 y 5003, respectivamente para los perfiles de conducción, bicicleta y a pie); la elección de esos puertos y el motivo de evitar el 5000 se explican en la Sección~\ref{sec:arch_infra}. Esta publicación de puertos se usa solo para depuración, ya que el backend se comunica con \gls{osrm} por la red interna.
+\newpage
+
+Una respuesta válida devuelve \texttt{"code": "Ok"} junto con la distancia en metros, la duración en segundos y la geometría en formato de polilínea codificada~\cite{GooglePolyline}, una cadena de texto compacta que representa la secuencia de coordenadas de la ruta. En lugar de guardar cada punto con sus coordenadas absolutas, almacena el incremento respecto al punto anterior y lo comprime en caracteres imprimibles, con lo que la geometría ocupa mucho menos. El backend la decodifica antes de enviar las coordenadas al frontend. Si el grafo está incompleto o el par origen-destino cae parcialmente fuera del extracto de Castilla-La Mancha, \gls{osrm} devuelve \texttt{"code": "NoRoute"} o una ruta incompleta, detectable al comparar visualmente los tres trazados en la interfaz.\newline
 
 
 \begin{code}[H]
 \begin{lstlisting}[language=bash]
 # osrm-car  (conduccion, localhost:5001)
 curl "http://localhost:5001/route/v1/driving/-4.0356,39.8750;-4.0023,39.8602?overview=full"
+
 # osrm-bike (bicicleta,  localhost:5002)
 curl "http://localhost:5002/route/v1/cycling/-4.0356,39.8750;-4.0023,39.8602?overview=full"
+
 # osrm-foot (peatonal,   localhost:5003)
 curl "http://localhost:5003/route/v1/foot/-4.0356,39.8750;-4.0023,39.8602?overview=full"
 \end{lstlisting}
-\caption{Verificación de las tres instancias OSRM desde el terminal del anfitrión. El parámetro \texttt{overview=full} fuerza la devolución de la geometría completa de la ruta; sin él, OSRM devuelve una versión simplificada con menos puntos.}
+\caption[Verificación de las tres instancias OSRM]{Verificación de las tres instancias \gls{osrm} desde el terminal del anfitrión. El parámetro \texttt{overview=full} fuerza la devolución de la geometría completa de la ruta; sin él, \gls{osrm} devuelve una versión simplificada con menos puntos.}
 \label{cod:osrm_verificacion}
 \end{code}
 
@@ -111,119 +113,115 @@ curl "http://localhost:5003/route/v1/foot/-4.0356,39.8750;-4.0023,39.8602?overvi
 \label{sec:impl_otp}
 % -------------------------------------------------------
 
-Esta sección reúne todo lo relacionado con el transporte público del simulador. Se describe la elección del feed GTFS, la construcción del grafo de OpenTripPlanner (OTP) a partir de ese feed, la estructura de los ficheros GTFS con las particularidades del feed de Toledo y el periodo de validez de los datos. La integración de los itinerarios en el backend se aborda después, junto al resto de routers, en la Sección~\ref{subsec:impl_backend_otp}.
-
-\subsection{Fuentes de datos GTFS y proceso de selección}
+Esta sección reúne todo lo relacionado con el transporte público del simulador. Se describe la elección del feed \gls{gtfs}, la construcción del grafo de \gls{otp} a partir de ese feed, la estructura de los ficheros \gls{gtfs} con las particularidades del feed de Toledo y el periodo de validez de los datos.
+\newpage
+\subsection[Fuentes de datos GTFS y proceso de selección]{Fuentes de datos \gls{gtfs} y proceso de selección}
 \label{subsec:impl_otp_gtfs}
 
-OpenTripPlanner requiere dos fuentes de datos: un extracto viario OSM para modelar los tramos de acceso a pie a las paradas, y un feed GTFS con el servicio programado del operador de transporte público. La fuente utilizada para los feeds fue el Punto de Acceso Nacional de Transporte Multimodal (NAP), gestionado por el Ministerio de Transportes y Movilidad Sostenible, que centraliza feeds GTFS de operadores de toda España \cite{NAPHome}. El extracto OSM de Castilla-La Mancha ya disponible para OSRM (Sección~\ref{subsec:impl_osrm_origen}) se reutilizó directamente, sin necesidad de preparar ningún fichero adicional.
+\acrlong{otp} requiere dos fuentes de datos: un extracto viario \gls{osm} para modelar los tramos de acceso a pie a las paradas, y un feed \gls{gtfs} con el servicio programado del operador de transporte público. La fuente utilizada para los feeds fue el \acrlong{nap}, gestionado por el \acrlong{mitrams}, que centraliza feeds \gls{gtfs} de operadores de toda España \cite{NAPHome}. El extracto \gls{osm} de Castilla-La Mancha ya disponible para \gls{osrm} (Sección~\ref{subsec:impl_osrm_origen}) se reutilizó directamente, sin necesidad de preparar ningún fichero adicional.\newline
 
-La disponibilidad de feeds de transporte urbano en Castilla-La Mancha resultó muy limitada. En Albacete solo figuraban servicios interurbanos como Alsa, sin datos de red urbana en el NAP. Guadalajara contaba con feeds del Consorcio de Transportes de Madrid, pero sin red municipal propia. Cuenca tampoco disponía de feed urbano. La única opción urbana era Ciudad Real, cuyo feed incluía también Seseña, con paradas repartidas entre dos localidades separadas por más de 170~km; además, en ese momento no incluía geometría de rutas, requisito imprescindible para la representación cartográfica.
+La disponibilidad de feeds de transporte urbano en Castilla-La Mancha resultó muy limitada. En Albacete solo figuraban servicios interurbanos como Alsa, sin datos de red urbana en el \gls{nap}. Guadalajara contaba con feeds del Consorcio de Transportes de Madrid, pero sin red municipal propia. Cuenca tampoco disponía de feed urbano. La única opción urbana era Ciudad Real, cuyo feed incluía también Seseña, con paradas repartidas entre dos localidades separadas por más de 170~km; además, en ese momento no incluía geometría de rutas, requisito imprescindible para la representación cartográfica.
 
-Ante la ausencia de un feed válido en Castilla-La Mancha, se evaluaron feeds de otras ciudades. La EMT de Madrid \cite{NAPEMTMadrid}, con 4.914 paradas, 236 rutas y 87.137 viajes programados, sirvió de banco de pruebas para validar la integración de OTP con datos reales y desarrollar los endpoints de la capa estática del backend. El volumen del feed reveló un problema de paginación: la API exige un límite explícito y devolvía solo las primeras 500 paradas por defecto, dejando la red visualmente incompleta. El límite se ajustó a 5.000, suficiente para Madrid y los feeds posteriores.
+Ante la ausencia de un feed válido en Castilla-La Mancha, se evaluaron feeds de otras ciudades. El de la \gls{emtmad} \cite{NAPEMTMadrid}, con \numprint{4914} paradas, 236 rutas y \numprint{87137} viajes programados, sirvió de banco de pruebas para validar la integración de \gls{otp} con datos reales y desarrollar los endpoints de la capa estática del backend. El volumen del feed reveló un problema de paginación: la API exige un límite explícito y devolvía solo las primeras 500 paradas por defecto, dejando la red visualmente incompleta. El límite se ajustó a \numprint{5000}, suficiente para Madrid y los feeds posteriores.
 
-El feed GTFS elegido finalmente fue el de los autobuses urbanos de Toledo \cite{NAPToledoUrbano}. Con 268 paradas, 56 rutas y 87.751 viajes que cubren aproximadamente tres meses de servicio programado, tiene un tamaño ajustado al alcance del simulador, abarca el casco urbano, el polígono industrial y las urbanizaciones periféricas, e incluye geometría de rutas para su representación cartográfica. Como el feed no incluye tarifas, el coste del billete se introduce como parámetro en el panel de la interfaz, junto al resto de variables del perfil de viajero, para su uso en la inferencia modal.
+El feed \gls{gtfs} elegido finalmente fue el de los autobuses urbanos de Toledo \cite{NAPToledoUrbano}. Con 268 paradas, 56 rutas y \numprint{87751} viajes que cubren aproximadamente tres meses de servicio programado, tiene un tamaño ajustado al alcance del simulador, abarca el casco urbano, el polígono industrial y las urbanizaciones periféricas, e incluye geometría de rutas para su representación cartográfica. Como el feed no incluye tarifas, el coste del billete se introduce como parámetro en el panel de la interfaz, junto al resto de variables del perfil de viajero, para su uso en la inferencia modal.
 
 \subsection{Construcción del grafo multimodal}
 \label{subsec:impl_otp_grafo}
 
-El grafo se construye con un único comando Docker ejecutado sobre el directorio \texttt{otp-toledo/}, que debe contener el extracto OSM (\texttt{clm.osm.pbf}) y el feed GTFS (\texttt{GTFS\_Urbano\_Toledo\_2026.zip}):
+El grafo se construye con un único comando Docker ejecutado sobre el directorio \texttt{otp-toledo/}, que debe contener el extracto \gls{osm} (\texttt{clm.osm.pbf}) y el feed \gls{gtfs} (\texttt{GTFS\_Urbano\_Toledo\_2026.zip}):\newline
 
 \begin{lstlisting}[language=bash]
 docker run --rm -v "otp-toledo:/var/opentripplanner" opentripplanner/opentripplanner:2.5.0 --build --save
 \end{lstlisting}
 
-OTP lee ambos ficheros y serializa el resultado en \texttt{graph.obj}. La red viaria OSM modela los tramos de acceso a pie a las paradas, y el feed GTFS aporta el servicio programado con horarios, paradas y geometría de las líneas. El proceso tarda algo más de un minuto y solo es necesario repetirlo cuando se actualiza el feed; el extracto OSM puede reutilizarse entre versiones. El comando anterior corresponde a la generación manual del grafo.
+\gls{otp} lee ambos ficheros y serializa el resultado en \texttt{graph.obj}. La red viaria \gls{osm} modela los tramos de acceso a pie a las paradas, y el feed \gls{gtfs} aporta el servicio programado con horarios, paradas y geometría de las líneas. El proceso tarda algo más de un minuto y solo es necesario repetirlo cuando se actualiza el feed; el extracto \gls{osm} puede reutilizarse entre versiones. El comando anterior corresponde a la generación manual del grafo.\newline
 
-El \texttt{graph.obj} resultante (unos 117\,MB) se versiona con \textit{Git LFS} y, si falta en el clon, lo regenera automáticamente el servicio de inicialización \texttt{otp-build}; ambos mecanismos se describen en la Sección~\ref{sec:arch_infra}. En funcionamiento, OTP se lanza en modo de servicio (\texttt{-{}-load -{}-serve}) y queda accesible en el puerto 8080, exponiendo la API REST de planificación de rutas \cite{OTPDocs}.
+El \texttt{graph.obj} resultante (unos 117\,MB) se versiona con \textit{Git \gls{lfs}} y, si falta en el clon, lo regenera automáticamente el servicio de inicialización \texttt{otp-build}; ambos mecanismos se describen en la Sección~\ref{sec:arch_infra}. En funcionamiento, \gls{otp} se lanza en modo de servicio (\texttt{-{}-load -{}-serve}) y queda accesible en el puerto 8080, exponiendo la API REST de planificación de rutas \cite{OTPDocs}.
 
-\subsection{Estructura del feed GTFS y particularidades del feed de Toledo}
+\subsection{Estructura del feed \gls{gtfs} y particularidades del feed de Toledo}
 \label{subsec:impl_otp_gtfs_estructura}
 
-El formato GTFS (\textit{General Transit Feed Specification}) \cite{GTFSOverview} estructura la información de transporte público como una colección de ficheros de texto plano con extensión \texttt{.txt} y formato de valores separados por comas, empaquetados en un único archivo ZIP. En el arranque del servicio, el backend descomprime y carga en memoria con \texttt{pandas} los seis ficheros necesarios: \texttt{stops.txt} (paradas con coordenadas y nombre), \texttt{routes.txt} (líneas de la red), \texttt{trips.txt} (servicios programados por línea), \texttt{stop\_times.txt} (horarios de paso por cada parada), \texttt{shapes.txt} (geometría de los trazados) y \texttt{calendar\_dates.txt} (calendario de excepciones de servicio) \cite{GTFSReference}. Los \textit{DataFrames} resultantes permanecen en memoria durante toda la vida del proceso, evitando releer el feed en cada petición y eliminando la necesidad de un sistema gestor de base de datos para información que no cambia en tiempo de ejecución.
+El formato \acrfull{gtfs} \cite{GTFSOverview} estructura la información de transporte público como una colección de ficheros de texto plano con extensión \texttt{.txt} y formato de valores separados por comas, empaquetados en un único archivo ZIP. En el arranque del servicio, el backend descomprime y carga en memoria con \texttt{pandas} los seis ficheros necesarios: \texttt{stops.txt} (paradas con coordenadas y nombre), \texttt{routes.txt} (líneas de la red), \texttt{trips.txt} (servicios programados por línea), \texttt{stop\_times.txt} (horarios de paso por cada parada), \texttt{shapes.txt} (geometría de los trazados) y \texttt{calendar\_dates.txt} (calendario de excepciones de servicio) \cite{GTFSReference}. Los \textit{DataFrames} resultantes permanecen en memoria durante toda la vida del proceso, evitando releer el feed en cada petición y eliminando la necesidad de un sistema gestor de base de datos para información que no cambia en tiempo de ejecución.
+\newpage
 
 Responder a preguntas como ``¿qué líneas pasan por esta parada?'' o ``¿cuál es el horario de una ruta para una fecha concreta?'' requiere cruzar varios de estos ficheros, tal como ilustra la Figura~\ref{fig:gtfs_joins}. Para obtener las líneas asociadas a una parada se encadenan tres cruces: \texttt{stops.txt} $\to$ \texttt{stop\_times.txt} $\to$ \texttt{trips.txt} $\to$ \texttt{routes.txt}, unidos por \texttt{stop\_id}, \texttt{trip\_id} y \texttt{route\_id}, respectivamente. Para los horarios por fecha se añade el filtro de \texttt{calendar\_dates.txt}, que indica los días en que cada servicio está activo.
 
+\vspace{-5mm}
 \begin{figure}[htbp]
   \centering
   % \missingfigure{Diagrama de los seis ficheros GTFS como cajas (\texttt{stops}, \texttt{stop\_times}, \texttt{trips}, \texttt{routes}, \texttt{shapes}, \texttt{calendar\_dates}) con flechas que muestran los cruces por clave: \texttt{stops}\,--\,\texttt{stop\_times} (stop\_id), \texttt{stop\_times}\,--\,\texttt{trips} (trip\_id), \texttt{trips}\,--\,\texttt{routes} (route\_id), \texttt{trips}\,--\,\texttt{shapes} (shape\_id) y \texttt{trips}\,--\,\texttt{calendar\_dates} (service\_id). Resaltar la cadena stops$\to$stop\_times$\to$trips$\to$routes que resuelve ``líneas por parada''.}
-  \includegraphics[width=1.0\textwidth]{figs/_borrador_gtfs_joins.png}
-  \caption{Cruces entre los ficheros del feed GTFS para resolver las consultas de la capa estática.}
+  \includegraphics[width=1\textwidth]{figs/CruceFicherosGTFS.pdf}
+  \caption{Cruces entre los ficheros del feed \gls{gtfs} para resolver las consultas de la capa estática.}
   \label{fig:gtfs_joins}
 \end{figure}
+\vspace{-5mm}
 
-El feed de Toledo presenta una particularidad en la estructura de sus líneas. La empresa operadora, identificada en los feeds del NAP como UNAUTO S.L. (Grupo Ruiz), registra cada sentido de recorrido como un \texttt{route\_id} independiente con el mismo \texttt{route\_short\_name}: el feed contiene 56 entradas en \texttt{routes.txt} que corresponden a solo 25 líneas distintas. Por ejemplo, la línea L5 tiene asignados los identificadores \texttt{50011} y \texttt{50012}, uno por cada sentido de circulación. Tanto el backend como el frontend agrupan los \texttt{route\_id} con el mismo \texttt{route\_short\_name} en un diccionario de hermanos (\texttt{siblingRouteIds}), de modo que el catálogo de líneas muestra una sola entrada por línea. Al seleccionar una parada concreta desde el mapa, que conoce el \texttt{route\_id} exacto del servicio que pasa por ella, se activa directamente el sentido correcto sin lógica adicional. Esta agrupación por sentido se reutiliza en el router GTFS de la capa estática (Sección~\ref{subsec:impl_backend_gtfs}) y en el panel Red GTFS del frontend (Sección~\ref{subsec:impl_frontend_red}).
+El feed de Toledo presenta una particularidad en la estructura de sus líneas. La empresa operadora, identificada en los feeds del \gls{nap} como UNAUTO S.L. (Grupo Ruiz), registra cada sentido de recorrido como un \texttt{route\_id} independiente con el mismo \texttt{route\_short\_name}: el feed contiene 56 entradas en \texttt{routes.txt} que corresponden a solo 25 líneas distintas. Por ejemplo, la línea L5 tiene asignados los identificadores \texttt{50011} y \texttt{50012}, uno por cada sentido de circulación. Tanto el backend como el frontend agrupan los \texttt{route\_id} con el mismo \texttt{route\_short\_name} en un diccionario de hermanos (\texttt{siblingRouteIds}), de modo que el catálogo de líneas muestra una sola entrada por línea. Al seleccionar una parada concreta desde el mapa, que conoce el \texttt{route\_id} exacto del servicio que pasa por ella, se activa directamente el sentido correcto sin lógica adicional. Esta agrupación por sentido se reutiliza en el router \gls{gtfs} de la capa estática (Sección~\ref{subsec:impl_backend_gtfs}) y en el panel Red \gls{gtfs} del frontend (Sección~\ref{subsec:impl_frontend_red}).
 
 \subsection{Periodo de validez del feed y selección de fecha}
 \label{subsec:impl_otp_fecha}
 
-Los feeds GTFS del NAP tienen un periodo de validez limitado; el del operador de Toledo (\texttt{GTFS\_Urbano\_Toledo\_2026.zip}) cubre del 22 de febrero al 22 de mayo de 2026. Si la fecha de consulta cae fuera de ese rango, OTP no devuelve itinerarios con tramos de transporte público y el simulador trata la situación como si no hubiera servicio disponible, devolviendo únicamente un trayecto a pie equivalente al que proporciona OSRM con el perfil peatonal.
+Los feeds \gls{gtfs} del \gls{nap} tienen un periodo de validez limitado; el del operador de Toledo (\texttt{GTFS\_Urbano\_Toledo\_2026.zip}) cubre del 22 de febrero al 22 de mayo de 2026. Si la fecha de consulta cae fuera de ese rango, \gls{otp} no devuelve itinerarios con tramos de transporte público y el simulador trata la situación como si no hubiera servicio disponible, devolviendo únicamente un trayecto a pie equivalente al que proporciona \gls{osrm} con el perfil peatonal.\newline
+\vspace{-3mm}
 
 Por ello, la fecha y la hora de consulta se exponen mediante un selector global en la interfaz, con un valor por defecto dentro del rango del feed (\texttt{2026-05-21}, \texttt{12:00}) y acotado al intervalo válido. Se fijó la hora por defecto a las 12:00 por situarse en la franja de mayor frecuencia de servicio y evitar el horario nocturno, donde la oferta es reducida o inexistente. Este selector es transversal a toda la simulación: gobierna a la vez los itinerarios multimodales, los horarios de la red y el día y la hora del perfil de inferencia, evitando configuraciones inconsistentes entre las distintas vistas. La ubicación y el comportamiento de este selector en la interfaz se describen en la Sección~\ref{subsec:impl_frontend_mapa}. El backend recibe la fecha y la hora en la petición; cuando no se indican, aplica el valor por defecto.
-
+\vspace{-5mm}
 
 % -------------------------------------------------------
 \section{Implementación del backend FastAPI}
 \label{sec:impl_backend}
 % -------------------------------------------------------
-
+\vspace{-5mm}
 \subsection{Estructura modular}
 \label{subsec:impl_backend_estructura}
 
-El backend está implementado con FastAPI sobre Python y organizado en módulos por responsabilidad. Un directorio \texttt{api/} contiene los cuatro routers (\texttt{routes\_osrm.py}, \texttt{routes\_otp.py}, \texttt{routes\_gtfs.py}, \texttt{routes\_lpmc.py}); un directorio \texttt{services/} contiene la lógica de negocio desacoplada de la capa HTTP (\texttt{osrm\_client.py}, \texttt{lpmc\_inference.py}); y el módulo raíz \texttt{main.py} monta los routers y habilita CORS (\textit{Cross-Origin Resource Sharing}), el mecanismo que autoriza al navegador a que la interfaz web, servida desde un puerto distinto, consuma la API del backend. Los endpoints expuestos por cada router se recogen en la Tabla~\ref{tab:endpoints_api} del capítulo~\ref{ch:arquitectura}.
+El backend está implementado con FastAPI sobre Python y organizado en módulos por responsabilidad. Un directorio \texttt{api/} contiene los cuatro routers (\texttt{routes\_osrm.py}, \texttt{routes\_otp.py}, \texttt{routes\_gtfs.py}, \texttt{routes\_lpmc.py}); un directorio \texttt{services/} contiene la lógica de negocio desacoplada de la capa HTTP (\texttt{osrm\_client.py}, \texttt{lpmc\_inference.py}); y el módulo raíz \texttt{main.py} monta los routers y habilita \gls{cors}, el mecanismo que autoriza al navegador a que la interfaz web, servida desde un puerto distinto, consuma la API del backend. Los endpoints expuestos por cada router se recogen en la Tabla~\ref{tab:endpoints_api} del capítulo~\ref{ch:arquitectura}.\newline
 
-La separación en módulos permite desarrollar, probar y documentar cada router por separado. Además, FastAPI genera de forma automática documentación interactiva siguiendo el estándar OpenAPI en la ruta \texttt{/docs}. Durante el desarrollo, esta documentación permitió lanzar peticiones a cada endpoint y comprobar sus respuestas directamente desde el navegador, sin escribir código adicional de prueba.
+La separación en módulos permite desarrollar, probar y documentar cada router por separado. Además, FastAPI genera de forma automática documentación interactiva siguiendo el estándar OpenAPI en la ruta \texttt{/docs}. Durante el desarrollo, esta documentación permitió lanzar peticiones a cada endpoint y comprobar sus respuestas directamente desde el navegador, sin escribir código adicional de prueba. La Figura~\ref{fig:fastapi_docs} del Anexo~\ref{anx:endpoints} recoge esta documentación con los cuatro grupos de endpoints y sus esquemas de petición y respuesta.
 
-\begin{figure}[htbp]
-  \centering
-  % \missingfigure{Captura de la documentación OpenAPI automática (\texttt{/docs}) del backend FastAPI, mostrando los cuatro grupos de endpoints (/api/osrm, /api/otp, /api/gtfs, /api/lpmc) con sus rutas, métodos HTTP y esquemas de petición y respuesta.}
-  \includegraphics[width=1.0\textwidth]{figs/FastAPI_Docs4.jpeg}
-  \caption{Documentación OpenAPI generada automáticamente por FastAPI.}
-  \label{fig:fastapi_docs}
-\end{figure}
-
-\subsection{Router OSRM: consultas multiperfil}
+\subsection[Router OSRM: consultas multiperfil]{Router \gls{osrm}: consultas multiperfil}
 \label{subsec:impl_backend_osrm}
 
-El router \texttt{/api/osrm} expone el endpoint \texttt{POST /api/osrm/routes}, que acepta un par origen-destino y la lista de perfiles de transporte solicitados. Las consultas a los tres contenedores OSRM se lanzan en paralelo mediante la primitiva \texttt{asyncio.gather}, de modo que el tiempo total de respuesta equivale al de la consulta más lenta y no a la suma de las tres.
+El router \texttt{/api/osrm} expone el endpoint \texttt{POST /api/osrm/routes}, que acepta un par origen-destino y la lista de perfiles de transporte solicitados. Las consultas a los tres contenedores \gls{osrm} se lanzan en paralelo mediante la primitiva \texttt{asyncio.gather}, de modo que el tiempo total de respuesta equivale al de la consulta más lenta y no a la suma de las tres.\newline
 
-Para cada perfil, OSRM devuelve la distancia en metros, la duración en segundos y la geometría en formato de polilínea codificada. El backend decodifica esa geometría en una lista de coordenadas \texttt{[lat, lon]} para que pueda enviarse al frontend y representarse con Leaflet. Por último, las duraciones se convierten de segundos a horas antes de construir el vector de características, ya que el dataset LPMC almacena todas las duraciones en esa unidad.
+Para cada perfil, \gls{osrm} devuelve la distancia en metros, la duración en segundos y la geometría en formato de polilínea codificada. El backend decodifica esa geometría en una lista de coordenadas \texttt{[lat, lon]} para que pueda enviarse al frontend y representarse con Leaflet. Por último, las duraciones se convierten de segundos a horas antes de construir el vector de características, ya que el dataset \gls{lpmc} almacena todas las duraciones en esa unidad.
 
-\subsection{Router OTP: itinerarios multimodales}
+\subsection[Router OTP: itinerarios multimodales]{Router \gls{otp}: itinerarios multimodales}
 \label{subsec:impl_backend_otp}
 
-El router \texttt{/api/otp} expone el endpoint \texttt{POST /api/otp/routes} y consulta OTP a través de su endpoint REST de planificación (\texttt{/otp/routers/default/plan}), el punto de acceso estándar de OTP~2.x para solicitar itinerarios entre dos coordenadas. OTP devuelve hasta cinco itinerarios alternativos; el criterio de selección automática elige el primero que incluya al menos un tramo de transporte público (modo distinto de \texttt{WALK}) y, si ninguno cumple esa condición, el de menor duración total. El índice del itinerario visualizado viaja en la petición, de modo que el vector de características para la inferencia se calcula siempre sobre el mismo itinerario que ve el usuario.
+El router \texttt{/api/otp} expone el endpoint \texttt{POST /api/otp/routes} y consulta \gls{otp} a través de su endpoint REST de planificación (\texttt{/otp/routers/default/plan}), el punto de acceso estándar de \gls{otp}~2.x para solicitar itinerarios entre dos coordenadas. \gls{otp} devuelve hasta cinco itinerarios alternativos; el criterio de selección automática elige el primero que incluya al menos un tramo de transporte público (modo distinto de \texttt{WALK}) y, si ninguno cumple esa condición, el de menor duración total. El índice del itinerario visualizado viaja en la petición, de modo que el vector de características para la inferencia se calcula siempre sobre el mismo itinerario que ve el usuario.\newline
 
-Para cada tramo del itinerario seleccionado, el backend transforma la respuesta de OTP a un formato propio y homogéneo con el modo de transporte, la distancia, la duración, la geometría decodificada, las paradas de inicio y fin, el nombre de la línea, la agencia y los horarios de salida y llegada. En los tramos de transporte público añade a la consulta el parámetro \texttt{showIntermediateStops}, que incorpora las paradas intermedias; con ellas compone la secuencia ordenada completa del tramo, desde el embarque hasta el desembarque, anotando para cada parada su nombre, coordenadas y hora de paso. Esa secuencia alimenta el diagrama de paradas del panel Rutas (Sección~\ref{subsec:impl_frontend_rutas}), y las geometrías de los tramos se combinan en una única traza que el frontend vuelve a separar para dibujar cada tramo según su modo de transporte.
+Para cada tramo del itinerario seleccionado, el backend transforma la respuesta de \gls{otp} a un formato propio y homogéneo con el modo de transporte, la distancia, la duración, la geometría decodificada, las paradas de inicio y fin, el nombre de la línea, la agencia y los horarios de salida y llegada. En los tramos de transporte público añade a la consulta el parámetro \texttt{showIntermediateStops}, que incorpora las paradas intermedias; con ellas compone la secuencia ordenada completa del tramo, desde el embarque hasta el desembarque, anotando para cada parada su nombre, coordenadas y hora de paso. Esa secuencia alimenta el diagrama de paradas del panel Rutas (Sección~\ref{subsec:impl_frontend_rutas}), y las geometrías de los tramos se combinan en una única traza que el frontend vuelve a separar para dibujar cada tramo según su modo de transporte.
 
-OTP devuelve los instantes de paso en tiempo universal (epoch UTC) acompañados del desfase horario de la agencia (\texttt{agencyTimeZoneOffset}). El backend suma ese desfase antes de formatear las horas, de modo que los itinerarios se muestran en hora local de Toledo (Europe/Madrid), con el horario de verano resuelto automáticamente según la fecha consultada.
+\gls{otp} devuelve los instantes de paso en tiempo universal (epoch UTC) acompañados del desfase horario de la agencia (\texttt{agencyTimeZoneOffset}). El backend suma ese desfase antes de formatear las horas, de modo que los itinerarios se muestran en hora local de Toledo (Europe/Madrid), con el horario de verano resuelto automáticamente según la fecha consultada.
 
-\subsection{Router GTFS: capa estática}
+\subsection[Router GTFS: capa estática]{Router \gls{gtfs}: capa estática}
 \label{subsec:impl_backend_gtfs}
 
-El router \texttt{/api/gtfs} expone la información estática de la red de autobús directamente a partir de los ficheros del feed GTFS cargados en memoria (Sección~\ref{subsec:impl_otp_gtfs_estructura}), sin depender de OpenTripPlanner. Esto permite consultar y visualizar la red aunque el planificador no esté disponible. Expone cuatro endpoints:
+El router \texttt{/api/gtfs} expone la información estática de la red de autobús directamente a partir de los ficheros del feed \gls{gtfs} cargados en memoria (Sección~\ref{subsec:impl_otp_gtfs_estructura}), sin depender de \gls{otp}. Esto permite consultar y visualizar la red aunque el planificador no esté disponible. Expone cuatro endpoints:
 
 \begin{itemize}
-  \item \textbf{Listado de paradas} (\texttt{GET /api/gtfs/stops}): devuelve todas las paradas del feed con identificador, nombre, coordenadas y líneas asociadas. Acepta un parámetro \texttt{limit} (5.000 por defecto, suficiente para el feed de Toledo con 268 paradas) y un filtro de caja delimitadora opcional para restringir el resultado al área visible en el mapa.
+  \item \textbf{Listado de paradas} (\texttt{GET /api/gtfs/stops}): devuelve todas las paradas del feed con identificador, nombre, coordenadas y líneas asociadas. Acepta un parámetro \texttt{limit} (\numprint{5000} por defecto, suficiente para el feed de Toledo con 268 paradas) y un filtro de caja delimitadora opcional para restringir el resultado al área visible en el mapa.
 
   \item \textbf{Listado de líneas} (\texttt{GET /api/gtfs/routes}): catálogo completo de líneas con identificador, nombre corto, nombre largo y atributos de color cuando están disponibles en el feed.
 
   \item \textbf{Detalle de línea} (\texttt{GET /api/gtfs/routes/\{route\_id\}}): dado el identificador de una línea, devuelve la secuencia ordenada de paradas y la geometría del trazado asociado para su representación cartográfica.
 
-  \item \textbf{Horarios por fecha} (\texttt{GET /api/gtfs/routes/\{route\_id\}/schedule}): dado un identificador de ruta y una fecha mediante el parámetro \texttt{?date=YYYY-MM-DD}, devuelve los servicios programados agrupados por sentido, con primera y última salida y listado completo de horarios. Al igual que con OTP (Sección~\ref{subsec:impl_otp_fecha}), la interfaz usa una fecha dentro del rango de validez del feed; cualquier fecha posterior devuelve cero servicios.
+  \item \textbf{Horarios por fecha} (\texttt{GET /api/gtfs/routes/\{route\_id\}/schedule}): dado un identificador de ruta y una fecha mediante el parámetro \texttt{?date=YYYY-MM-DD}, devuelve los servicios programados agrupados por sentido, con primera y última salida y listado completo de horarios. Al igual que con \gls{otp} (Sección~\ref{subsec:impl_otp_fecha}), la interfaz usa una fecha dentro del rango de validez del feed; cualquier fecha posterior devuelve cero servicios.
 \end{itemize}
 
-\subsection{Router LPMC: inferencia modal y descubrimiento de modelos}
+\subsection[Router LPMC: inferencia modal y descubrimiento de modelos]{Router \gls{lpmc}: inferencia modal y descubrimiento de modelos}
 \label{subsec:impl_backend_lpmc}
 
-El router \texttt{/api/lpmc} centraliza la lógica de inferencia de elección modal y el acceso a los modelos entrenados. A diferencia de los routers de enrutado, que delegan el cálculo en servicios externos (OSRM y OTP), este router ejecuta la predicción de forma local sobre los artefactos serializados en \texttt{lpmc/models/}. Expone cuatro endpoints:
+El router \texttt{/api/lpmc} centraliza la lógica de inferencia de elección modal y el acceso a los modelos entrenados. A diferencia de los routers de enrutado, que delegan el cálculo en servicios externos (\gls{osrm} y \gls{otp}), este router ejecuta la predicción de forma local sobre los artefactos serializados en \texttt{lpmc/models/}. Expone cuatro endpoints:
 
 \begin{itemize}
   \item \textbf{Predicción} (\texttt{POST /api/lpmc/predict}). Recibe el par origen-destino, el itinerario de OTP que el usuario tiene seleccionado, las variables sociodemográficas del viajero y, de forma opcional, el nombre del modelo a usar (\texttt{model\_variant}). Cuando no se indica el nombre del modelo, se recurre a la variable de entorno \texttt{LPMC\_MODEL\_VARIANT}. La respuesta contiene la probabilidad de cada uno de los cuatro modos de transporte (a pie, bicicleta, transporte público y coche), el modo más probable para ese viajero junto con su probabilidad, y el vector de características de ruta con el que se ha inferido. Incluye además algunos metadatos útiles para depuración, entre ellos el indicador \texttt{pt\_available}, que vale verdadero cuando el itinerario contiene al menos un tramo de transporte público y falso cuando no hay servicio real (caso descrito en la Sección~\ref{subsec:impl_lpmc_conocimiento}).
 
   \item \textbf{Comparación de modelos} (\texttt{POST /api/lpmc/compare}). Ejecuta la predicción con los tres modelos sobre el mismo escenario y devuelve las probabilidades de cada uno, de modo que pueden contrastarse en la interfaz. Los tres modelos se evalúan uno tras otro reutilizando el mismo vector de características, que solo se construye una vez.
 
-  \item \textbf{Depuración de características} (\texttt{POST /api/lpmc/debug-features}). Devuelve el vector de características completo, con sus valores antes y después de aplicar el escalado estándar. Permite comprobar que las variables de ruta calculadas a partir de OSRM y OTP caen en el rango esperado por el dataset, y fue la herramienta principal para diagnosticar los problemas de unidades que se describen en la Sección~\ref{subsec:impl_lpmc_entrenamiento}.
+  \item \textbf{Depuración de características} (\texttt{POST /api/lpmc/debug-features}). Devuelve el vector de características completo, con sus valores antes y después de aplicar el escalado estándar. Permite comprobar que las variables de ruta calculadas a partir de \gls{osrm} y \gls{otp} caen en el rango esperado por el dataset, y fue la herramienta principal para diagnosticar los problemas de unidades que se describen en la Sección~\ref{subsec:impl_lpmc_entrenamiento}.
 
   \item \textbf{Modelos disponibles} (\texttt{GET /api/lpmc/models}). Escanea el directorio \texttt{lpmc/models/} en busca de pares de ficheros \texttt{\{nombre\}\_lpmc.joblib} y \texttt{\{nombre\}\_lpmc\_scaler.joblib}, y devuelve la lista de modelos encontrados junto con el predeterminado (\texttt{LPMC\_MODEL\_VARIANT}). Gracias a este barrido, basta con dejar un modelo entrenado fuera del sistema en ese directorio para que la interfaz lo detecte en la siguiente petición, sin reiniciar ningún contenedor.
 \end{itemize}
@@ -244,33 +242,34 @@ El frontend utiliza las siguientes tecnologías principales:
 \begin{itemize}
   \item \textbf{React~18} \cite{ReactDocs}: biblioteca de construcción de interfaces de usuario basada en componentes reutilizables y actualizaciones reactivas del árbol de elementos DOM.
   \item \textbf{Vite} \cite{ViteDocs}: herramienta de compilación que sirve los módulos de forma nativa durante el desarrollo, con actualización del módulo modificado sin recargar la página, y genera el paquete de producción optimizado.
-  \item \textbf{TypeScript} \cite{TypeScriptDocs}: lenguaje que extiende JavaScript añadiendo tipos comprobados de forma estática. Resulta especialmente útil al modelar las respuestas del backend, como los itinerarios OTP con desglose de tramos, los feeds GTFS con múltiples entidades relacionadas o los vectores de probabilidades de los modelos.
+  \item \textbf{TypeScript} \cite{TypeScriptDocs}: lenguaje que extiende JavaScript añadiendo tipos comprobados de forma estática. Resulta especialmente útil al modelar las respuestas del backend, como los itinerarios \gls{otp} con desglose de tramos, los feeds \gls{gtfs} con múltiples entidades relacionadas o los vectores de probabilidades de los modelos.
   \item \textbf{Leaflet} \cite{LeafletDocs}, integrado mediante \textbf{React-Leaflet} \cite{ReactLeafletDocs}: biblioteca de mapas interactivos de código abierto. React-Leaflet expone cada primitiva cartográfica (marcadores, polilíneas, capas de teselas) como un componente React declarativo.
   \item \textbf{Lucide React} \cite{LucideReact}: colección de iconos SVG de código abierto, utilizada en los botones de la barra lateral y los controles del mapa. Al ser vectoriales, escalan sin pérdida de calidad.
   \item \textbf{TanStack Query} \cite{TanStackQuery}: librería de gestión del estado asíncrono para React que aporta caché de respuestas, seguimiento del ciclo de vida de cada petición (carga, error, éxito) y reintento automático.
 \end{itemize}
 
 La aplicación se estructura en dos componentes principales: \texttt{App} concentra el estado global y la lógica del cliente, y \texttt{MapView} recibe el estado necesario como \textit{props} (datos que el componente padre pasa al hijo de forma unidireccional) y es responsable exclusivamente del renderizado cartográfico. Esta separación se describe en la Sección~\ref{sec:arch_frontend}.
+\newpage
 
 \subsection{Interfaz cartográfica y controles del mapa}
 \label{subsec:impl_frontend_mapa}
 
-La interfaz sigue el esquema de las aplicaciones cartográficas modernas: el mapa ocupa toda la ventana del navegador como fondo, mientras los controles y los paneles de navegación se superponen sobre él. Leaflet renderiza el mapa a partir de teselas de los proveedores seleccionados, sin descargar ningún mapa local; el extracto OSM que usa OSRM es solo para el cálculo de rutas en el servidor. Las rutas calculadas por OSRM cubren únicamente el territorio del extracto de Castilla-La Mancha, y las paradas de autobús disponibles pertenecen exclusivamente al feed GTFS de Toledo.
+La interfaz sigue el esquema de las aplicaciones cartográficas modernas: el mapa ocupa toda la ventana del navegador como fondo, mientras los controles y los paneles de navegación se superponen sobre él. Leaflet renderiza el mapa a partir de teselas de los proveedores seleccionados, sin descargar ningún mapa local; el extracto \gls{osm} que usa \gls{osrm} es solo para el cálculo de rutas en el servidor. Las rutas calculadas por \gls{osrm} cubren únicamente el territorio del extracto de Castilla-La Mancha, y las paradas de autobús disponibles pertenecen exclusivamente al feed \gls{gtfs} de Toledo.\newline
 
-Los marcadores de origen y destino son iconos propios diseñados con CSS, distintos de los marcadores predeterminados de Leaflet, para distinguir visualmente el punto de inicio del de llegada. Las paradas de autobús se representan como marcadores circulares (\texttt{CircleMarker}) en una capa de renderizado propia de Leaflet (\textit{pane} \texttt{stopsPane}, z-index~450 frente a los 400 de las polilíneas). Este orden de apilamiento asegura que las paradas sean siempre accesibles a la interacción del usuario aunque un trazado las atraviese.
+Los marcadores de origen y destino son iconos propios diseñados con CSS, distintos de los marcadores predeterminados de Leaflet, para distinguir visualmente el punto de inicio del de llegada. Las paradas de autobús se representan como marcadores circulares (\texttt{CircleMarker}) en una capa de renderizado propia de Leaflet (\textit{pane} \texttt{stopsPane}, z-index~450 frente a los 400 de las polilíneas). Este orden de apilamiento asegura que las paradas sean siempre accesibles a la interacción del usuario aunque un trazado las atraviese.\newline
 
-El origen y el destino del viaje se fijan con el menú contextual del mapa (clic derecho): sus opciones establecen el punto pulsado como origen o como destino, y también permiten copiar sus coordenadas. Las mismas coordenadas pueden editarse como texto desde el panel Rutas.
+El origen y el destino del viaje se fijan con el menú contextual del mapa (clic derecho): sus opciones establecen el punto pulsado como origen o como destino, y también permiten copiar sus coordenadas. Las mismas coordenadas pueden editarse como texto desde el panel Rutas.\newline
 
 Los controles de navegación del mapa se implementaron como componentes React, en lugar de los controles predeterminados de Leaflet, para seguir el mismo estilo visual que el resto de la interfaz. Se organizan en dos grupos fijos sobre el mapa:
 
 \begin{itemize}
   \item \textbf{Esquina inferior derecha}: botones de acercar y alejar la vista, más un botón de recentrar que devuelve el mapa al centro de Toledo con el zoom inicial.
-  \item \textbf{Esquina superior derecha}: tres botones de limpieza que eliminan, respectivamente, las rutas de navegación viaria (OSRM y OTP), la línea de bus activa en el panel Red GTFS, o ambas cosas junto con los puntos de origen y destino. Los botones se deshabilitan automáticamente cuando no hay datos que eliminar.
+  \item \textbf{Esquina superior derecha}: tres botones de limpieza que eliminan, respectivamente, las rutas de navegación viaria (\gls{osrm} y \gls{otp}), la línea de bus activa en el panel Red \gls{gtfs}, o ambas cosas junto con los puntos de origen y destino. Los botones se deshabilitan automáticamente cuando no hay datos que eliminar.
 \end{itemize}
 
 El zoom puede ajustarse en pasos de 0,25 en lugar de enteros, lo que aporta mayor precisión al encuadrar áreas urbanas concretas.
 
-La barra lateral de navegación (\textit{rail}) de 64~px de ancho, siempre visible a la izquierda de la pantalla, da acceso a los seis paneles funcionales del simulador. Al pulsar un botón del \textit{rail}, el panel correspondiente se despliega a su derecha con un ancho de 360~px (medidas sobre una pantalla de escritorio de 1920$\times$1080); pulsar de nuevo el mismo botón lo cierra. El panel activo al arrancar la aplicación es \textbf{Inicio}. Los demás paneles son \textbf{Rutas}, \textbf{Red GTFS}, \textbf{Predicción IA}, \textbf{Capas} y \textbf{Ajustes}, descritos en las secciones siguientes.
+La barra lateral de navegación (\textit{rail}) de 64~px de ancho, siempre visible a la izquierda de la pantalla, da acceso a los seis paneles funcionales del simulador. Al pulsar un botón del \textit{rail}, el panel correspondiente se despliega a su derecha con un ancho de 360~px (medidas sobre una pantalla de escritorio de 1920$\times$1080); pulsar de nuevo el mismo botón lo cierra. El panel activo al arrancar la aplicación es \textbf{Inicio}. Los demás paneles son \textbf{Rutas}, \textbf{Red \gls{gtfs}}, \textbf{Predicción IA}, \textbf{Capas} y \textbf{Ajustes}, descritos en las secciones siguientes.\newline
 
 La maquetación es adaptable (\textit{responsive}): el mapa ocupa siempre el espacio disponible y los paneles y controles se dimensionan con unidades relativas, de modo que la interfaz se ajusta a distintos tamaños de ventana y resoluciones, desde un monitor de escritorio hasta un \textit{tablet}.
 
@@ -285,52 +284,44 @@ La maquetación es adaptable (\textit{responsive}): el mapa ocupa siempre el esp
 \subsection{Panel Inicio}
 \label{subsec:impl_frontend_inicio}
 
-El panel Inicio es la vista por defecto al cargar la aplicación. Presenta una descripción del proyecto y su contexto académico, una lista de las tecnologías utilizadas con sus versiones, y una tabla de créditos con autor, tutor, centro, dataset, feed GTFS y cartografía base. El objetivo es orientar al usuario que accede al simulador por primera vez sin que necesite consultar documentación externa. Cerrar el panel o cambiar a otro no afecta al estado del mapa ni a los cálculos en curso.
-
+El panel Inicio es la vista por defecto al cargar la aplicación. Presenta una descripción del proyecto y su contexto académico, una lista de las tecnologías utilizadas con sus versiones, y una tabla de créditos con autor, tutor, centro, dataset, feed \gls{gtfs} y cartografía base. El objetivo es orientar al usuario que accede al simulador por primera vez sin que necesite consultar documentación externa. Cerrar el panel o cambiar a otro no afecta al estado del mapa ni a los cálculos en curso.
+\newpage
 \subsection{Panel Rutas}
 \label{subsec:impl_frontend_rutas}
 
 El panel Rutas agrupa las funciones de navegación viaria y multimodal. En su parte superior muestra las coordenadas de origen y destino, que además de fijarse desde el mapa con el menú contextual (Sección~\ref{subsec:impl_frontend_mapa}) pueden editarse aquí como texto, pegando un par ``latitud, longitud''; el campo valida el rango geográfico al confirmar y restaura el valor anterior si el formato no es correcto.
 
-Los botones de selección de modo de transporte no son mutuamente excluyentes: un clic normal selecciona en exclusiva el modo pulsado, mientras que un clic con \textit{Shift} añade o retira ese modo sin modificar el resto. Cuando hay varios modos activos, \texttt{MapView} dibuja una polilínea independiente por modo de transporte: azul para conducción, verde para bicicleta y gris discontinuo para el desplazamiento a pie. El itinerario de transporte público combina dos estilos, ya que no es homogéneo: los tramos en autobús se dibujan en naranja (el color asignado a este modo) y los tramos a pie de acceso a la parada o de transbordo, en un naranja más oscuro y discontinuo, para distinguirlos del gris del modo a pie cuando se muestran varios modos a la vez. Sobre el mapa, las paradas del trayecto se colorean con el color real de su línea, para localizar los transbordos de un vistazo. Las tres rutas OSRM se calculan siempre en paralelo, por lo que cambiar los modos activos no requiere ninguna nueva petición al servidor. La Figura~\ref{fig:osrm_rutas} muestra las rutas de los tres perfiles OSRM trazadas simultáneamente sobre Toledo: la de conducción sigue las vías principales, la de bicicleta prioriza carriles bici y calles tranquilas, y la peatonal accede a zonas restringidas al tráfico rodado.
+Los botones de selección de modo de transporte no son mutuamente excluyentes: un clic normal selecciona en exclusiva el modo pulsado, mientras que un clic con \textit{Shift} añade o retira ese modo sin modificar el resto. Cuando hay varios modos activos, \texttt{MapView} dibuja una polilínea independiente por modo de transporte: azul para conducción, verde para bicicleta y gris discontinuo para el desplazamiento a pie. El itinerario de transporte público combina dos estilos, ya que no es homogéneo: los tramos en autobús se dibujan en naranja (el color asignado a este modo) y los tramos a pie de acceso a la parada o de transbordo, en un naranja más oscuro y discontinuo, para distinguirlos del gris del modo a pie cuando se muestran varios modos a la vez. Sobre el mapa, las paradas del trayecto se colorean con el color real de su línea, para localizar los transbordos de un vistazo. Las tres rutas \gls{osrm} se calculan siempre en paralelo, por lo que cambiar los modos activos no requiere ninguna nueva petición al servidor. La Figura~\ref{fig:osrm_rutas} muestra las rutas de los tres perfiles \gls{osrm} trazadas simultáneamente sobre Toledo: la de conducción sigue las vías principales, la de bicicleta prioriza carriles bici y calles tranquilas, y la peatonal accede a zonas restringidas al tráfico rodado.
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=1.0\textwidth]{figs/FRONTEND_RutasOSRM.jpeg}
-  \caption{Rutas OSRM para los tres perfiles de transporte sobre Toledo.}
+  \includegraphics[width=0.9\textwidth]{figs/FRONTEND_RutasOSRM.jpeg}
+  \caption{Rutas \gls{osrm} para los tres perfiles de transporte sobre Toledo.}
   \label{fig:osrm_rutas}
 \end{figure}
 
 Al pulsar ``Calcular rutas'' se lanza la petición a \texttt{POST /api/osrm/routes} y, si el modo de transporte público está activo, también a \texttt{POST /api/otp/routes}. Una vez realizado ese primer cálculo, cualquier modificación posterior de los extremos O/D relanza ambas peticiones de forma automática. Este auto-recálculo se desactiva al limpiar las rutas y permanece inactivo hasta el siguiente cálculo manual, evitando peticiones antes de que el usuario haya definido el escenario.
 
-Los resultados de OSRM se presentan en una tabla con una fila por modo activo (distancia y duración estimada). El itinerario de OTP aparece en una tarjeta aparte, con paginación entre las alternativas devueltas y una cabecera que resume la hora de salida, la de llegada y la duración total. Debajo se despliega el detalle tramo a tramo: los tramos a pie como una línea de resumen y cada tramo en autobús con la etiqueta de su línea, sus horas y un diagrama vertical de todas sus paradas con la hora de paso. Los transbordos directos (cambio de línea en la misma parada) se señalan entre los bloques del diagrama, y al pulsar una parada el mapa se centra en ella.
+Los resultados de \gls{osrm} se presentan en una tabla con una fila por modo activo (distancia y duración estimada). El itinerario de \gls{otp} aparece en una tarjeta aparte, con paginación entre las alternativas devueltas y una cabecera que resume la hora de salida, la de llegada y la duración total. Debajo se despliega el detalle tramo a tramo: los tramos a pie como una línea de resumen y cada tramo en autobús con la etiqueta de su línea, sus horas y un diagrama vertical de todas sus paradas con la hora de paso. Los transbordos directos (cambio de línea en la misma parada) se señalan entre los bloques del diagrama, y al pulsar una parada el mapa se centra en ella.
 
-La etiqueta coloreada de cada línea en el panel debe coincidir con el color del catálogo GTFS. Sin embargo, OTP identifica las líneas con un identificador prefijado por el código del feed (por ejemplo, \texttt{1:50011}), que no coincide directamente con el \texttt{route\_id} del feed estático. La función auxiliar \texttt{resolveGtfsRoute()} resuelve la correspondencia en tres intentos sucesivos: por identificador exacto, por identificador sin el prefijo del feed y por nombre corto. Este proceso es necesario también para aplicar el contorno de contraste que se describe en la Sección~\ref{subsec:impl_frontend_red}.
-
-La Figura~\ref{fig:otp_itinerario} muestra un itinerario multimodal con el desglose de tramos desplegado en la interfaz.
-
+La etiqueta coloreada de cada línea en el panel debe coincidir con el color del catálogo \gls{gtfs}. Sin embargo, \gls{otp} identifica las líneas con un identificador prefijado por el código del feed (por ejemplo, \texttt{1:50011}), que no coincide directamente con el \texttt{route\_id} del feed estático. La función auxiliar \texttt{resolveGtfsRoute()} resuelve la correspondencia en tres intentos sucesivos: por identificador exacto, por identificador sin el prefijo del feed y por nombre corto. Este proceso es necesario también para aplicar el contorno de contraste que se describe en la Sección~\ref{subsec:impl_frontend_red}. La Figura~\ref{fig:otp_itinerario} muestra un itinerario multimodal con el desglose de tramos desplegado en la interfaz.
+\
 \begin{figure}[H]
   \centering
-  \includegraphics[width=1.0\textwidth]{figs/FRONTEND_RutasOTP.jpeg}
-  \caption{Itinerario multimodal OTP con desglose de tramos en la interfaz.}
+  \includegraphics[width=0.8\textwidth]{figs/FRONTEND_RutasOTP.jpeg}
+  \caption{Itinerario multimodal \gls{otp} con desglose de tramos en la interfaz.}
   \label{fig:otp_itinerario}
 \end{figure}
 
-% \begin{figure}[htbp]
-%   \centering
-%   \missingfigure{Captura del panel Rutas con la tabla de resultados OSRM para los tres modos activos y el itinerario OTP desplegado mostrando el diagrama de paradas de un tramo en autobús.}
-%   \caption{Panel Rutas con resultados OSRM e itinerario OTP.}
-%   \label{fig:panel_rutas}
-% \end{figure}
 
-\subsection{Panel Red GTFS}
+\subsection{Panel Red \gls{gtfs}}
 \label{subsec:impl_frontend_red}
 
-El panel Red GTFS permite explorar la red de autobús urbano de Toledo sin necesidad de calcular un itinerario. Muestra las líneas disponibles, el trazado de la línea seleccionada sobre el mapa, la secuencia de paradas y los horarios del día activo.
+El panel Red \gls{gtfs} permite explorar la red de autobús urbano de Toledo sin necesidad de calcular un itinerario. Muestra las líneas disponibles, el trazado de la línea seleccionada sobre el mapa, la secuencia de paradas y los horarios del día activo.\newline
 
-El feed de Toledo contiene 56 sentidos (identificadores \texttt{route\_id} distintos) agrupados en 25 líneas por nombre corto (\texttt{route\_short\_name}). El panel organiza los contenidos en un acordeón, un listado plegable en el que cada elemento puede expandirse o contraerse de forma independiente para mostrar u ocultar su contenido. Cada entrada del nivel superior representa una línea; las líneas con más de un sentido muestran un icono de despliegue y, al expandirlas, listan los sentidos disponibles con el sentido activo resaltado.
+El feed de Toledo contiene 56 sentidos (identificadores \texttt{route\_id} distintos) agrupados en 25 líneas por nombre corto (\texttt{route\_short\_name}). El panel organiza los contenidos en un acordeón, un listado plegable en el que cada elemento puede expandirse o contraerse de forma independiente para mostrar u ocultar su contenido. Cada entrada del nivel superior representa una línea; las líneas con más de un sentido muestran un icono de despliegue y, al expandirlas, listan los sentidos disponibles con el sentido activo resaltado.\newline
 
-El color de cada línea procede del propio feed. El fichero \texttt{routes.txt} del GTFS de Toledo incluye para cada línea los campos \texttt{route\_color} y \texttt{route\_text\_color}, que la interfaz usa directamente para mostrar la línea con el color oficial del operador. Para el caso de un feed que no traiga esos campos, la función \texttt{routeColor()} genera un color de reserva a partir del nombre corto de la línea: la función auxiliar \texttt{hslForKey()} recorre los caracteres del nombre acumulando un valor entero (un hash) y lo reduce módulo 360 para elegir un tono, con saturación y luminosidad fijas (70\,\% y 35\,\%) que garantizan contraste suficiente con el texto blanco superpuesto. Como un mismo nombre produce siempre el mismo entero, cada línea conserva su color entre ejecuciones. El Código~\ref{cod:gtfs_color} recoge ambas funciones.
+El color de cada línea procede del propio feed. El fichero \texttt{routes.txt} del \gls{gtfs} de Toledo incluye para cada línea los campos \texttt{route\_color} y \texttt{route\_text\_color}, que la interfaz usa directamente para mostrar la línea con el color oficial del operador. Para el caso de un feed que no traiga esos campos, la función \texttt{routeColor()} genera un color de reserva a partir del nombre corto de la línea: la función auxiliar \texttt{hslForKey()} recorre los caracteres del nombre acumulando un valor entero (un hash) y lo reduce módulo 360 para elegir un tono, con saturación y luminosidad fijas (70\,\% y 35\,\%) que garantizan contraste suficiente con el texto blanco superpuesto. Como un mismo nombre produce siempre el mismo entero, cada línea conserva su color entre ejecuciones. El Código~\ref{cod:gtfs_color} recoge ambas funciones.
 
 \begin{code}[H]
 \begin{lstlisting}[language=Java]
@@ -340,24 +331,25 @@ function hslForKey(key) {
   return `hsl(${Math.abs(h) % 360}, 70%, 35%)`;
 }
 function routeColor(r) {
-  if (r.color) return `#${r.color}`;       // color del feed (route_color)
-  return hslForKey(r.short_name || r.id);  // color de reserva determinista
+  if (r.color) return `#${r.color}`;       // color del feed
+  return hslForKey(r.short_name || r.id);  // fallback
 }
 \end{lstlisting}
 \caption{Color de línea: el feed GTFS como fuente primaria y un hash determinista como reserva.}
 \label{cod:gtfs_color}
 \end{code}
 
-Sea cual sea el origen del color (del feed o generado), algunas líneas resultan casi invisibles sobre el fondo claro de los paneles y del mapa; el caso extremo es la L14, de color blanco. Para evitarlo, la función \texttt{isLightColor()} estima cuán claro es un color a partir de sus componentes rojo, verde y azul mediante la luminancia $0{,}299\,R + 0{,}587\,G + 0{,}114\,B$, los coeficientes de la recomendación ITU-R BT.601 \cite{ITU601BT601}; si el resultado supera un umbral cercano al blanco, se añade un contorno oscuro. Este criterio de color y contraste se aplica de forma homogénea en toda la interfaz: en las etiquetas de línea, en las paradas, en el diagrama de paradas y en el trazado de la línea sobre el mapa.
+Sea cual sea el origen del color (del feed o generado), algunas líneas resultan casi invisibles sobre el fondo claro de los paneles y del mapa; el caso extremo es la L14, de color blanco. Para evitarlo, la función \texttt{isLightColor()} estima cuán claro es un color a partir de sus componentes rojo, verde y azul mediante la luminancia $0{,}299\,R + 0{,}587\,G + 0{,}114\,B$, los coeficientes de la recomendación ITU-R BT.601 \cite{ITU601BT601}; si el resultado supera un umbral cercano al blanco, se añade un contorno oscuro. Este criterio de color y contraste se aplica de forma homogénea en toda la interfaz: en las etiquetas de línea, en las paradas, en el diagrama de paradas y en el trazado de la línea sobre el mapa.\newline
+\vspace{-5mm}
 
 Al seleccionar una línea, el mapa dibuja su trazado como polilínea del color correspondiente y sus paradas como marcadores circulares rellenos con ese mismo color y un contorno de contraste. Estos marcadores se renderizan en la capa \texttt{stopsPane}, por encima de las polilíneas, de modo que son siempre accesibles a la interacción aunque el trazado los cruce. Al pulsar una parada del listado lateral, la vista se desplaza hasta ella y, al terminar la animación, se abre su ventana emergente con el nombre, el código y las etiquetas de las líneas que pasan por ella; al pulsar una de esas etiquetas se selecciona ese sentido en el panel.
 
 Los horarios se presentan agrupados por hora: una columna con la hora y, a su derecha, los minutos de cada salida estilizados según su posición respecto a la hora activa del control global de fecha. Los minutos ya pasados aparecen en gris; los futuros, en azul; el próximo (menor tiempo restante), en negrita. Si no quedan salidas futuras ese día se muestra un aviso; si la línea no circula en la fecha seleccionada, el panel informa de ello sin tabla de horarios.
-
+\vspace{-5mm}
 \begin{figure}[htbp]
   \centering
   % \missingfigure{Captura del panel Red GTFS con el acordeón de líneas, una línea seleccionada con su diagrama de paradas y la tabla de horarios con la próxima salida destacada en negrita.}
-  \includegraphics[width=1.0\textwidth]{figs/FRONTEND_GTFS_Horarios.jpg}
+  \includegraphics[width=1\textwidth]{figs/FRONTEND_GTFS_Horarios.jpg}
   \caption{Panel Red GTFS con trazado, paradas y horarios de una línea.}
   \label{fig:panel_red}
 \end{figure}
@@ -365,7 +357,9 @@ Los horarios se presentan agrupados por hora: una columna con la hora y, a su de
 \subsection{Panel Predicción IA}
 \label{subsec:impl_frontend_ia}
 
-El panel Predicción IA, que muestra la Figura~\ref{fig:panel_ia}, permite obtener la probabilidad de cada modo de transporte para un viajero concreto en el escenario definido sobre el mapa. Su disposición sigue el flujo de los datos que recibe el modelo. En primer lugar, en modo de solo lectura, aparecen las coordenadas de origen y destino que se pasan a OSRM y OTP, de modo que el usuario verifica de un vistazo el escenario. Justo debajo, también en solo lectura, se muestran los tiempos y distancias que esos servicios calculan para cada modo de transporte (las variables de ruta que alimentan al modelo), de manera que el usuario ve exactamente con qué cifras se va a inferir. A continuación se indica la información del viaje (día de la semana y hora de salida), derivada del control global de fecha y hora; al no ser editable aquí, se evita cualquier inconsistencia entre el itinerario calculado y el perfil enviado al modelo.
+El panel Predicción IA, que muestra la Figura~\ref{fig:panel_ia}, permite obtener la probabilidad de cada modo de transporte para un viajero concreto en el escenario definido sobre el mapa. Su disposición sigue el flujo de los datos que recibe el modelo.\newline
+
+En primer lugar, en modo de solo lectura, aparecen las coordenadas de origen y destino que se pasan a \gls{osrm} y \gls{otp}, de modo que el usuario verifica de un vistazo el escenario. Justo debajo, también en solo lectura, se muestran los tiempos y distancias que esos servicios calculan para cada modo de transporte (las variables de ruta que alimentan al modelo), de manera que el usuario ve exactamente con qué cifras se va a inferir. A continuación se indica la información del viaje (día de la semana y hora de salida), derivada del control global de fecha y hora; al no ser editable aquí, se evita cualquier inconsistencia entre el itinerario calculado y el perfil enviado al modelo.
 
 \begin{figure}[htbp]
   \centering
@@ -374,6 +368,7 @@ El panel Predicción IA, que muestra la Figura~\ref{fig:panel_ia}, permite obten
   \caption{Panel Predicción IA con el formulario y el resultado de la inferencia.}
   \label{fig:panel_ia}
 \end{figure}
+\newpage
 
 Para facilitar la exploración del simulador, el panel ofrece tres perfiles sociodemográficos predefinidos que autocompletan todos los campos del formulario y ajustan además la fecha y la hora globales al escenario que representan:
 
@@ -383,33 +378,47 @@ Para facilitar la exploración del simulador, el panel ofrece tres perfiles soci
   \item \textbf{Familiar}: viaje de ocio (HBO, \textit{home-based other}) un sábado a las 11:30. Mujer de 44~años con carnet de conducir y dos vehículos en el hogar.
 \end{itemize}
 
-El perfil activo por defecto es \textit{Commuter}. El indicador de perfil activo desaparece en cuanto el usuario modifica algún campo del formulario, eliminando la ambigüedad sobre qué valores se están usando. Aunque los perfiles rellenan automáticamente todos los campos sociodemográficos (edad, género, carnet, vehículos en el hogar, motivo del viaje, tipo de combustible, costes), cada uno puede modificarse manualmente para ajustar el escenario al gusto. La inferencia se lanza con el botón ``Inferir modo'', que muestra junto a su rótulo el nombre del modelo activo. El resultado es un conjunto de probabilidades para los cuatro modos de transporte (a pie, bicicleta, transporte público y conducción), con el modo de mayor probabilidad destacado visualmente.
+El perfil activo por defecto es \textit{Commuter}. El indicador de perfil activo desaparece en cuanto el usuario modifica algún campo del formulario, eliminando la ambigüedad sobre qué valores se están usando. Aunque los perfiles rellenan automáticamente todos los campos sociodemográficos (edad, género, carnet, vehículos en el hogar, motivo del viaje, tipo de combustible, costes), cada uno puede modificarse manualmente para ajustar el escenario al gusto. La inferencia se lanza con el botón ``Inferir modo'', que muestra junto a su rótulo el nombre del modelo activo. El resultado es un conjunto de probabilidades para los cuatro modos de transporte (a pie, bicicleta, transporte público y conducción), con el modo de mayor probabilidad destacado visualmente.\newline
 
-Tras la inferencia, bajo el botón aparecen las probabilidades de los cuatro modos en forma de barras y, solo entonces, se habilitan dos acciones secundarias para profundizar en el resultado. La primera, ``Comparar modelos'', llama a \texttt{POST /api/lpmc/compare} y presenta una tabla con las probabilidades de los tres modelos (XGBoost, Random Forest y red neuronal) para el mismo escenario, lo que permite ver hasta qué punto coinciden; el resultado es visible en la parte inferior de la Figura~\ref{fig:panel_ia}. La segunda, ``Ver variables'', llama a \texttt{POST /api/lpmc/debug-features} y abre una ventana modal con el vector de características completo, en sus valores originales y tras el escalado, útil para inspeccionar con qué datos exactos se ha inferido.
+Tras la inferencia, bajo el botón aparecen las probabilidades de los cuatro modos en forma de barras y, solo entonces, se habilitan dos acciones secundarias para profundizar en el resultado. La primera, ``Comparar modelos'', llama a \texttt{POST /api/lpmc/compare} y presenta una tabla con las probabilidades de los tres modelos (\gls{xgboost}, \gls{rf} y \gls{dnn}) para el mismo escenario, lo que permite ver hasta qué punto coinciden; el resultado es visible en la parte inferior de la Figura~\ref{fig:panel_ia}. La segunda, ``Ver variables'', llama a \texttt{POST /api/lpmc/debug-features} y abre una ventana modal con el vector de características completo, en sus valores originales y tras el escalado, útil para inspeccionar con qué datos exactos se ha inferido.
 
+% \begin{figure}[htbp]
+%   \centering
+%   \missingfigure{Captura del panel de comparación de los tres modelos (XGBoost, Random Forest, DNN) mostrando las probabilidades de elección para los cuatro modos (a pie, bicicleta, transporte público y coche) ante el mismo par origen-destino y perfil de usuario. Mostrar un caso con clara concordancia entre modelos y el modo más probable destacado.}
+%   \caption{Panel de comparación de probabilidades de los tres modelos de elección modal.}
+%   \label{fig:panel_comparacion}
+% \end{figure}
+
+% \begin{figure}[htbp]
+%   \centering
+%   \missingfigure{Captura de la ventana modal ``Ver variables'' (debug-features) con la tabla del vector de características completo: cada variable con su valor original y su valor tras el escalado estándar, incluyendo las variables de ruta de OSRM/OTP y las sociodemográficas.}
+%   \caption{Ventana de depuración del vector de características que recibe el modelo.}
+%   \label{fig:debug_features}
+% \end{figure}
+
+\newpage
 \subsection{Panel Capas}
 \label{subsec:impl_frontend_capas}
 
 El panel Capas permite seleccionar la capa de fondo del mapa entre seis opciones, cada una orientada a un tipo de análisis o preferencia visual:
-
 \begin{itemize}
   \item \textbf{Color} (CartoDB Voyager): calles y nombres de lugar en tonos suaves. Seleccionada por defecto al iniciar la aplicación por ofrecer contexto urbano sin competir visualmente con las rutas superpuestas.
   \item \textbf{Blanco y negro} (CartoDB Positron): paleta completamente desaturada que minimiza el ruido visual y maximiza la legibilidad de los trazados.
-  \item \textbf{OpenStreetMap}: mapa estándar de la comunidad OSM, con mayor detalle de nombres e infraestructuras.
+  \item \textbf{OpenStreetMap}: mapa estándar de la comunidad \gls{osm}, con mayor detalle de nombres e infraestructuras.
   \item \textbf{Topográfico} (OpenTopoMap): curvas de nivel y sombreado de relieve, especialmente relevante para trayectos en bicicleta o a pie por zonas con desnivel.
   \item \textbf{Satélite} (Esri World Imagery): ortofoto aérea global con resolución variable según la región.
   \item \textbf{PNOA} (Plan Nacional de Ortofotografía Aérea, IGN España): ortofoto servida mediante el protocolo WMTS por el Instituto Geográfico Nacional; cubre el territorio español con resolución de 25~cm en zonas urbanas y no requiere token de autenticación.
 \end{itemize}
-
 Como el zoom admite valores decimales (Sección~\ref{subsec:impl_frontend_mapa}), al cambiar de capa puede ocurrir que el nivel activo no sea entero y que el nuevo proveedor no sirva teselas en niveles fraccionarios. Un componente auxiliar (\texttt{BasemapZoomSnapper}) se ocupa de ello: cuando se cambia de capa, redondea el zoom al entero más próximo para evitar errores de carga. La Figura~\ref{fig:panel_capas} muestra el panel con las seis capas disponibles y la capa de fondo "Satélite" seleccionada.
-
+\vspace{-5mm}
 \begin{figure}[htbp]
   \centering
   % \missingfigure{Captura del panel Capas mostrando las seis capas de fondo disponibles y la capa "Satélite" seleccionada.}
-  \includegraphics[width=1\textwidth]{figs/FRONTEND_Capas2.jpeg}
+  \includegraphics[width=0.7\textwidth]{figs/FRONTEND_Capas2.jpeg}
   \caption{Panel Capas con seis opciones de fondo para el mapa.}
   \label{fig:panel_capas}
 \end{figure}
+
 \subsection{Panel Ajustes}
 \label{subsec:impl_frontend_ajustes}
 
@@ -436,18 +445,17 @@ Esta sección describe el proceso de entrenamiento, validación y despliegue en 
 \subsection{Dataset LPMC y variables de entrada}
 \label{subsec:impl_lpmc_dataset}
 
-El dataset London Passenger Mode Choice (LPMC) \cite{Hillel2018LPMC,CSLPMC2019} recoge registros de viajes reales observados en el área metropolitana de Londres entre 2012 y 2015. Procede de la \textit{London Travel Demand Survey} (LTDS), la encuesta de movilidad de Transport for London, sobre la que Hillel et al.\ construyeron el dataset que aquí se utiliza: a cada viaje observado le añadieron las variables de nivel de servicio, esto es, los tiempos y costes de cada modo de transporte alternativo (a pie, bicicleta, transporte público y coche) para ese mismo par origen-destino, calculados aunque el viajero no eligiera ese modo. Es, además, el dataset sobre el que se apoya la investigación de referencia de este trabajo \cite{MartinBaos2023Thesis}. La Tabla~\ref{tab:lpmc_dataset_stats} resume sus características principales.
-
+El dataset \acrfull{lpmc} \cite{Hillel2018LPMC,CSLPMC2019} recoge registros de viajes reales observados en el área metropolitana de Londres entre 2012 y 2015. Procede de la \gls{ltds}, la encuesta de movilidad de Transport for London, sobre la que Hillel et al.\ construyeron el dataset que aquí se utiliza: a cada viaje observado le añadieron las variables de nivel de servicio, esto es, los tiempos y costes de cada modo de transporte alternativo (a pie, bicicleta, transporte público y coche) para ese mismo par origen-destino, calculados aunque el viajero no eligiera ese modo. Es, además, el dataset sobre el que se apoya la investigación de referencia de este trabajo \cite{MartinBaos2023Thesis}. La Tabla~\ref{tab:lpmc_dataset_stats} resume sus características principales.
 \begin{table}[htbp]
-  \caption{Características generales del dataset LPMC.}
+  \caption{Características generales del dataset \gls{lpmc}.}
   \label{tab:lpmc_dataset_stats}
   \centering
   \begin{tabular}{lc}
     \toprule
     \textbf{Característica} & \textbf{Valor} \\
     \midrule
-    Registros totales        & 81.086 \\
-    Hogares únicos           & 17.616 \\
+    Registros totales        & \numprint{81086} \\
+    Hogares únicos           & \numprint{17616} \\
     Modos de viaje           & 4 (\textit{walk}, \textit{cycle}, \textit{pt}, \textit{drive}) \\
     Oleadas de encuesta      & 3 (\texttt{survey\_year} 1, 2, 3) \\
     Años de viaje cubiertos  & 2012--2015 \\
@@ -455,10 +463,10 @@ El dataset London Passenger Mode Choice (LPMC) \cite{Hillel2018LPMC,CSLPMC2019} 
     \bottomrule
   \end{tabular}
 \end{table}
+\vspace{-5mm}
+El interés metodológico del dataset para este TFM no reside en el caso geográfico concreto (Londres), sino en que sus variables de nivel de servicio son justamente las que \gls{osrm} y \gls{otp} calculan para cualquier par origen-destino (tiempos por modo, transbordos, costes). Contiene también las variables sociodemográficas que el simulador pide al usuario, tiene un tamaño suficiente para entrenar modelos de aprendizaje automático con validación cruzada robusta, y ya ha demostrado su utilidad para la predicción de elección modal con aprendizaje automático en investigaciones previas \cite{MartinBaos2023TRC}.\newline
 
-El interés metodológico del dataset para este TFM no reside en el caso geográfico concreto (Londres), sino en que sus variables de nivel de servicio son justamente las que OSRM y OTP calculan para cualquier par origen-destino (tiempos por modo, transbordos, costes). Contiene también las variables sociodemográficas que el simulador pide al usuario, tiene un tamaño suficiente para entrenar modelos de aprendizaje automático con validación cruzada robusta, y ya ha demostrado su utilidad para la predicción de elección modal con aprendizaje automático en investigaciones previas \cite{MartinBaos2023TRC}.
-
-Las variables de entrada al modelo se dividen en dos grupos. El primero comprende las variables de ruta, derivadas automáticamente de OSRM y OTP para cada par origen-destino consultado en el simulador. El segundo comprende las variables sociodemográficas y contextuales, introducidas por el usuario a través del panel lateral de la interfaz o autocompletadas a partir de uno de los perfiles predefinidos. El listado completo de variables, con su tipo de dato y su origen, se recoge en la Tabla~\ref{tab:lpmc_features} del Anexo~\ref{anx:experimentos}.
+Las variables de entrada al modelo se dividen en dos grupos. El primero comprende las variables de ruta, derivadas automáticamente de \gls{osrm} y \gls{otp} para cada par origen-destino consultado en el simulador. El segundo comprende las variables sociodemográficas y contextuales, introducidas por el usuario a través del panel lateral de la interfaz o autocompletadas a partir de uno de los perfiles predefinidos. El listado completo de variables, con su tipo de dato y su origen, se recoge en la Tabla~\ref{tab:lpmc_features} del Anexo~\ref{anx:experimentos}.
 
 \subsection{Preprocesado de datos}
 \label{subsec:impl_lpmc_preprocesado}
@@ -466,13 +474,14 @@ Las variables de entrada al modelo se dividen en dos grupos. El primero comprend
 El preprocesado del dataset transforma los datos en bruto en el conjunto de variables que reciben los modelos. Se aplica en cuatro pasos.
 
 \begin{enumerate}
-  \item \textbf{Eliminación de columnas sin valor predictivo.} Se descartan doce columnas. Tres son identificadores (\texttt{trip\_id}, \texttt{person\_n}, \texttt{trip\_n}), que no aportan señal. Tres son variables de fecha de grano fino (\texttt{travel\_year}, \texttt{travel\_month}, \texttt{travel\_date}), cuya información ya recogen \texttt{day\_of\_week} y \texttt{start\_time\_linear}. Una es la escala de tarifa de autobús del viajero (\texttt{bus\_scale}: billete gratuito, a mitad de precio o completo), que el simulador no maneja a ese nivel de detalle, ya que la tarifa se introduce como un único parámetro de coste. Las cinco restantes son variables derivadas redundantes, que se obtienen sumando otras ya presentes (\texttt{dur\_pt\_total}, \texttt{dur\_pt\_int\_total}, \texttt{cost\_driving\_fuel}, \texttt{cost\_driving\_con\_charge}, \texttt{driving\_traffic\_percent}).
+  \item \textbf{Eliminación de columnas sin valor predictivo.} Se descartan doce columnas. Tres son identificadores (\texttt{trip\_id}, \texttt{person\_n}, \texttt{trip\_n}), que no aportan señal. Tres son variables de fecha de grano fino (\texttt{travel\_year}, \texttt{travel\_month}, \texttt{travel\_date}), cuya información ya recogen \texttt{day\_of\_week} y \texttt{start\_time\_linear}. Una es la escala de tarifa de autobús del viajero (\texttt{bus\_scale}: billete gratuito, a mitad de precio o completo), que el simulador no maneja a ese nivel de detalle, ya que la tarifa se introduce como un único parámetro de coste. Las cinco restantes son variables derivadas redundantes, que se obtienen sumando otras ya presentes (\texttt{dur\_pt\_total}, \texttt{dur\_pt\_int\_total}, \texttt{cost\_driving\_fuel}, \texttt{cost\_driving\_con\_charge}, \texttt{driving\_traffic\_percent}).\newline
 
   \item \textbf{Codificación de variables categóricas.} Las dos variables categóricas se transforman a representación \textit{one-hot}, esto es, una columna binaria por categoría. El motivo del viaje (\texttt{purpose}) genera cinco columnas (\textit{B, HBE, HBO, HBW, NHBO}). El tipo de combustible (\texttt{fueltype}) se consolida primero de seis categorías a cuatro (\textit{Petrol, Diesel, Hybrid, Average}), unificando las variantes de furgoneta ligera (\texttt{Petrol\_LGV}, \texttt{Diesel\_LGV}) con sus equivalentes de turismo, y después se codifica con \textit{one-hot}. La variable objetivo \texttt{travel\_mode} se convierte a entero (\textit{walk}~=~0, \textit{cycle}~=~1, \textit{pt}~=~2, \textit{drive}~=~3).
+  \newpage
 
-  \item \textbf{División temporal de los datos.} El conjunto se separa por la oleada de encuesta (\texttt{survey\_year}), no de forma aleatoria. Las oleadas 1 y 2 forman el conjunto de entrenamiento y la oleada 3, la más reciente, el conjunto de prueba. Con una división aleatoria, viajes de un mismo periodo caerían a la vez en entrenamiento y prueba, y el modelo podría aprender tendencias del periodo de prueba en lugar de generalizar hacia el futuro. La separación temporal reproduce la condición real de uso del simulador, que predice sobre escenarios posteriores a los datos con los que se entrenó.
+  \item \textbf{División temporal de los datos.} El conjunto se separa por la oleada de encuesta (\texttt{survey\_year}), no de forma aleatoria. Las oleadas 1 y 2 forman el conjunto de entrenamiento y la oleada 3, la más reciente, el conjunto de prueba. Con una división aleatoria, viajes de un mismo periodo caerían a la vez en entrenamiento y prueba, y el modelo podría aprender tendencias del periodo de prueba en lugar de generalizar hacia el futuro. La separación temporal reproduce la condición real de uso del simulador, que predice sobre escenarios posteriores a los datos con los que se entrenó.\newline
 
-  \item \textbf{Normalización de variables continuas.} Las dieciséis variables continuas (distancias, duraciones por modo, transbordos, edad, coches del hogar, hora, día y costes) se normalizan con \texttt{StandardScaler} de scikit-learn, que resta la media y divide por la desviación típica de cada variable para dejarla con media~0 y desviación típica~1. Las variables binarias y las columnas \textit{one-hot} no se escalan. Los modelos de árbol (XGBoost y Random Forest) son insensibles al escalado, pero se aplica el mismo preprocesado a los tres modelos para que el pipeline de inferencia del backend sea idéntico con cualquiera de ellos.
+  \item \textbf{Normalización de variables continuas.} Las dieciséis variables continuas (distancias, duraciones por modo, transbordos, edad, coches del hogar, hora, día y costes) se normalizan con \texttt{StandardScaler} de scikit-learn, que resta la media y divide por la desviación típica de cada variable para dejarla con media~0 y desviación típica~1. Las variables binarias y las columnas \textit{one-hot} no se escalan. Los modelos de árbol (\gls{xgboost} y \gls{rf}) son insensibles al escalado, pero se aplica el mismo preprocesado a los tres modelos para que el pipeline de inferencia del backend sea idéntico con cualquiera de ellos.
 \end{enumerate}
 
 El escalador se ajusta siempre solo con datos de entrenamiento y nunca con los de evaluación. En la validación cruzada se reajusta sobre el subconjunto de entrenamiento de cada \textit{fold}; para el modelo final, sobre todo el conjunto de entrenamiento. De este modo, la media y la desviación típica que usa el escalador no incorporan información del conjunto de validación, lo que evitaría una fuga de datos que daría una estimación de error demasiado optimista.
@@ -480,14 +489,14 @@ El escalador se ajusta siempre solo con datos de entrenamiento y nunca con los d
 \subsection{Ajuste de hiperparámetros}
 \label{subsec:impl_lpmc_hiperparametros}
 
-Los hiperparámetros son los ajustes que gobiernan cómo aprende cada modelo (por ejemplo, el número de árboles o la tasa de aprendizaje) y que no se estiman durante el entrenamiento, sino que hay que fijar de antemano. Para los tres modelos se realizó una búsqueda propia de hiperparámetros con una metodología común: se trabajó sobre el conjunto de entrenamiento completo, se evaluó cada configuración con validación cruzada agrupada por hogar y se tomó como criterio la entropía cruzada media en validación, equivalente a maximizar el GMPCA descrito en la Sección~\ref{subsec:impl_lpmc_entrenamiento}. Cada búsqueda tardó del orden de veinte minutos en la máquina de desarrollo. En el caso particular de XGBoost, además, se dispone de la búsqueda mucho más exhaustiva publicada en la investigación de referencia \cite{MartinBaos2023Thesis}, que se adopta para el modelo final. Los apartados siguientes detallan cada modelo.
+Los hiperparámetros son los ajustes que gobiernan cómo aprende cada modelo (por ejemplo, el número de árboles o la tasa de aprendizaje) y que no se estiman durante el entrenamiento, sino que hay que fijar de antemano. Para los tres modelos se realizó una búsqueda propia de hiperparámetros con una metodología común: se trabajó sobre el conjunto de entrenamiento completo, se evaluó cada configuración con validación cruzada agrupada por hogar y se tomó como criterio la entropía cruzada media en validación, equivalente a maximizar el \gls{gmpca} descrito en la Sección~\ref{subsec:impl_lpmc_entrenamiento}. Cada búsqueda tardó del orden de veinte minutos en la máquina de desarrollo. En el caso particular de \gls{xgboost}, además, se dispone de la búsqueda mucho más exhaustiva publicada en la investigación de referencia \cite{MartinBaos2023Thesis}, que se adopta para el modelo final. Los apartados siguientes detallan cada modelo.
 
 \subsubsection*{Random Forest}
 
-La búsqueda para el Random Forest se hizo con optimización Bayesiana (HyperOpt con el estimador de Parzen estructurado en árbol, TPE), con 100 evaluaciones sobre el conjunto de entrenamiento completo. El TPE construye un modelo probabilístico de la relación entre los hiperparámetros y el error, y dirige cada nueva evaluación hacia las regiones del espacio que mejores resultados han dado, de modo que converge antes que una búsqueda en rejilla (que probaría todas las combinaciones) o que una búsqueda aleatoria (que muestrea sin aprender de las pruebas anteriores). El espacio explorado abarcó el número de árboles, la profundidad máxima, los tamaños mínimos de nodo y hoja, y el número de variables candidatas por división. La mejor configuración encontrada (Tabla~\ref{tab:rf_params}) se adoptó como modelo final.
+La búsqueda para el \acrlong{rf} se hizo con optimización Bayesiana (HyperOpt con el estimador de Parzen estructurado en árbol, TPE), con 100 evaluaciones sobre el conjunto de entrenamiento completo. El TPE construye un modelo probabilístico de la relación entre los hiperparámetros y el error, y dirige cada nueva evaluación hacia las regiones del espacio que mejores resultados han dado, de modo que converge antes que una búsqueda en rejilla (que probaría todas las combinaciones) o que una búsqueda aleatoria (que muestrea sin aprender de las pruebas anteriores). El espacio explorado abarcó el número de árboles, la profundidad máxima, los tamaños mínimos de nodo y hoja, y el número de variables candidatas por división. La mejor configuración encontrada (Tabla~\ref{tab:rf_params}) se adoptó como modelo final.
 
 \begin{table}[htbp]
-  \caption{Hiperparámetros del Random Forest hallados por la búsqueda propia (HyperOpt/TPE, 100 evaluaciones).}
+  \caption{Hiperparámetros del \acrlong{rf} hallados por la búsqueda propia (HyperOpt/TPE, 100 evaluaciones).}
   \label{tab:rf_params}
   \centering
   \begin{tabular}{ll}
@@ -505,19 +514,20 @@ La búsqueda para el Random Forest se hizo con optimización Bayesiana (HyperOpt
 
 Los 500 árboles del bosque se entrenan cada uno sobre una muestra distinta de los datos y de las variables (\textit{bagging}); promediar sus predicciones reduce la varianza del conjunto. La profundidad máxima de 20 niveles, junto con los mínimos de 15 muestras para dividir un nodo y 6 para formar una hoja, impide que los árboles crezcan hasta memorizar casos concretos, lo que limita el sobreajuste. El parámetro \texttt{max\_features=sqrt} indica que en cada división solo se considera la raíz cuadrada del número total de variables; es el valor que Breiman recomienda para clasificación \cite{Breiman2001}, ya que decorrelaciona los árboles y mejora la capacidad de generalización del conjunto.
 
+\newpage
 \subsubsection*{XGBoost}
 
-Para XGBoost se ejecutó primero una búsqueda propia con la misma metodología que la del Random Forest (HyperOpt/TPE, 100 evaluaciones sobre el conjunto de entrenamiento completo), que alcanzó un rendimiento comparable al de la configuración de referencia. No obstante, la investigación de referencia \cite{MartinBaos2023Thesis} publica una búsqueda mucho más exhaustiva sobre este mismo dataset, con 1.000 evaluaciones y un presupuesto de cómputo muy superior. Por su mayor exhaustividad y por estar ya validada en la literatura, se adoptaron esos hiperparámetros (Tabla~\ref{tab:xgb_params}) para el modelo XGBoost final.
+Para \gls{xgboost} se ejecutó primero una búsqueda propia con la misma metodología que la del Random Forest (HyperOpt/TPE, 100 evaluaciones sobre el conjunto de entrenamiento completo), que alcanzó un rendimiento comparable al de la configuración de referencia. No obstante, la investigación de referencia \cite{MartinBaos2023Thesis} publica una búsqueda mucho más exhaustiva sobre este mismo dataset, con 1.000 evaluaciones y un presupuesto de cómputo muy superior. Por su mayor exhaustividad y por estar ya validada en la literatura, se adoptaron esos hiperparámetros (Tabla~\ref{tab:xgb_params}) para el modelo XGBoost final.
 
 \begin{table}[htbp]
-  \caption{Hiperparámetros de XGBoost adoptados de la búsqueda de referencia (HyperOpt/TPE, 1.000 evaluaciones).}
+  \caption{Hiperparámetros de XGBoost adoptados de la búsqueda de referencia (HyperOpt/TPE, \numprint{1000} evaluaciones).}
   \label{tab:xgb_params}
   \centering
   \begin{tabular}{ll}
     \toprule
     \textbf{Parámetro} & \textbf{Valor} \\
     \midrule
-    \texttt{n\_estimators}      & 4.809 \\
+    \texttt{n\_estimators}      & \numprint{4809} \\
     \texttt{learning\_rate}     & 0,01 \\
     \texttt{max\_depth}         & 4 \\
     \texttt{min\_child\_weight} & 35 \\
@@ -533,6 +543,8 @@ Para XGBoost se ejecutó primero una búsqueda propia con la misma metodología 
 \end{table}
 
 La combinación de una tasa de aprendizaje baja (\texttt{learning\_rate=0,01}) con un número elevado de árboles (4.809) es característica de un modelo robusto: con pasos pequeños el modelo necesita más iteraciones para converger, pero el resultado tiene menor varianza. La penalización \texttt{gamma=3,93} y el peso mínimo de hoja \texttt{min\_child\_weight=35} actúan como regularización estructural, ya que evitan divisiones que no aporten una ganancia suficiente y reducen el sobreajuste en las clases minoritarias, como la bicicleta.
+
+\newpage
 
 \subsubsection*{Red neuronal profunda}
 
@@ -557,17 +569,20 @@ Como cada evaluación de la red exige un ciclo completo de entrenamiento, en lug
   \end{tabular}
 \end{table}
 
-La red, representada en la Figura~\ref{fig:dnn_arch}, transforma el vector de entrada a través de tres capas ocultas de 128, 128 y 64 neuronas y una capa final de 4 salidas, una por modo de transporte. Cada capa oculta encadena cuatro operaciones. Primero, una capa lineal (\textit{Linear}) combina sus entradas mediante una suma ponderada. Después, la normalización por lotes (\textit{BatchNorm}) reescala esas sumas para que tengan media y escala estables dentro de cada lote de entrenamiento, lo que evita que los valores crezcan o se desvanezcan al atravesar las capas y hace que el entrenamiento sea más estable. A continuación, la función de activación ReLU introduce la no linealidad que permite a la red aprender relaciones complejas, dejando pasar los valores positivos y anulando los negativos. Por último, en las dos primeras capas, el \textit{dropout} desactiva al azar una fracción de las neuronas (30\,\% y 20\,\%, respectivamente) en cada paso de entrenamiento, lo que obliga a la red a no depender de neuronas concretas y reduce el sobreajuste.
+% La red, representada en la Figura~\ref{fig:dnn_arch}, 
+La red transforma el vector de entrada a través de tres capas ocultas de 128, 128 y 64 neuronas y una capa final de 4 salidas, una por modo de transporte. Cada capa oculta encadena cuatro operaciones. Primero, una capa lineal (\textit{Linear}) combina sus entradas mediante una suma ponderada. Después, la normalización por lotes (\textit{BatchNorm}) reescala esas sumas para que tengan media y escala estables dentro de cada lote de entrenamiento, lo que evita que los valores crezcan o se desvanezcan al atravesar las capas y hace que el entrenamiento sea más estable. A continuación, la función de activación ReLU introduce la no linealidad que permite a la red aprender relaciones complejas, dejando pasar los valores positivos y anulando los negativos. Por último, en las dos primeras capas, el \textit{dropout} desactiva al azar una fracción de las neuronas (30\,\% y 20\,\%, respectivamente) en cada paso de entrenamiento, lo que obliga a la red a no depender de neuronas concretas y reduce el sobreajuste.
 
-El orden de estas operaciones importa: la normalización se aplica después de la capa lineal y antes de la activación, sobre las sumas ponderadas y no sobre la salida de la capa anterior, lo que mantiene la entrada a la ReLU en un rango estable a lo largo del entrenamiento. La red se entrena con el optimizador Adam, que adapta el tamaño del paso de actualización para cada parámetro, y la función de pérdida es la entropía cruzada con suavizado de etiquetas (\textit{label smoothing} de 0,1): en lugar de exigir al modelo una probabilidad de 1 para la clase correcta y 0 para el resto, se le pide repartir una pequeña parte de la probabilidad entre todas las clases, lo que evita que se vuelva excesivamente confiado y mejora el ajuste de sus probabilidades. El entrenamiento incorpora además tres mecanismos de control: reducción de la tasa de aprendizaje a la mitad cuando la pérdida de validación deja de mejorar (\texttt{ReduceLROnPlateau}), recorte de la magnitud de los gradientes para evitar actualizaciones bruscas (\texttt{clip\_grad\_norm=1,0}) y parada anticipada, que detiene el entrenamiento y recupera el mejor estado si la pérdida de validación no mejora en 10 épocas seguidas. La semilla aleatoria se fijó a 481516 en PyTorch y NumPy para que el entrenamiento sea reproducible.
+El orden de estas operaciones importa: la normalización se aplica después de la capa lineal y antes de la activación, sobre las sumas ponderadas y no sobre la salida de la capa anterior, lo que mantiene la entrada a la ReLU en un rango estable a lo largo del entrenamiento.\newline
 
-\begin{figure}[htbp]
-  \centering
-  % \missingfigure{Diagrama de la arquitectura de la red neuronal: vector de entrada de n características → bloque 1 [Linear(128) → BatchNorm → ReLU → Dropout 0,3] → bloque 2 [Linear(128) → BatchNorm → ReLU → Dropout 0,2] → bloque 3 [Linear(64) → BatchNorm → ReLU] → capa de salida Linear(4) → softmax → probabilidades de walk, cycle, pt, drive.}
-  \includegraphics[width=1.0\textwidth]{figs/_borrador_dnn.png}
-  \caption{Arquitectura de la red neuronal profunda de elección modal.}
-  \label{fig:dnn_arch}
-\end{figure}
+La red se entrena con el optimizador Adam, que adapta el tamaño del paso de actualización para cada parámetro, y la función de pérdida es la entropía cruzada con suavizado de etiquetas (\textit{label smoothing} de 0,1): en lugar de exigir al modelo una probabilidad de 1 para la clase correcta y 0 para el resto, se le pide repartir una pequeña parte de la probabilidad entre todas las clases, lo que evita que se vuelva excesivamente confiado y mejora el ajuste de sus probabilidades. El entrenamiento incorpora además tres mecanismos de control: reducción de la tasa de aprendizaje a la mitad cuando la pérdida de validación deja de mejorar (\texttt{ReduceLROnPlateau}), recorte de la magnitud de los gradientes para evitar actualizaciones bruscas (\texttt{clip\_grad\_norm=1,0}) y parada anticipada, que detiene el entrenamiento y recupera el mejor estado si la pérdida de validación no mejora en 10 épocas seguidas. La semilla aleatoria se fijó a 481516 en PyTorch y NumPy para que el entrenamiento sea reproducible.
+
+% \begin{figure}[htbp]
+%   \centering
+%   % \missingfigure{Diagrama de la arquitectura de la red neuronal: vector de entrada de n características → bloque 1 [Linear(128) → BatchNorm → ReLU → Dropout 0,3] → bloque 2 [Linear(128) → BatchNorm → ReLU → Dropout 0,2] → bloque 3 [Linear(64) → BatchNorm → ReLU] → capa de salida Linear(4) → softmax → probabilidades de walk, cycle, pt, drive.}
+%   \includegraphics[width=1.0\textwidth]{figs/_borrador_dnn.png}
+%   \caption{Arquitectura de la red neuronal profunda de elección modal.}
+%   \label{fig:dnn_arch}
+% \end{figure}
 
 \subsection{Entrenamiento y evaluación}
 \label{subsec:impl_lpmc_entrenamiento}
@@ -579,12 +594,14 @@ La evaluación combina dos métricas. La primera es la exactitud (\textit{accura
   \label{eq:accuracy}
   \text{Accuracy} = \frac{1}{N}\sum_{i=1}^{N} \mathbb{1}\!\left[\hat{y}_i = y_i\right]
 \end{equation}
-donde $N$ es el número de viajes evaluados, $y_i$ el modo real del viaje $i$, $\hat{y}_i$ el modo predicho y $\mathbb{1}[\cdot]$ una función indicadora que vale 1 cuando ambos coinciden y 0 en caso contrario. La exactitud solo atiende al modo más probable e ignora con cuánta seguridad lo predice el modelo. Para medir también la calidad de las probabilidades se parte de la entropía cruzada media $H$:
+donde $N$ es el número de viajes evaluados, $y_i$ el modo real del viaje $i$, $\hat{y}_i$ el modo predicho y $\mathbb{1}[\cdot]$ una función indicadora que vale 1 cuando ambos coinciden y 0 en caso contrario. La exactitud solo atiende al modo más probable e ignora con cuánta seguridad lo predice el modelo.
+\newpage
+Para medir también la calidad de las probabilidades se parte de la entropía cruzada media $H$:
 \begin{equation}
   \label{eq:crossentropy}
   H = -\frac{1}{N}\sum_{i=1}^{N} \ln \hat{p}(y_i)
 \end{equation}
-donde $\hat{p}(y_i)$ es la probabilidad que el modelo asigna al modo realmente elegido en el viaje $i$. La entropía cruzada penaliza asignar probabilidades bajas a la clase correcta, tanto más cuanto más confiada y equivocada sea la predicción. A partir de ella se define el GMPCA (\textit{Geometric Mean Probability of Correct Alternative}):
+donde $\hat{p}(y_i)$ es la probabilidad que el modelo asigna al modo realmente elegido en el viaje $i$. La entropía cruzada penaliza asignar probabilidades bajas a la clase correcta, tanto más cuanto más confiada y equivocada sea la predicción. A partir de ella se define el \gsl{gmpca}:
 \begin{equation}
   \label{eq:gmpca}
   \text{GMPCA} = \exp(-H) = \exp\!\left(\frac{1}{N}\sum_{i=1}^{N} \ln \hat{p}(y_i)\right)
@@ -605,7 +622,7 @@ esto es, la media geométrica de las probabilidades que el modelo asigna al modo
     \bottomrule
   \end{tabular}
 \end{table}
-
+\vspace{-10mm}
 \begin{table}[htbp]
   \caption{Resultados en el conjunto de prueba independiente (dataset LPMC).}
   \label{tab:lpmc_test_results}
@@ -621,19 +638,27 @@ esto es, la media geométrica de las probabilidades que el modelo asigna al modo
   \end{tabular}
 \end{table}
 
-Las Tablas~\ref{tab:lpmc_train_results} y~\ref{tab:lpmc_test_results} muestran que los tres modelos alcanzan un rendimiento muy similar, con XGBoost ligeramente por delante en ambas métricas. La diferencia entre la validación cruzada y la prueba se mantiene por debajo de un punto porcentual en todos los modelos, señal de que la división temporal no introduce diferencias apreciables entre las oleadas del dataset. El GMPCA, en torno al 50--52\,\%, duplica aproximadamente al de un clasificador aleatorio sobre cuatro clases (25\,\%), en línea con los resultados de investigaciones previas sobre el mismo dataset \cite{MartinBaos2023TRC}. XGBoost obtiene el mayor valor de GMPCA en prueba (51,63\,\%), una ligera ventaja tanto en exactitud como en la calidad de las probabilidades que asigna.
+\newpage
+Las Tablas~\ref{tab:lpmc_train_results} y~\ref{tab:lpmc_test_results} muestran que los tres modelos alcanzan un rendimiento muy similar, con \gls{xgboost} ligeramente por delante en ambas métricas. La diferencia entre la validación cruzada y la prueba se mantiene por debajo de un punto porcentual en todos los modelos, señal de que la división temporal no introduce diferencias apreciables entre las oleadas del dataset. El \gls{gmpca}, en torno al 50--52\,\%, duplica aproximadamente al de un clasificador aleatorio sobre cuatro clases (25\,\%), en línea con los resultados de investigaciones previas sobre el mismo dataset \cite{MartinBaos2023TRC}. \gls{xgboost} obtiene el mayor valor de \gls{gmpca} en prueba (51,63\,\%), una ligera ventaja tanto en exactitud como en la calidad de las probabilidades que asigna.\newline
 
-La elección de XGBoost como modelo principal del simulador no responde solo a esta ventaja numérica, que es estrecha, sino sobre todo a su comportamiento en la práctica ante los ajustes de conocimiento experto que aplica el backend, como se detalla en la Sección~\ref{subsec:impl_lpmc_conocimiento}.
-
+La elección de \gls{xgboost} como modelo principal del simulador no responde solo a esta ventaja numérica, que es estrecha, sino sobre todo a su comportamiento en la práctica ante los ajustes de conocimiento experto que aplica el backend, como se detalla en la Sección~\ref{subsec:impl_lpmc_conocimiento}.
+\vspace{-5mm}
 \subsection{Ajustes y conocimiento experto}
 \label{subsec:impl_lpmc_conocimiento}
 
-Los tres modelos infieren siempre sobre un número fijo y predefinido de modos de transporte, con independencia de que en un trayecto concreto alguno de esos modos no exista realmente. Para que las predicciones sean razonables en esos casos límite, el backend inyecta dos ajustes de conocimiento experto en las variables de entrada antes de la inferencia.
+Los tres modelos infieren siempre sobre un número fijo y predefinido de modos de transporte, con independencia de que en un trayecto concreto alguno de esos modos no exista realmente. Para que las predicciones sean razonables en esos casos límite, el backend inyecta dos ajustes de conocimiento experto en las variables de entrada antes de la inferencia.\newline
 
-El primer ajuste corrige los trayectos sin transporte público real. Cuando OTP devuelve un itinerario compuesto exclusivamente por un tramo a pie, las seis características de transporte público (tiempo de acceso a la parada, tiempo en autobús, tiempo en ferroviario, tiempo de espera y de desplazamiento en transbordos, y número de transbordos) valdrían cero en casi todas ellas, lo que en el dataset caracteriza precisamente a un transporte público muy rápido y directo. El modelo podría entonces asignar una probabilidad elevada a un modo que, en realidad, no está disponible. Como no es posible eliminar un modo de la inferencia sin cambiar la arquitectura, el backend comprueba si el itinerario contiene algún tramo de transporte público y, si no es así, sobrescribe esas seis características (\texttt{dur\_pt\_access}, \texttt{dur\_pt\_bus}, \texttt{dur\_pt\_rail}, \texttt{dur\_pt\_int\_waiting}, \texttt{dur\_pt\_int\_walking} y \texttt{pt\_n\_interchanges}) con un valor situado en el extremo superior de su distribución. En concreto, a cada característica se le asigna el valor que, tras el escalado estándar (\texttt{StandardScaler}) del modelo, queda cinco desviaciones típicas por encima de la media de entrenamiento: es decir, $\mu + 5\sigma$, tomando la media $\mu$ y la desviación típica $\sigma$ que el escalador aprendió de esa característica. De este modo el modelo percibe un transporte público con tiempos y transbordos extremos, prácticamente inviable, y descarta esa opción sin necesidad de modificar su arquitectura ni el número de variables de entrada.
+El primer ajuste corrige los trayectos sin transporte público real. Cuando OTP devuelve un itinerario compuesto exclusivamente por un tramo a pie, las seis características de transporte público (tiempo de acceso a la parada, tiempo en autobús, tiempo en ferroviario, tiempo de espera y de desplazamiento en transbordos, y número de transbordos) valdrían cero en casi todas ellas, lo que en el dataset caracteriza precisamente a un transporte público muy rápido y directo. El modelo podría entonces asignar una probabilidad elevada a un modo que, en realidad, no está disponible. Como no es posible eliminar un modo de la inferencia sin cambiar la arquitectura, el backend comprueba si el itinerario contiene algún tramo de transporte público y, si no es así, sobrescribe esas seis características (\texttt{dur\_pt\_access}, \texttt{dur\_pt\_bus}, \texttt{dur\_pt\_rail}, \texttt{dur\_pt\_int\_waiting}, \texttt{dur\_pt\_int\_walking} y \texttt{pt\_n\_interchanges}) con un valor situado en el extremo superior de su distribución. En concreto, a cada característica se le asigna el valor que, tras el escalado estándar (\texttt{StandardScaler}) del modelo, queda cinco desviaciones típicas por encima de la media de entrenamiento: es decir, $\mu + 5\sigma$, tomando la media $\mu$ y la desviación típica $\sigma$ que el escalador aprendió de esa característica. 
 
-El segundo ajuste corrige los trayectos muy cortos en coche. En trayectos de menos de 500~m de distancia en línea recta (calculada con la fórmula de Haversine), el backend añade un recargo fijo de 10 minutos al tiempo de conducción, que representa el aparcamiento y el acceso al vehículo. Sin él, el modelo tendería a elegir el coche siempre que su tiempo de conducción fuese menor, ignorando que para distancias tan cortas el sobrecoste de aparcar hace más razonable ir a pie.
+\newpage
+De este modo el modelo percibe un transporte público con tiempos y transbordos extremos, prácticamente inviable, y descarta esa opción sin necesidad de modificar su arquitectura ni el número de variables de entrada.\newline
 
-Ambos ajustes conviene enmarcarlos en una limitación de fondo de los modelos de elección modal, tanto los clásicos de elección discreta como los de aprendizaje automático. Todos maximizan una utilidad y asumen un viajero racional, pero las decisiones reales incorporan un componente de ruido irreducible: no es realista esperar una probabilidad exactamente nula para un modo, de modo que una probabilidad residual del orden del 1\,\% no debe interpretarse como un error del modelo. Por otra parte, todo modelo de aprendizaje automático pierde fiabilidad al extrapolar fuera del rango de datos con el que se entrenó. El dataset LPMC, por ejemplo, contiene pocos trayectos muy cortos, y de ahí que el segundo ajuste sea necesario. En estas regiones poco cubiertas por los datos, inyectar conocimiento experto en las entradas corrige el comportamiento sin tener que tocar el modelo.
+El segundo ajuste corrige los trayectos muy cortos en coche. En trayectos de menos de 500~m de distancia en línea recta (calculada con la fórmula de Haversine), el backend añade un recargo fijo de 10 minutos al tiempo de conducción, que representa el aparcamiento y el acceso al vehículo. Sin él, el modelo tendería a elegir el coche siempre que su tiempo de conducción fuese menor, ignorando que para distancias tan cortas el sobrecoste de aparcar hace más razonable ir a pie.\newline
 
-El comportamiento de los tres modelos ante la penalización del transporte público resultó, además, revelador de sus diferencias. Esa penalización lleva las características de transporte público a valores extremos, muy alejados de los vistos en entrenamiento. XGBoost responde como se espera y reduce la probabilidad del transporte público a un valor casi nulo. El Random Forest, en cambio, está acotado por construcción: su predicción es el promedio de las distribuciones de clase almacenadas en las hojas, por lo que la probabilidad del transporte público desciende pero no llega a anularse, quedándose en un valor residual que el usuario percibe como una opción todavía algo probable. La red neuronal no tiene esa cota: ante entradas tan alejadas de la distribución de entrenamiento puede extrapolar de forma descontrolada y concentrar casi toda la probabilidad en un único modo de transporte. La literatura atribuye a las redes neuronales una capacidad de extrapolación más flexible que la de los modelos de árbol \cite{Goodfellow2016}, pero esa flexibilidad no asegura que la extrapolación sea acertada en un caso concreto. Por todo ello, tanto por su rendimiento como por su respuesta más predecible ante los escenarios límite del simulador, se escogió XGBoost como modelo principal.
+Ambos ajustes conviene enmarcarlos en una limitación de fondo de los modelos de elección modal, tanto los clásicos de elección discreta como los de aprendizaje automático. Todos maximizan una utilidad y asumen un viajero racional, pero las decisiones reales incorporan un componente de ruido irreducible: no es realista esperar una probabilidad exactamente nula para un modo, de modo que una probabilidad residual del orden del 1\,\% no debe interpretarse como un error del modelo. Por otra parte, todo modelo de aprendizaje automático pierde fiabilidad al extrapolar fuera del rango de datos con el que se entrenó. El dataset \gls{lpmc}, por ejemplo, contiene pocos trayectos muy cortos, y de ahí que el segundo ajuste sea necesario. En estas regiones poco cubiertas por los datos, inyectar conocimiento experto en las entradas corrige el comportamiento sin tener que tocar el modelo.\newline
+
+El comportamiento de los tres modelos ante la penalización del transporte público resultó, además, revelador de sus diferencias. Esa penalización lleva las características de transporte público a valores extremos, muy alejados de los vistos en entrenamiento.\newline
+
+XGBoost responde como se espera y reduce la probabilidad del transporte público a un valor casi nulo. El Random Forest, en cambio, está acotado por construcción: su predicción es el promedio de las distribuciones de clase almacenadas en las hojas, por lo que la probabilidad del transporte público desciende pero no llega a anularse, quedándose en un valor residual que el usuario percibe como una opción todavía algo probable. La red neuronal no tiene esa cota: ante entradas tan alejadas de la distribución de entrenamiento puede extrapolar de forma descontrolada y concentrar casi toda la probabilidad en un único modo de transporte. \newpage
+
+La literatura atribuye a las redes neuronales una capacidad de extrapolación más flexible que la de los modelos de árbol \cite{Goodfellow2016}, pero esa flexibilidad no asegura que la extrapolación sea acertada en un caso concreto. Por todo ello, tanto por su rendimiento como por su respuesta más predecible ante los escenarios límite del simulador, se escogió \gls{xgboost} como modelo principal.

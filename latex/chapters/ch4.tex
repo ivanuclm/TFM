@@ -1,16 +1,16 @@
 \chapter{Arquitectura del sistema}
 \label{ch:arquitectura}
 
-Este capítulo describe la organización estructural del simulador: los componentes que lo forman, cómo se relacionan entre sí y las decisiones de diseño que condicionan esa organización. El detalle de implementación de cada componente se desarrolla en el Capítulo~\ref{ch:implementacion}.
+Este capítulo describe la organización estructural del simulador: los componentes que lo forman, cómo se relacionan entre sí y las decisiones de diseño que condicionan esa organización. El detalle de implementación de cada componente se desarrolla en el Capítulo~\ref{ch:implementacion}.\newline
 
-El sistema está compuesto por cinco bloques funcionales: una interfaz web, un backend de orquestación, tres instancias del motor de enrutado viario OSRM, un planificador de transporte público basado en OpenTripPlanner y un módulo de inferencia de elección modal. Todos ellos se despliegan como contenedores Docker orquestados mediante Docker Compose.
+El sistema está compuesto por cinco bloques funcionales: una interfaz web, un backend de orquestación, tres instancias del motor de enrutado viario \gls{osrm}, un planificador de transporte público basado en \gls{otp} y un módulo de inferencia de elección modal. Todos ellos se despliegan como contenedores Docker orquestados mediante Docker Compose.
 
 % -------------------------------------------------------
 \section{Visión general}
 \label{sec:arch_vision_general}
 % -------------------------------------------------------
 
-La Figura~\ref{fig:arch_general} muestra la arquitectura de alto nivel del sistema. El principio de diseño central es que el frontend nunca se comunica directamente con ningún servicio externo: toda petición pasa por el backend FastAPI, que actúa como única puerta de entrada y punto de orquestación. Esta decisión simplifica el control de versiones de la API, centraliza el manejo de errores y evita exponer los puertos internos de OSRM y OTP al navegador.
+La Figura~\ref{fig:arch_general} muestra la arquitectura de alto nivel del sistema. El principio de diseño central es que el frontend nunca se comunica directamente con ningún servicio externo: toda petición pasa por el backend FastAPI, que actúa como única puerta de entrada y punto de orquestación. Esta decisión simplifica el control de versiones de la API, centraliza el manejo de errores y evita exponer los puertos internos de \gls{osrm} y \gls{otp} al navegador.\newline
 
 \begin{figure}[htbp]
   \centering
@@ -28,41 +28,42 @@ El frontend expone la interfaz cartográfica al usuario y delega en el backend e
 
 La infraestructura del sistema se define íntegramente en un fichero \texttt{docker-compose.yml} en la raíz del repositorio. El despliegue completo se obtiene con un único comando (\texttt{docker compose up -{}-build}), que elimina dependencias de entorno en la máquina anfitriona y hace reproducible el sistema entre equipos de desarrollo y de producción. 
 
-\subsection{Versionado de artefactos pesados con Git LFS}
+\subsection[Versionado de artefactos pesados con Git LFS]{Versionado de artefactos pesados con Git \gls{lfs}}
 
-Varios servicios requieren artefactos pesados generados a partir de los datos de origen: los grafos viarios de OSRM, el grafo multimodal de OpenTripPlanner y los modelos de aprendizaje automático entrenados. Un repositorio Git convencional está pensado para ficheros de texto y penaliza los binarios grandes, ya que guarda una copia completa de cada versión en el historial. Para evitarlo, estos artefactos se versionan con \textit{Git LFS} (\textit{Large File Storage}), una extensión de Git que almacena los ficheros de gran tamaño en un servidor aparte y deja en el historial únicamente un puntero de texto ligero que los referencia. Así, un clon del repositorio recupera los artefactos ya construidos sin necesidad de regenerarlos y sin inflar el historial. La Tabla~\ref{tab:lfs_artefactos} recoge los artefactos versionados con LFS.
+Varios servicios requieren artefactos pesados generados a partir de los datos de origen: los grafos viarios de \gls{osrm}, el grafo multimodal de \gls{otp} y los modelos de aprendizaje automático entrenados. Un repositorio Git convencional está pensado para ficheros de texto y penaliza los binarios grandes, ya que guarda una copia completa de cada versión en el historial. Para evitarlo, estos artefactos se versionan con \textit{Git \gls{lfs}}, una extensión de Git que almacena los ficheros de gran tamaño en un servidor aparte y deja en el historial únicamente un puntero de texto ligero que los referencia. Así, un clon del repositorio recupera los artefactos ya construidos sin necesidad de regenerarlos y sin inflar el historial. La Tabla~\ref{tab:lfs_artefactos} recoge los artefactos versionados con \gls{lfs}.
 
 \begin{table}[htbp]
-  \caption{Artefactos versionados mediante Git LFS.}
+  \caption[Artefactos versionados mediante Git LFS.]{Artefactos versionados mediante Git \gls{lfs}.}
   \label{tab:lfs_artefactos}
   \centering
   \begin{tabular}{llp{6.2cm}}
     \hline
     \textbf{Artefacto} & \textbf{Tamaño} & \textbf{Descripción} \\
     \hline
-    \texttt{clm.osm.pbf}                  & \textasciitilde{}97~MB  & Extracto OSM de Castilla-La Mancha; red viaria para OSRM y OTP. \\
-    \texttt{graph.obj}                    & \textasciitilde{}117~MB & Grafo multimodal de OpenTripPlanner. \\
-    \texttt{GTFS\_Urbano\_Toledo\_2026.zip} & \textasciitilde{}14~MB  & Feed GTFS del autobús urbano de Toledo. \\
-    \texttt{xgb\_lpmc.joblib}             & \textasciitilde{}16~MB  & Modelo XGBoost entrenado. \\
-    \texttt{rf\_lpmc.joblib}              & \textasciitilde{}398~MB & Modelo Random Forest entrenado. \\
-    \texttt{dnn\_lpmc.pt}                 & \textasciitilde{}0,2~MB & Pesos de la red neuronal profunda. \\
+    \texttt{clm.osm.pbf}                  & \textasciitilde{}97~MB  & Extracto \gls{osm} de Castilla-La Mancha; red viaria para \gls{osrm} y \gls{otp}. \\
+    \texttt{graph.obj}                    & \textasciitilde{}117~MB & Grafo multimodal de \gls{otp}. \\
+    \texttt{GTFS\_Urbano\_Toledo\_2026.zip} & \textasciitilde{}14~MB  & Feed \gls{gtfs} del autobús urbano de Toledo. \\
+    \texttt{xgb\_lpmc.joblib}             & \textasciitilde{}16~MB  & Modelo \gls{xgboost} entrenado. \\
+    \texttt{rf\_lpmc.joblib}              & \textasciitilde{}398~MB & Modelo \gls{rf} entrenado. \\
+    \texttt{dnn\_lpmc.pt}                 & \textasciitilde{}0,2~MB & Pesos de la \gls{dnn}. \\
     \hline
     \textbf{Total}                        & \textasciitilde{}642~MB & \\
     \hline
   \end{tabular}
 \end{table}
 
-El artefacto más pesado es, con diferencia, el modelo Random Forest (\textasciitilde{}398~MB), lo que llevó a valorar si excluirlo del repositorio y exigir su reentrenamiento tras el clonado. Se optó por incluirlo tras un análisis de coste sencillo. El plan gratuito de GitHub ofrece 10~GiB de almacenamiento y 10~GiB mensuales de transferencia para Git LFS \cite{GitHubLFSBilling}. El repositorio ocupa unos 0,64~GiB de artefactos LFS, muy por debajo del límite de almacenamiento, y esa misma cifra es lo que consume cada clonado completo, por lo que la cuota gratuita da margen para alrededor de quince clonados al mes. Superado ese punto, GitHub factura la transferencia adicional por uso, a razón de unos céntimos por clonado; como salvaguarda frente a un consumo inesperado, se configuró en la cuenta un límite de gasto de 5~€, que a ese precio deja margen para cientos de descargas. Incluir el modelo, por tanto, no supone coste apreciable y evita que quien clone el repositorio tenga que reentrenarlo. Si el número de descargas creciera de forma sostenida, la alternativa natural sería distribuir los modelos como \textit{release assets}, que no computan en la cuota de LFS.
+El artefacto más pesado es, con diferencia, el modelo \acrlong{rf} (\textasciitilde{}398~MB), lo que llevó a valorar si excluirlo del repositorio y exigir su reentrenamiento tras el clonado. Se optó por incluirlo tras un análisis de coste sencillo. El plan gratuito de GitHub ofrece 10~GiB de almacenamiento y 10~GiB mensuales de transferencia para Git \gls{lfs} \cite{GitHubLFSBilling}. El repositorio ocupa unos 0,64~GiB de artefactos \gls{lfs}, muy por debajo del límite de almacenamiento, y esa misma cifra es lo que consume cada clonado completo, por lo que la cuota gratuita da margen para alrededor de quince clonados al mes. Superado ese punto, GitHub factura la transferencia adicional por uso, a razón de unos céntimos por clonado; como salvaguarda frente a un consumo inesperado, se configuró en la cuenta un límite de gasto de 5~€, que a ese precio deja margen para cientos de descargas. Incluir el modelo, por tanto, no supone coste apreciable y evita que quien clone el repositorio tenga que reentrenarlo. Si el número de descargas creciera de forma sostenida, la alternativa natural sería distribuir los modelos como \textit{release assets}, que no computan en la cuota de \gls{lfs}.
 
 \subsection{Despliegue automatizado}
 
-El objetivo de diseño es que el sistema arranque de principio a fin con un único comando, sin pasos manuales. Para ello, además de los servicios de explotación, la orquestación define tres servicios de inicialización que se ejecutan una sola vez antes de los principales. \texttt{gtfs-init} descomprime el feed GTFS, \texttt{osrm-setup} compila los grafos viarios de OSRM por perfil y \texttt{otp-build} construye el grafo de OpenTripPlanner. Los tres son idempotentes: comprueban si su resultado ya existe y, en tal caso, terminan de inmediato sin rehacer el trabajo.
+El objetivo de diseño es que el sistema arranque de principio a fin con un único comando, sin pasos manuales. Para ello, además de los servicios de explotación, la orquestación define tres servicios de inicialización que se ejecutan una sola vez antes de los principales. \texttt{gtfs-init} descomprime el feed \gls{gtfs}, \texttt{osrm-setup} compila los grafos viarios de \gls{osrm} por perfil y \texttt{otp-build} construye el grafo de \gls{otp}. Los tres son idempotentes: comprueban si su resultado ya existe y, en tal caso, terminan de inmediato sin rehacer el trabajo.
+\newpage
 
-Esta automatización actúa además como mecanismo de reserva (\textit{fallback}) del versionado con LFS. En un clon íntegro, los artefactos ya están presentes gracias a LFS y los servicios de inicialización no hacen nada. Pero si se clona sin LFS, o si se actualiza alguno de los datos de origen (por ejemplo, un feed GTFS más reciente), esos mismos servicios regeneran solo lo que falte. De este modo el sistema es reproducible tanto desde los artefactos versionados como desde cero, siempre con el mismo comando. Los pasos manuales equivalentes, útiles para regenerar un artefacto de forma puntual, se recogen en el Anexo~\ref{anx:despliegue}.
+Esta automatización actúa además como mecanismo de reserva (\textit{fallback}) del versionado con \gls{lfs}. En un clon íntegro, los artefactos ya están presentes gracias a \gls{lfs} y los servicios de inicialización no hacen nada. Pero si se clona sin \gls{lfs}, o si se actualiza alguno de los datos de origen (por ejemplo, un feed \gls{gtfs} más reciente), esos mismos servicios regeneran solo lo que falte. De este modo el sistema es reproducible tanto desde los artefactos versionados como desde cero, siempre con el mismo comando. Los pasos manuales equivalentes, útiles para regenerar un artefacto de forma puntual, se recogen en el Anexo~\ref{anx:despliegue}.
 
 \subsection{Servicios y contenedores}
 
-La Tabla~\ref{tab:servicios_docker} resume los servicios definidos, sus puertos expuestos y su función en el sistema. La Figura~\ref{fig:arch_docker} ilustra la topología de servicios, sus dependencias y los volúmenes compartidos.
+La Tabla~\ref{tab:servicios_docker} resume los servicios definidos, sus puertos expuestos y su función en el sistema. %La Figura~\ref{fig:arch_docker} ilustra la topología de servicios, sus dependencias y los volúmenes compartidos.
 
 \begin{table}[htbp]
   \caption{Servicios Docker Compose del simulador.}
@@ -74,42 +75,45 @@ La Tabla~\ref{tab:servicios_docker} resume los servicios definidos, sus puertos 
     \hline
     \texttt{frontend}   & 5173 & Interfaz web React servida por Vite. \\
     \texttt{backend}    & 8000 & API FastAPI, orquestación y lógica de negocio. \\
-    \texttt{osrm-car}   & 5001 & Motor OSRM con perfil de vehículo a motor. \\
-    \texttt{osrm-bike}  & 5002 & Motor OSRM con perfil de bicicleta. \\
-    \texttt{osrm-foot}  & 5003 & Motor OSRM con perfil peatonal. \\
-    \texttt{otp}        & 8080 & OpenTripPlanner 2.x con grafo multimodal de Toledo. \\
+    \texttt{osrm-car}   & 5001 & Motor \gls{osrm} con perfil de vehículo a motor. \\
+    \texttt{osrm-bike}  & 5002 & Motor \gls{osrm} con perfil de bicicleta. \\
+    \texttt{osrm-foot}  & 5003 & Motor \gls{osrm} con perfil peatonal. \\
+    \texttt{otp}        & 8080 & \gls{otp} 2.x con grafo multimodal de Toledo. \\
     \hline
-    \texttt{gtfs-init}  & — & Descomprime el feed GTFS del archivo ZIP. \\
-    \texttt{osrm-setup} & — & Compila los grafos viarios OSRM por perfil si no están presentes. \\
-    \texttt{otp-build}  & — & Construye el grafo multimodal de OTP si no está presente. \\
+    \texttt{gtfs-init}  & — & Descomprime el feed \gls{gtfs} del archivo ZIP. \\
+    \texttt{osrm-setup} & — & Compila los grafos viarios \gls{osrm} por perfil si no están presentes. \\
+    \texttt{otp-build}  & — & Construye el grafo multimodal de \gls{otp} si no está presente. \\
     \hline
   \end{tabular}
 \end{table}
 
-\begin{figure}[htbp]
-  \centering
-  % \missingfigure{Diagrama de servicios Docker Compose: servicios de aplicación (frontend :5173, backend :8000, osrm-car :5001, osrm-bike :5002, osrm-foot :5003, otp :8080) y servicios de inicialización (gtfs-init, osrm-setup, otp-build, sin puerto expuesto). Dependencias entre servicios (service\_completed\_successfully) y volúmenes montados en los contenedores OSRM y OTP.}
-  \includegraphics[width=\textwidth]{figs/_borrador_docker.png}
-  \caption{Servicios Docker Compose del simulador: dependencias y puertos expuestos.}
-  \label{fig:arch_docker}
-\end{figure}
+% \begin{figure}[htbp]
+%   \centering
+%   % \missingfigure{Diagrama de servicios Docker Compose: servicios de aplicación (frontend :5173, backend :8000, osrm-car :5001, osrm-bike :5002, osrm-foot :5003, otp :8080) y servicios de inicialización (gtfs-init, osrm-setup, otp-build, sin puerto expuesto). Dependencias entre servicios (service\_completed\_successfully) y volúmenes montados en los contenedores OSRM y OTP.}
+%   \includegraphics[width=\textwidth]{figs/_borrador_docker.png}
+%   \caption{Servicios Docker Compose del simulador: dependencias y puertos expuestos.}
+%   \label{fig:arch_docker}
+% \end{figure}
 
-La razón por la que OSRM se instancia tres veces en lugar de usar un único servidor multiperfil es que la imagen oficial de OSRM no admite perfiles simultáneos: cada proceso solo puede servir el grafo con el que fue preprocesado. Esta restricción motivó el cambio desde la solución inicial basada en el servidor de demostración público, que únicamente ofrecía el perfil de conducción, a la infraestructura local multiperfil descrita aquí.
+La razón por la que \gls{osrm} se instancia tres veces en lugar de usar un único servidor multiperfil es que la imagen oficial de \gls{osrm} no admite perfiles simultáneos: cada proceso solo puede servir el grafo con el que fue preprocesado. Esta restricción motivó el cambio desde la solución inicial basada en el servidor de demostración público, que únicamente ofrecía el perfil de conducción, a la infraestructura local multiperfil descrita aquí.
 
 \subsection{Portabilidad}
 
-El sistema está pensado para ejecutarse sin cambios en cualquier máquina, con independencia del sistema operativo, algo que descansa sobre todo en cómo se resuelven las rutas de fichero y cómo se asignan los puertos.
+El sistema está pensado para ejecutarse sin cambios en cualquier máquina, con independencia del sistema operativo, algo que descansa sobre todo en cómo se resuelven las rutas de fichero y cómo se asignan los puertos.\newline
 
-Ningún módulo codifica rutas absolutas del disco, que dependerían del equipo concreto. En su lugar, cada módulo deriva las rutas que necesita a partir de su propia ubicación mediante la biblioteca estándar \texttt{pathlib}, que abstrae el separador de directorios de cada sistema (la barra invertida de Windows frente a la barra de Linux). El módulo de inferencia, por ejemplo, asciende desde su propio fichero hasta la raíz del repositorio y compone desde ahí la ruta al directorio de modelos; el mismo código funciona en el entorno de desarrollo (Windows) y en el contenedor de ejecución (Linux), sin puntos de montaje fijos.
+Ningún módulo codifica rutas absolutas del disco, que dependerían del equipo concreto. En su lugar, cada módulo deriva las rutas que necesita a partir de su propia ubicación mediante la biblioteca estándar \texttt{pathlib}, que abstrae el separador de directorios de cada sistema (la barra invertida de Windows frente a la barra de Linux). El módulo de inferencia, por ejemplo, asciende desde su propio fichero hasta la raíz del repositorio y compone desde ahí la ruta al directorio de modelos; el mismo código funciona en el entorno de desarrollo (Windows) y en el contenedor de ejecución (Linux), sin puntos de montaje fijos.\newline
 
-Los puertos siguen un esquema parecido de independencia. Cada contenedor OSRM escucha internamente en el 5000, y el backend se comunica con ellos por nombre de servicio dentro de la red interna de Docker. Hacia el anfitrión, cada instancia se publica en un puerto distinto (5001, 5002 y 5003 para conducción, bicicleta y a pie, respectivamente) para poder verificarlas por separado. Se evita el 5000 del anfitrión porque lo reutilizan servicios habituales, como el receptor AirPlay de macOS, y provocaría conflictos en algunos equipos. Esta publicación de puertos es solo una comodidad de depuración, ya que en funcionamiento normal el backend es el único que habla con OSRM y OTP, siempre por la red interna.
+Los puertos siguen un esquema parecido de independencia. Cada contenedor \gls{osrm} escucha internamente en el 5000, y el backend se comunica con ellos por nombre de servicio dentro de la red interna de Docker. Hacia el anfitrión, cada instancia se publica en un puerto distinto (5001, 5002 y 5003 para conducción, bicicleta y a pie, respectivamente) para poder verificarlas por separado. Se evita el 5000 del anfitrión porque lo reutilizan servicios habituales, como el receptor AirPlay de macOS, y provocaría conflictos en algunos equipos. Esta publicación de puertos es solo una comodidad de depuración, ya que en funcionamiento normal el backend es el único que habla con \gls{osrm} y \gls{otp}, siempre por la red interna.
 
 % -------------------------------------------------------
 \section{Backend: API y routers}
 \label{sec:arch_backend}
 % -------------------------------------------------------
 
-El backend está implementado con FastAPI sobre Python y se organiza en cuatro routers, cada uno responsable de un dominio funcional. La separación en routers permite desarrollar, probar y documentar cada integración de forma independiente. La Tabla~\ref{tab:endpoints_api} recoge los endpoints principales expuestos por cada router.
+El backend está implementado con FastAPI sobre Python y se organiza en cuatro routers, cada uno responsable de un dominio funcional. La separación en routers permite desarrollar, probar y documentar cada integración de forma independiente. La Tabla~\ref{tab:endpoints_api} recoge los endpoints principales expuestos por cada router.\newline
+
+El de enrutado viario, \texttt{/api/osrm}, recibe un par origen-destino con la lista de perfiles solicitados, consulta en paralelo las instancias \gls{osrm} correspondientes mediante el método \texttt{asyncio.gather} y devuelve al frontend las rutas con distancia, duración y geometría decodificada para su representación cartográfica.
+\newpage
 
 \begin{table}[htbp]
   \caption{Endpoints principales de la API REST del backend.}
@@ -119,8 +123,8 @@ El backend está implementado con FastAPI sobre Python y se organiza en cuatro r
     \hline
     \textbf{Método} & \textbf{Ruta} & \textbf{Descripción} \\
     \hline
-    POST & \texttt{/api/osrm/routes}                  & Rutas viarias por perfil de transporte (OSRM). \\
-    POST & \texttt{/api/otp/routes}                   & Itinerarios de transporte público con desglose por tramos (OTP). \\
+    POST & \texttt{/api/osrm/routes}                  & Rutas viarias por perfil de transporte (\gls{osrm}). \\
+    POST & \texttt{/api/otp/routes}                   & Itinerarios de transporte público con desglose por tramos (\gls{otp}). \\
     GET  & \texttt{/api/gtfs/stops}                   & Listado de paradas con filtro por caja delimitadora. \\
     GET  & \texttt{/api/gtfs/routes}                  & Listado de líneas de la red de transporte. \\
     GET  & \texttt{/api/gtfs/routes/\{id\}}           & Detalle de línea: paradas ordenadas y trazado. \\
@@ -133,32 +137,34 @@ El backend está implementado con FastAPI sobre Python y se organiza en cuatro r
     \hline
   \end{tabular}
 \end{table}
+\vspace{-8mm}
+Para el transporte público, \texttt{/api/otp} consulta \acrlong{otp} y gestiona la paginación entre las alternativas devueltas, hasta cinco por consulta. La respuesta incluye el desglose por tramos, con tipo de modo de transporte, geometría, paradas de inicio y fin, y agencia operadora cuando el tramo es en autobús. Los itinerarios se ordenan por duración; se selecciona automáticamente el primero que incluya al menos un tramo en autobús y, si ninguno lo incluye, el de menor duración total.
 
-El de enrutado viario, \texttt{/api/osrm}, recibe un par origen-destino con la lista de perfiles solicitados, consulta en paralelo las instancias OSRM correspondientes mediante \texttt{asyncio.gather} y devuelve al frontend las rutas con distancia, duración y geometría decodificada para su representación cartográfica.
+La información estática de la red la sirve \texttt{/api/gtfs} a partir del feed \gls{gtfs} cargado en memoria: listado de paradas con sus líneas asociadas, listado de líneas con sus sentidos, detalle de una línea con sus paradas ordenadas y trazado, y horarios por fecha. Estos datos son independientes de \gls{otp}, de modo que la red puede consultarse aunque el planificador no esté disponible.
 
-Para el transporte público, \texttt{/api/otp} consulta OpenTripPlanner y gestiona la paginación entre las alternativas devueltas, hasta cinco por consulta. La respuesta incluye el desglose por tramos, con tipo de modo de transporte, geometría, paradas de inicio y fin, y agencia operadora cuando el tramo es en autobús. Los itinerarios se ordenan por duración; se selecciona automáticamente el primero que incluya al menos un tramo en autobús y, si ninguno lo incluye, el de menor duración total.
-
-La información estática de la red la sirve \texttt{/api/gtfs} a partir del feed GTFS cargado en memoria: listado de paradas con sus líneas asociadas, listado de líneas con sus sentidos, detalle de una línea con sus paradas ordenadas y trazado, y horarios por fecha. Estos datos son independientes de OpenTripPlanner, de modo que la red puede consultarse aunque el planificador no esté disponible.
-
-Por último, \texttt{/api/lpmc} recibe las coordenadas de origen y destino junto con el perfil sociodemográfico del viajero, construye el vector de características consultando OSRM y OTP internamente, aplica el escalado y ejecuta la inferencia con el modelo activo. El endpoint \texttt{/compare} ejecuta los tres modelos de forma secuencial sobre el mismo escenario y devuelve sus probabilidades para cada modo de transporte; la ejecución secuencial evita comprometer el rendimiento de la CPU compartida entre contenedores.
+Por último, \texttt{/api/lpmc} recibe las coordenadas de origen y destino junto con el perfil sociodemográfico del viajero, construye el vector de características consultando \gls{osrm} y \gls{otp} internamente, aplica el escalado y ejecuta la inferencia con el modelo activo. El endpoint \texttt{/compare} ejecuta los tres modelos de forma secuencial sobre el mismo escenario y devuelve sus probabilidades para cada modo de transporte; la ejecución secuencial evita comprometer el rendimiento de la CPU compartida entre contenedores.
 
 % -------------------------------------------------------
 \section{Frontend: interfaz cartográfica}
 \label{sec:arch_frontend}
 % -------------------------------------------------------
 
-El frontend está desarrollado con React~18, Vite y TypeScript. React~18 es la biblioteca de construcción de interfaces de usuario; Vite actúa como compilador y servidor de desarrollo con recarga automática del módulo; TypeScript añade comprobación estática de tipos sobre JavaScript. La representación cartográfica se realiza con React-Leaflet, que integra la biblioteca de mapas Leaflet en el modelo de componentes de React. Los iconos de la interfaz proceden de Lucide React, una biblioteca de iconos SVG de código abierto. Las peticiones asíncronas al backend se gestionan con TanStack Query, que aporta caché de respuestas, gestión de estados de carga y reintento automático.
+El frontend está desarrollado con React~18, Vite y TypeScript. React~18 es la biblioteca de construcción de interfaces de usuario; Vite actúa como compilador y servidor de desarrollo con recarga automática del módulo; TypeScript añade comprobación estática de tipos sobre JavaScript. La representación cartográfica se realiza con React-Leaflet, que integra la biblioteca de mapas Leaflet en el modelo de componentes de React. Los iconos de la interfaz proceden de Lucide React, una biblioteca de iconos SVG de código abierto. Las peticiones asíncronas al backend se gestionan con TanStack Query, que aporta caché de respuestas, gestión de estados de carga y reintento automático.\newline
 
-La aplicación se estructura en dos componentes principales. \texttt{App} concentra el estado global y la lógica de negocio del cliente: gestiona los puntos de origen y destino, los modos de transporte seleccionados, los resultados de rutas, la línea activa en la red GTFS y el perfil del viajero para la inferencia. \texttt{MapView} recibe el estado relevante mediante \textit{props} —datos que el componente padre pasa al componente hijo de forma unidireccional— y se encarga de renderizar los marcadores, los trazados de ruta y las paradas de autobús sobre el mapa.
+La aplicación se estructura en dos componentes principales. \texttt{App} concentra el estado global y la lógica de negocio del cliente: gestiona los puntos de origen y destino, los modos de transporte seleccionados, los resultados de rutas, la línea activa en la red \gls{gtfs} y el perfil del viajero para la inferencia. \texttt{MapView} recibe el estado relevante mediante \textit{props} —datos que el componente padre pasa al componente hijo de forma unidireccional— y se encarga de renderizar los marcadores, los trazados de ruta y las paradas de autobús sobre el mapa.\newline
 
-La interfaz cartográfica está complementada por una barra lateral de navegación (\textit{rail}) de ancho fijo que da acceso a los paneles funcionales del simulador: Inicio, Rutas, Red GTFS, Predicción IA, Capas y Ajustes. La capa de fondo es seleccionable entre seis opciones; el detalle de cada una se describe en la Sección~\ref{subsec:impl_frontend_capas}.
+La interfaz cartográfica está complementada por una barra lateral de navegación (\textit{rail}) de ancho fijo que da acceso a los paneles funcionales del simulador: Inicio, Rutas, Red \gls{gtfs}, Predicción IA, Capas y Ajustes. La capa de fondo es seleccionable entre seis opciones; el detalle de cada una se describe en la Sección~\ref{subsec:impl_frontend_capas}.
 
 % -------------------------------------------------------
 \section{Pipeline de inferencia modal}
 \label{sec:arch_pipeline_inferencia}
 % -------------------------------------------------------
 
-La inferencia de elección modal requiere coordinar cuatro peticiones asíncronas para construir el vector de entrada al modelo. La Figura~\ref{fig:pipeline_inferencia} ilustra el flujo completo.
+La inferencia de elección modal requiere coordinar cuatro peticiones asíncronas para construir el vector de entrada al modelo. La Figura~\ref{fig:pipeline_inferencia} ilustra el flujo completo.\newline
+
+
+Al recibir una petición \texttt{POST /api/lpmc/predict}, el backend lanza en paralelo cuatro consultas asíncronas mediante la primitiva\texttt{asyncio.gather}: una a cada una de las tres instancias \gls{osrm} (conducción, bicicleta y a pie) y una a \gls{otp}. Con los resultados se construye el vector de características de ruta y se añaden las variables sociodemográficas recibidas en la petición, componiendo el vector completo de entrada al modelo.
+\newpage
 
 \begin{figure}[htbp]
   \centering
@@ -167,10 +173,8 @@ La inferencia de elección modal requiere coordinar cuatro peticiones asíncrona
   \label{fig:pipeline_inferencia}
 \end{figure}
 
-Al recibir una petición \texttt{POST /api/lpmc/predict}, el backend lanza en paralelo cuatro consultas asíncronas mediante \texttt{asyncio.gather}: una a cada una de las tres instancias OSRM (conducción, bicicleta y a pie) y una a OpenTripPlanner. Con los resultados se construye el vector de características de ruta y se añaden las variables sociodemográficas recibidas en la petición, componiendo el vector completo de entrada al modelo.
+Las variables de entrada proceden de tres fuentes: los tiempos y distancias por perfil de transporte calculados por \gls{osrm}, el desglose temporal del itinerario de transporte público proporcionado por \gls{otp}, y los datos sociodemográficos y contextuales que el usuario introduce en el panel Predicción IA. El Capítulo~\ref{ch:implementacion} detalla la construcción del vector de características y las transformaciones aplicadas.\newline
 
-Las variables de entrada proceden de tres fuentes: los tiempos y distancias por perfil de transporte calculados por OSRM, el desglose temporal del itinerario de transporte público proporcionado por OTP, y los datos sociodemográficos y contextuales que el usuario introduce en el panel Predicción IA. El Capítulo~\ref{ch:implementacion} detalla la construcción del vector de características y las transformaciones aplicadas.
-
-Las variables continuas se normalizan con un escalado estándar aplicado a las columnas de ruta y contextuales, preservando las variables binarias y las columnas codificadas sin transformar. El modelo devuelve un vector de cuatro probabilidades, una por modo de transporte: a pie (\textit{walk}), bicicleta (\textit{cycle}), transporte público (\textit{pt}) y conducción (\textit{drive}). El modo predicho es el de mayor probabilidad.
+Las variables continuas se normalizan con un escalado estándar aplicado a las columnas de ruta y contextuales, preservando las variables binarias y las columnas codificadas sin transformar. El modelo devuelve un vector de cuatro probabilidades, una por modo de transporte: a pie (\textit{walk}), bicicleta (\textit{cycle}), transporte público (\textit{pt}) y conducción (\textit{drive}). El modo predicho es el de mayor probabilidad.\newline
 
 El modelo activo se selecciona mediante el parámetro opcional \texttt{model\_variant} de la petición; en su ausencia, se recurre a la variable de entorno \texttt{LPMC\_MODEL\_VARIANT} (\texttt{xgb} por defecto). Este mecanismo permite cambiar el modelo de inferencia y facilita la incorporación de modelos entrenados externamente, sin modificar el código del backend.

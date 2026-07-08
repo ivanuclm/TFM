@@ -59,7 +59,6 @@
 
 {\fontsize{14pt}{4pt}\selectfont \bft{Director:} \director}
 
-{\fontsize{14pt}{4pt}\selectfont \bft{Codirector:} \codirector}
 \end{flushleft}
 \end{textblock*}
 
@@ -77,12 +76,17 @@
 \cleardoublepage
 \thispagestyle{empty}
 
-\vspace*{9cm}  
-\begin{flushright} \em 
-Aquí va la dedicatoria que cada cual \\ 
-quiera escribir. El ancho se controla \\ 
-manualmente
+\vspace*{9cm}
+\begin{flushright}
+{\em ``Divide et vinces''}\\[0.4em]
+{\footnotesize (Divide y vencerás)}
 \end{flushright}
+
+% \vspace*{9cm}
+% \begin{flushright}
+% {\em ``Divide y vencerás''}\\[0.4em]
+% {\footnotesize Máxima latina, atribuida tradicionalmente a Julio César}
+% \end{flushright}
 
 
 % -------------------------------
@@ -97,11 +101,13 @@ manualmente
 %\end{center}
 %\vskip1cm
 
-Yo, \quad \ldots \quad, con DNI \quad \ldots \quad, declaro que soy el único autor del trabajo fin de grado titulado ``\quad \ldots \quad'', que el citado trabajo no infringe las leyes en vigor sobre propiedad intelectual, y que todo el material no original contenido en dicho trabajo está apropiadamente atribuido a sus legítimos autores.
+% Yo, \quad \ldots \quad, con DNI \quad \ldots \quad, declaro que soy el único autor del trabajo fin de grado titulado ``\quad \ldots \quad'', que el citado trabajo no infringe las leyes en vigor sobre propiedad intelectual, y que todo el material no original contenido en dicho trabajo está apropiadamente atribuido a sus legítimos autores.
+
+Yo, IVÁN VICENTE HERNÁNDEZ GARCÍA DE MORA, con DNI 47448214-L, declaro que soy el único autor del trabajo fin de grado titulado ``SIMULADOR WEB DE ESCENARIOS DE MOVILIDAD URBANA MEDIANTE TÉCNICAS DE INTELIGENCIA ARTIFICIAL'', que el citado trabajo no infringe las leyes en vigor sobre propiedad intelectual, y que todo el material no original contenido en dicho trabajo está apropiadamente atribuido a sus legítimos autores.
 
 \vspace*{2cm}
 \begin{center}
-Albacete, a \quad \ldots \quad de \quad \ldots \quad de 20 \ldots
+Albacete, a 8 de Julio de 2026
 
 \vskip3cm
 
@@ -122,12 +128,30 @@ Fdo.: \autor
 
 La descarbonización de las ciudades y la implantación de zonas de bajas emisiones han situado el reparto modal de los viajes en el centro de la política de movilidad urbana. Las decisiones sobre precios, recorridos o frecuencias del transporte público persiguen desplazar los viajes hacia modos más sostenibles, pero son costosas y difíciles de revertir, por lo que sus responsables necesitan anticipar cómo reaccionarán los ciudadanos antes de aplicarlas.
 
-Este Trabajo Fin de Máster presenta el diseño y la implementación de un simulador web de escenarios de movilidad urbana que aborda esa necesidad. La herramienta combina modelos de aprendizaje automático para la predicción de la elección modal, entrenados sobre el conjunto de datos London Passenger Mode Choice, con servicios de enrutado que proporcionan tiempos y costes realistas de cada modo de transporte: Open Source Routing Machine (OSRM) para los modos viarios y OpenTripPlanner junto con datos GTFS para el transporte público, tomando la ciudad de Toledo como caso de estudio. Sobre un mapa interactivo, el usuario define un viaje y un perfil de viajero, y el sistema estima la probabilidad de que se elija cada modo, permitiendo explorar escenarios \textit{what-if} de interés para la planificación de la movilidad.
+Este Trabajo Fin de Máster presenta el diseño y la implementación de un simulador web de escenarios de movilidad urbana que aborda esa necesidad. La herramienta combina modelos de aprendizaje automático para la predicción de la elección modal, entrenados sobre un conjunto de datos de movilidad urbana, con servicios de enrutado que proporcionan tiempos y costes realistas de cada modo de transporte: Open Source Routing Machine (OSRM) para los modos viarios y OpenTripPlanner junto con datos GTFS para el transporte público, tomando la ciudad de Toledo como caso de estudio. Sobre un mapa interactivo, el usuario define un viaje y un perfil de viajero, y el sistema estima la probabilidad de que se elija cada modo, permitiendo explorar escenarios \textit{what-if} de interés para la planificación de la movilidad.
 
 Se entrenaron y compararon tres modelos (Random Forest, XGBoost y una red neuronal profunda), de los que XGBoost se adoptó como modelo principal por su rendimiento y por su respuesta más robusta ante los ajustes de conocimiento experto del simulador. El sistema completo se despliega de forma reproducible mediante contenedores Docker y se desarrolló siguiendo una metodología ágil basada en Scrum.
 
 \vspace{0.5cm}
 \noindent\textbf{Palabras clave:} movilidad urbana, elección modal, aprendizaje automático, simulación de escenarios, datos abiertos, GTFS, OSRM, OpenTripPlanner.
+
+
+% -------------------------------
+% Abstract
+% -------------------------------
+\cleardoublepage
+\thispagestyle{plain}
+\chapter*{Abstract}
+
+The decarbonisation of cities and the roll-out of low-emission zones have placed the modal split of trips at the centre of urban mobility policy. Decisions on public transport fares, routes or frequencies aim to shift trips towards more sustainable modes, but they are costly and hard to reverse, so decision-makers need to anticipate how citizens will react before applying them.
+
+This Master's Thesis presents the design and implementation of a web-based simulator of urban mobility scenarios that addresses this need. The tool combines machine learning models for mode-choice prediction, trained on an urban mobility dataset, with routing services that provide realistic times and costs for each transport mode: Open Source Routing Machine (OSRM) for road modes and OpenTripPlanner together with GTFS data for public transport, taking the city of Toledo as a case study. On an interactive map, the user defines a trip and a traveller profile, and the system estimates the probability of each mode being chosen, enabling the exploration of \textit{what-if} scenarios relevant to mobility planning.
+
+Three models were trained and compared (Random Forest, XGBoost and a deep neural network), of which XGBoost was adopted as the main model for its performance and its more robust response to the expert-knowledge adjustments of the simulator. The complete system was developed following a Scrum-based agile methodology and is deployed using Docker containers to ensure reproducibility.
+
+\vspace{0.5cm}
+\noindent\textbf{Keywords:} urban mobility, mode choice, machine learning, scenario simulation, open data, GTFS, OSRM, OpenTripPlanner.
+
 
 % -------------------------------
 % Agradecimientos
@@ -140,4 +164,12 @@ Se entrenaron y compararon tres modelos (Random Forest, XGBoost y una red neuron
 \end{center}
 \vskip0.5cm
 
-\lipsum[1]
+Este trabajo es fruto del apoyo de muchas personas, a las que quiero dedicar estas líneas.\newline
+
+En primer lugar, a mi tutor, José Ángel Martín Baos, por su implicación en el proyecto de principio a fin. Le agradezco especialmente que me haya introducido en tecnologías que desconocía, que me haya guiado en cada etapa adaptándose a mis necesidades y a mi ritmo de trabajo, y que me haya dado libertad creativa para tomar mis propias decisiones sobre el proyecto. Su criterio ha sido clave en las decisiones importantes de la implementación, y me ha enseñado conceptos de aprendizaje automático y de su fundamento matemático que no dominaba. Sin sus modelos y su investigación previa, este simulador no habría sido posible.\newline
+
+En segundo lugar, a las Escuelas Superiores de Ingeniería Informática de Albacete y de Ciudad Real (UCLM), por la formación recibida a lo largo de estos años y por haber cultivado en mí la curiosidad y el ingenio que me han traído hasta aquí. En especial, a los profesores de Albacete, donde cursé el grado, y a los profesores y compañeros de Ciudad Real, todo un descubrimiento en esta etapa de máster.\newline
+
+Por último, a mis padres, por dejarme trastear con las máquinas desde pequeño y alimentar sin saberlo esta vocación. Y, por supuesto, a Andrea, por su paciencia infinita y su apoyo constante durante todo este tiempo.\newline
+
+A todos, gracias.

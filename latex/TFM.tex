@@ -42,7 +42,7 @@
 \tableofcontents
 \listoffigures
 \listoftables
-\listofalgorithms
+% \listofalgorithms
 \listofcodes
 \cleardoublepage
 
@@ -67,6 +67,14 @@
 \appendix
 \input{chapters/anexos}
 
+\cleardoublepage
+\thispagestyle{empty}
+
+% -------------------------------
+% Lista de acrónimos
+% -------------------------------
+\glsaddall
+\printnoidxglossary[type=acronym, title=Lista de acrónimos, sort=letter]
 \cleardoublepage
 \thispagestyle{empty}
 

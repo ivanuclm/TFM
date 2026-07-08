@@ -9,7 +9,7 @@ Este anexo recoge el procedimiento para desplegar el simulador en un entorno loc
 
 \subsection{Requisitos del entorno}
 
-El despliegue solo necesita \textbf{Docker} y \textbf{Docker Compose} (incluidos en Docker Desktop) y \textbf{Git} con la extensión \textbf{Git LFS} instalada. Git LFS es imprescindible: los artefactos pesados (grafos OSRM, grafo de OTP, feed GTFS y modelos entrenados) se almacenan mediante esta extensión, de modo que un clon sin LFS descargaría solo punteros de texto en su lugar. El primer arranque descarga las imágenes oficiales de OSRM, OpenTripPlanner, Python y Node, por lo que requiere conexión a internet; las ejecuciones posteriores funcionan sin red.
+El despliegue solo necesita \textbf{Docker} y \textbf{Docker Compose} (incluidos en Docker Desktop) y \textbf{Git} con la extensión \textbf{Git \gls{lfs}} instalada. Git \gls{lfs} es imprescindible: los artefactos pesados (grafos \gls{osrm}, grafo de \gls{otp}, feed \gls{gtfs} y modelos entrenados) se almacenan mediante esta extensión, de modo que un clon sin \gls{lfs} descargaría solo punteros de texto en su lugar. El primer arranque descarga las imágenes oficiales de \gls{osrm}, \acrlong{otp}, Python y Node, por lo que requiere conexión a internet; las ejecuciones posteriores funcionan sin red.
 
 \begin{lstlisting}[language=bash]
 # Clonado del repositorio con los artefactos de Git LFS
@@ -28,16 +28,16 @@ docker compose up --build
 
 La orquestación define, además de los servicios de explotación, varios servicios de inicialización idempotentes que se ejecutan una sola vez antes de levantar el sistema y que se omiten si su resultado ya está presente:
 \begin{itemize}
-  \item \texttt{gtfs-init}: descomprime el feed GTFS (\texttt{GTFS\_Urbano\_Toledo\_2026.zip}) en el directorio de datos del backend.
+  \item \texttt{gtfs-init}: descomprime el feed \gls{gtfs} (\texttt{GTFS\_Urbano\_Toledo\_2026.zip}) en el directorio de datos del backend.
   \item \texttt{osrm-setup}: preprocesa los tres grafos viarios (perfiles de conducción, bicicleta y a pie) si no están ya generados.
-  \item \texttt{otp-build}: construye el grafo multimodal de OpenTripPlanner (\texttt{graph.obj}) si no existe.
+  \item \texttt{otp-build}: construye el grafo multimodal de \acrlong{otp} (\texttt{graph.obj}) si no existe.
 \end{itemize}
 
-Como los artefactos vienen versionados con Git LFS, en un clon íntegro estos servicios detectan que el trabajo ya está hecho y terminan de inmediato; solo reconstruyen lo que falte (por ejemplo, tras actualizar el feed o en un clon sin LFS). Una vez arrancado, el simulador queda accesible en \url{http://127.0.0.1:5173}, la documentación interactiva del backend en \url{http://127.0.0.1:8000/docs} y la comprobación de estado en \url{http://127.0.0.1:8000/health}.
+Como los artefactos vienen versionados con Git \gls{lfs}, en un clon íntegro estos servicios detectan que el trabajo ya está hecho y terminan de inmediato; solo reconstruyen lo que falte (por ejemplo, tras actualizar el feed o en un clon sin \gls{lfs}). Una vez arrancado, el simulador queda accesible en \url{http://127.0.0.1:5173}, la documentación interactiva del backend en \url{http://127.0.0.1:8000/docs} y la comprobación de estado en \url{http://127.0.0.1:8000/health}.
 
 \subsection{Generación manual de los artefactos de enrutado}
 
-El preprocesado de OSRM se ejecuta con la imagen oficial \texttt{osrm/osrm-backend}, que ya incluye los perfiles Lua. Las tres etapas (extracción, particionado y personalización) se repiten para cada perfil sobre el extracto \texttt{clm.osm.pbf}, produciendo un directorio de artefactos independiente por modo:
+El preprocesado de \gls{osrm} se ejecuta con la imagen oficial \texttt{osrm/osrm-backend}, que ya incluye los perfiles Lua. Las tres etapas (extracción, particionado y personalización) se repiten para cada perfil sobre el extracto \texttt{clm.osm.pbf}, produciendo un directorio de artefactos independiente por modo:
 
 \begin{lstlisting}[language=bash]
 # Perfil de conduccion (analogo para bicycle.lua y foot.lua)
@@ -49,7 +49,7 @@ docker run --rm -v "${PWD}/osrm-clm/car:/data" osrm/osrm-backend \
   osrm-customize /data/clm.osrm
 \end{lstlisting}
 
-El grafo de OpenTripPlanner se construye con un único comando sobre el directorio \texttt{otp-toledo/}, que debe contener el extracto OSM y el feed GTFS:
+El grafo de \gls{otp} se construye con un único comando sobre el directorio \texttt{otp-toledo/}, que debe contener el extracto \gls{osm} y el feed \gls{gtfs}:
 
 \begin{lstlisting}[language=bash]
 docker run --rm -v "${PWD}/otp-toledo:/var/opentripplanner" \
@@ -58,20 +58,30 @@ docker run --rm -v "${PWD}/otp-toledo:/var/opentripplanner" \
 
 \subsection{Verificación}
 
-Cada motor OSRM se publica en un puerto distinto del anfitrión (5001, 5002 y 5003 para conducción, bicicleta y a pie, respectivamente; se evita el 5000 por su conflicto con un servicio del sistema en macOS). Una consulta de prueba devuelve \texttt{"code": "Ok"} y la geometría de la ruta:
+Cada motor \gls{osrm} se publica en un puerto distinto del anfitrión (5001, 5002 y 5003 para conducción, bicicleta y a pie, respectivamente; se evita el 5000 por su conflicto con un servicio del sistema en macOS). Una consulta de prueba devuelve \texttt{"code": "Ok"} y la geometría de la ruta:
 
 \begin{lstlisting}[language=bash]
 curl "http://localhost:5001/route/v1/driving/-4.0356,39.8750;-4.0023,39.8602?overview=full"
 \end{lstlisting}
 
-OpenTripPlanner queda accesible en el puerto 8080 y el backend en el 8000. La documentación OpenAPI de \texttt{/docs} permite ejercitar todos los endpoints desde el navegador.
-
+\acrlong{otp} queda accesible en el puerto 8080 y el backend en el 8000. La documentación OpenAPI de \texttt{/docs} permite ejercitar todos los endpoints desde el navegador.
+\vspace{-5mm}
 % =======================================================
 \section{Endpoints y contratos de la API}
 \label{anx:endpoints}
 % =======================================================
 
-La Tabla~\ref{tab:endpoints_api} del capítulo~\ref{ch:arquitectura} resume los endpoints de la API. Este anexo recoge ejemplos de petición y respuesta de los tres principales. Todas las peticiones \texttt{POST} usan cuerpo JSON y todas las coordenadas son pares \texttt{(lat, lon)} en grados decimales.
+La Tabla~\ref{tab:endpoints_api} del Capítulo~\ref{ch:arquitectura} resume los endpoints de la API. Este anexo recoge ejemplos de petición y respuesta de los tres principales. Todas las peticiones \texttt{POST} usan cuerpo JSON y todas las coordenadas son pares \texttt{(lat, lon)} en grados decimales.
+
+
+La Figura~\ref{fig:fastapi_docs} muestra la documentación OpenAPI interactiva que FastAPI genera en \texttt{/docs}, con los cuatro grupos de endpoints y sus esquemas de petición y respuesta.
+
+\begin{figure}[p]
+  \centering
+  \includegraphics[width=\textwidth]{figs/FastAPI_Docs4.jpeg}
+  \caption{Documentación OpenAPI generada automáticamente por FastAPI.}
+  \label{fig:fastapi_docs}
+\end{figure}
 
 \subsection{Rutas viarias multiperfil (\texttt{POST /api/osrm/routes})}
 
@@ -113,7 +123,6 @@ La Tabla~\ref{tab:endpoints_api} del capítulo~\ref{ch:arquitectura} resume los 
       {"mode": "WALK", "distance_m": 220.0, "duration_s": 180.0, "geometry": [...]}
     ] } }
 \end{lstlisting}
-\newpage
 
 \subsection{Inferencia de elección modal (\texttt{POST /api/lpmc/predict})}
 
@@ -140,7 +149,7 @@ La Tabla~\ref{tab:endpoints_api} del capítulo~\ref{ch:arquitectura} resume los 
 \label{anx:sprints}
 % =======================================================
 
-La planificación y el desarrollo siguieron un proceso Scrum adaptado, descrito en el capítulo~\ref{ch:metodologia}, donde se detallan los sprints con sus objetivos, fechas y resultados. La trazabilidad fina del trabajo (tareas, decisiones técnicas y artefactos) queda registrada en el historial de control de versiones del repositorio público del proyecto (\url{https://github.com/ivanuclm/movilidad-urbana}), cuyos mensajes de \textit{commit} documentan la evolución incremental del sistema sprint a sprint.
+La planificación y el desarrollo siguieron un proceso Scrum adaptado, descrito en el Capítulo~\ref{ch:metodologia}, donde se detallan los sprints con sus objetivos, fechas y resultados. La trazabilidad fina del trabajo (tareas, decisiones técnicas y artefactos) queda registrada en el historial de control de versiones del repositorio público del proyecto (\url{https://github.com/ivanuclm/movilidad-urbana}), cuyos mensajes de \textit{commit} documentan la evolución incremental del sistema sprint a sprint.
 
 La Figura~\ref{fig:sprints_timeline} muestra el cronograma de los sprints ejecutados a lo largo del proyecto, desde la fase inicial de planificación (noviembre de 2025) hasta el cierre del desarrollo (julio de 2026). Las barras reflejan la secuencia y el solapamiento entre sprints, y están codificadas por color según su naturaleza: infraestructura y servicios (azul), Machine Learning e IA (verde), memoria (naranja) y consolidación y entrega (teal).
 
@@ -156,40 +165,40 @@ La Figura~\ref{fig:sprints_timeline} muestra el cronograma de los sprints ejecut
 \label{anx:experimentos}
 % =======================================================
 
-Los hiperparámetros de los tres modelos se detallan en la Sección~\ref{subsec:impl_lpmc_hiperparametros}  (Tablas~\ref{tab:rf_params},~\ref{tab:xgb_params} y~\ref{tab:dnn_params} para Random Forest, XGBoost y la red neuronal, respectivamente) y los resultados de validación cruzada y test en la sección~\ref{subsec:impl_lpmc_entrenamiento} (Tablas~\ref{tab:lpmc_train_results} y~\ref{tab:lpmc_test_results}). Este anexo reúne las condiciones que aseguran la reproducibilidad de esos experimentos:
+Los hiperparámetros de los tres modelos se detallan en la Sección~\ref{subsec:impl_lpmc_hiperparametros}  (Tablas~\ref{tab:rf_params},~\ref{tab:xgb_params} y~\ref{tab:dnn_params} para \acrlong{rf}, \gls{xgboost} y la \acrlong{dnn}, respectivamente) y los resultados de validación cruzada y test en la sección~\ref{subsec:impl_lpmc_entrenamiento} (Tablas~\ref{tab:lpmc_train_results} y~\ref{tab:lpmc_test_results}). Este anexo reúne las condiciones que aseguran la reproducibilidad de esos experimentos:
 
 \begin{itemize}
-  \item \textbf{Dataset}: London Passenger Mode Choice (LPMC), con división temporal no aleatoria (oleadas 1 y 2 para entrenamiento, oleada 3 para test).
+  \item \textbf{Dataset}: \acrfull{lpmc}, con división temporal no aleatoria (oleadas 1 y 2 para entrenamiento, oleada 3 para test).
   \item \textbf{Validación}: validación cruzada de 5~\textit{folds} agrupada por hogar (\texttt{GroupKFold} con \texttt{household\_id} como grupo), de modo que ningún hogar aparece simultáneamente en entrenamiento y validación.
   \item \textbf{Preprocesado}: \texttt{StandardScaler} ajustado solo sobre el subconjunto de entrenamiento de cada fold; codificación \textit{one-hot} de las variables categóricas \texttt{purpose} y \texttt{fueltype}; exclusión de \texttt{household\_id} de las características.
   \item \textbf{Semilla aleatoria}: 481516, fijada en NumPy y PyTorch.
-  \item \textbf{Bibliotecas}: scikit-learn (Random Forest y escalado), XGBoost (\textit{gradient boosting}) y PyTorch (red neuronal profunda).
-  \item \textbf{Métricas}: exactitud (\textit{accuracy}) y GMPCA (\textit{Geometric Mean Probability of Correct Alternative}).
+  \item \textbf{Bibliotecas}: scikit-learn (\acrlong{rf} y escalado), \gls{xgboost} (\textit{gradient boosting}) y PyTorch (\gls{dnn}).
+  \item \textbf{Métricas}: exactitud (\textit{accuracy}) y \gls{gmpca}.
 \end{itemize}
 
 
-La Tabla~\ref{tab:lpmc_features} detalla las variables de entrada del modelo, agrupadas según procedan de los servicios de enrutado (OSRM y OTP) o del perfil sociodemográfico aportado por el usuario, tal como se introdujo en la Sección~\ref{subsec:impl_lpmc_dataset}.
+La Tabla~\ref{tab:lpmc_features} detalla las variables de entrada del modelo, agrupadas según procedan de los servicios de enrutado (\gls{osrm} y \gls{otp}) o del perfil sociodemográfico aportado por el usuario, tal como se introdujo en la Sección~\ref{subsec:impl_lpmc_dataset}.
 
 \begin{table}[htbp]
-  \caption{Variables de entrada al modelo de elección modal. Las variables de ruta se derivan automáticamente de OSRM y OTP; las sociodemográficas las aporta el usuario a través de la interfaz.}
+  \caption[Variables de entrada al modelo de elección modal.]{Variables de entrada al modelo de elección modal. Las variables de ruta se derivan automáticamente de \gls{osrm} y \gls{otp}; las sociodemográficas las aporta el usuario a través de la interfaz.}
   \label{tab:lpmc_features}
   \centering
   \begin{tabular}{llp{5.5cm}}
     \toprule
     \textbf{Variable} & \textbf{Tipo / Rango} & \textbf{Descripción} \\
     \midrule
-    \multicolumn{3}{l}{\textit{Variables de ruta (derivadas de OSRM y OTP)}} \\
+    \multicolumn{3}{l}{\textit{Variables de ruta (derivadas de \gls{osrm} y \gls{otp})}} \\
     \midrule
-    \texttt{distance}              & float, m         & Distancia en coche (OSRM driving). \\
-    \texttt{dur\_driving}          & float, h         & Tiempo de conducción (OSRM driving). \\
-    \texttt{dur\_cycling}          & float, h         & Tiempo en bicicleta (OSRM cycling). \\
-    \texttt{dur\_walking}          & float, h         & Tiempo a pie hasta destino (OSRM foot). \\
-    \texttt{dur\_pt\_access}       & float, h         & Tiempo del primer tramo a pie hasta la parada (OTP). \\
-    \texttt{dur\_pt\_bus}          & float, h         & Tiempo acumulado en autobús (OTP). \\
-    \texttt{dur\_pt\_rail}         & float, h         & Tiempo acumulado en ferroviario (OTP). \\
-    \texttt{dur\_pt\_int\_waiting} & float, h         & Tiempo de espera en transbordos (OTP). \\
-    \texttt{dur\_pt\_int\_walking} & float, h         & Desplazamiento a pie entre transbordos (OTP). \\
-    \texttt{pt\_n\_interchanges}   & int, $\geq 0$    & Número de transbordos (OTP). \\
+    \texttt{distance}              & float, m         & Distancia en coche (\gls{osrm} driving). \\
+    \texttt{dur\_driving}          & float, h         & Tiempo de conducción (\gls{osrm} driving). \\
+    \texttt{dur\_cycling}          & float, h         & Tiempo en bicicleta (\gls{osrm} cycling). \\
+    \texttt{dur\_walking}          & float, h         & Tiempo a pie hasta destino (\gls{osrm} foot). \\
+    \texttt{dur\_pt\_access}       & float, h         & Tiempo del primer tramo a pie hasta la parada (\gls{otp}). \\
+    \texttt{dur\_pt\_bus}          & float, h         & Tiempo acumulado en autobús (\gls{otp}). \\
+    \texttt{dur\_pt\_rail}         & float, h         & Tiempo acumulado en ferroviario (\gls{otp}). \\
+    \texttt{dur\_pt\_int\_waiting} & float, h         & Tiempo de espera en transbordos (\gls{otp}). \\
+    \texttt{dur\_pt\_int\_walking} & float, h         & Desplazamiento a pie entre transbordos (\gls{otp}). \\
+    \texttt{pt\_n\_interchanges}   & int, $\geq 0$    & Número de transbordos (\gls{otp}). \\
     \midrule
     \multicolumn{3}{l}{\textit{Variables sociodemográficas y contextuales (aportadas por el usuario)}} \\
     \midrule
@@ -206,5 +215,3 @@ La Tabla~\ref{tab:lpmc_features} detalla las variables de entrada del modelo, ag
     \bottomrule
   \end{tabular}
 \end{table}
-
-
