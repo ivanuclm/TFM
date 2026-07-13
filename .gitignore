@@ -122,6 +122,9 @@ prediction-behavioural-analysis-ml-travel-mode-choice/.git/
 
 *.bak
 
+# ── Defense presentation (local only) ────────────────────────────────────────
+presentacion/
+
 # ── Office lock files ─────────────────────────────────────────────────────────
 ~$*
 
