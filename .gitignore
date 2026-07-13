@@ -103,6 +103,7 @@ lpmc/ConfusionMatrix.png
 
 # ── Internal project files (not for public repo) ──────────────────────────────
 CLAUDE.md
+CLAUDE_REPASO.md
 ESTADO_MEMORIA.md
 INSTRUCCIONES.md
 RUNBOOK.md
@@ -120,3 +121,56 @@ prediction-behavioural-analysis-ml-travel-mode-choice/.git/
 **/.git_backup_*/**
 
 *.bak
+
+# ── Office lock files ─────────────────────────────────────────────────────────
+~$*
+
+# ── Root scratch/borrador files ───────────────────────────────────────────────
+_borrador_*
+CruceFicherosGTFS.pdf
+pipeline_inferencia.py
+
+# ── LaTeX build artifact and internal files ───────────────────────────────────
+latex/*.xdv
+latex/TFM_Anotado*.pdf
+latex/ultimos_cambios.md
+latex/Léeme.txt
+latex/Reuniones*.csv
+
+# ── Papers plain-text previews ────────────────────────────────────────────────
+papers/*.preview.txt
+
+# ── latex/figs: figuras no usadas en la memoria final ────────────────────────
+# (solo las referenciadas activamente en \includegraphics sin comentar permanecen)
+latex/figs/ARQUITECTURA*.pdf
+latex/figs/ARQUITECTURA*.pptx
+latex/figs/ARQUITECTURA*.jpg
+latex/figs/GTFS_Linea*.png
+latex/figs/GTFS_Paradas*.png
+latex/figs/Itinerario*.png
+latex/figs/Rutas[0-9]*.jpeg
+latex/figs/RutasOSRM*.jpeg
+latex/figs/RutasOSRM*.png
+latex/figs/RutasOTP.jpeg
+latex/figs/RutasSoloOSRM.jpeg
+latex/figs/Screenshot_*.jpeg
+latex/figs/DetalleParadas.jpeg
+latex/figs/FastAPI_Docs.jpeg
+latex/figs/FastAPI_Docs2.jpeg
+latex/figs/FastAPI_Docs3.jpeg
+latex/figs/FRONTEND_Ajustes1.jpeg
+latex/figs/FRONTEND_Ajustes2.jpeg
+latex/figs/FRONTEND_Capas.jpeg
+latex/figs/FRONTEND_GTFS.jpeg
+latex/figs/FRONTEND_Horarios.jpeg
+latex/figs/FRONTEND_IA[0-9].jpeg
+latex/figs/FRONTEND_VistaGeneral.jpeg
+latex/figs/esiiab.png
+latex/figs/euroinf.jpg
+latex/figs/ch2_pipeline*.png
+latex/figs/fig_pipeline_osrm.svg
+latex/figs/logoesi.svg
+latex/figs/scrum_tfm_cycle.png
+latex/figs/sprints_timeline.png
+latex/figs/_borrador_*.png
+latex/figs/generate_*.py
