@@ -16,14 +16,63 @@ Mancha (ESIIAB, UCLM).
 
 ## Funcionalidades
 
-- Selección de origen y destino haciendo clic derecho sobre el mapa interactivo.
-- Cálculo de rutas en coche, bicicleta y a pie mediante tres instancias
-  locales de OSRM.
-- Planificación de trayectos en transporte público con OpenTripPlanner 2.x y
-  el feed GTFS urbano de Toledo.
-- Exploración de líneas, paradas y horarios en el panel GTFS.
-- Inferencia de elección modal con XGBoost entrenado sobre el dataset LPMC,
-  con la opción de comparar con DNN y Random Forest.
+La interfaz se articula en torno a un rail lateral fijo que da acceso a seis
+paneles funcionales superpuestos sobre un mapa de Toledo a pantalla completa.
+
+**Panel Rutas**
+- Establece el origen y el destino haciendo clic derecho en el mapa o editando
+  directamente las coordenadas en el panel.
+- Calcula simultáneamente rutas en coche, bicicleta y a pie mediante tres
+  instancias locales de OSRM (polilíneas coloreadas con contorno de contraste
+  para colores claros).
+- Planifica trayectos en transporte público con OpenTripPlanner 2.x (GTFS
+  urbano de Toledo, 22 feb – 22 may 2026); navega entre alternativas e
+  inspecciona un diagrama parada a parada con horas de paso, fly-to en el mapa
+  y marcadores de transbordo.
+- Auto-recálculo: tras el primer cálculo, cambiar cualquier extremo O/D
+  relanza todas las peticiones automáticamente.
+
+**Panel Red GTFS**
+- Explora las líneas de bus en un acordeón agrupado por nombre de línea; cada
+  línea muestra su color oficial, ambos sentidos y un diagrama de paradas estilo
+  cartel de línea.
+- Tabla de horarios con resaltado de la próxima salida: pasadas en gris,
+  futuras en azul, la próxima en negrita. Avisa si la línea no circula en la
+  fecha seleccionada.
+
+**Panel Predicción IA**
+- Tres perfiles de viaje predefinidos — Commuter, Estudiante, Familiar — que
+  autocompletan el formulario y ajustan también la fecha y la hora globales al
+  escenario que representan.
+- Inferencia de elección modal (XGBoost, Random Forest o DNN) con probabilidades
+  para los cuatro modos: a pie, bicicleta, transporte público y coche.
+- Compara los tres modelos sobre el mismo escenario, o inspecciona el vector de
+  características completo (valores originales y escalados) en un modal de depuración.
+
+**Panel Capas**
+- Seis capas de fondo: CartoDB Voyager (por defecto), CartoDB Positron,
+  OpenStreetMap, OpenTopoMap, Esri World Imagery (satélite) y ortofoto PNOA
+  (IGN España, 25 cm de resolución en zona urbana, sin token necesario).
+
+**Panel Ajustes**
+- Mostrar u ocultar las paradas de bus en el mapa.
+- Selector de modelo dinámico: cualquier par `{nombre}_lpmc.joblib` +
+  `{nombre}_lpmc_scaler.joblib` en `lpmc/models/` es detectado en tiempo de
+  ejecución sin reiniciar ningún contenedor.
+- Instrucciones colapsables para añadir modelos propios (interfaz sklearn
+  `predict_proba` o PyTorch mediante `TorchModalWrapper`).
+
+**Control global de fecha y hora**
+- Un único selector de fecha y hora fijo en la esquina superior izquierda del
+  mapa gobierna todos los paneles a la vez: itinerarios OTP, horarios GTFS y
+  perfil de viaje de la IA. Acotado al rango válido del feed (22 feb – 22 may 2026).
+
+**Controles del mapa**
+- Zoom fraccionario (pasos de 0,25) mediante botones React propios que
+  sustituyen a los controles nativos de Leaflet. Botones de limpieza
+  independientes para rutas, capa de bus o todo incluidos los puntos O/D.
+- Menú contextual (clic derecho): establecer origen, establecer destino o
+  copiar coordenadas al portapapeles.
 
 ---
 
@@ -33,7 +82,7 @@ Mancha (ESIIAB, UCLM).
 |---|---|
 | [Git](https://git-scm.com/) | Obligatorio. |
 | [Docker Desktop](https://www.docker.com/products/docker-desktop/) | Obligatorio. Proporciona Docker Engine y Compose v2. |
-| [Git LFS](https://git-lfs.com/) | Obligatorio para descargar los ficheros grandes (modelos, grafos de enrutado). |
+| [Git LFS](https://git-lfs.com/) | Obligatorio para descargar los ficheros binarios grandes (modelos, grafos, GTFS). |
 
 ---
 
@@ -48,18 +97,19 @@ docker compose up --build
 
 Abre **http://127.0.0.1:5173** cuando todos los servicios estén activos.
 
-> **El primer arranque tarda ~15-20 minutos** mientras OSRM compila los
-> grafos de enrutado para los tres perfiles (coche, bicicleta, a pie) a
-> partir del extracto OSM incluido. Los arranques posteriores son inmediatos.
+> **El primer arranque tarda ~15–20 minutos** mientras OSRM compila los grafos
+> viarios para los tres perfiles (coche, bicicleta y a pie) a partir del
+> extracto OSM incluido. Los arranques siguientes son inmediatos.
 
 ### Qué hace `docker compose up` automáticamente
 
 1. **`gtfs-init`** — extrae el ZIP del GTFS (del LFS) al directorio de datos
    del backend. Se salta en arranques posteriores.
 2. **`osrm-setup`** — ejecuta `osrm-extract → osrm-partition → osrm-customize`
-   para cada perfil de enrutado usando el PBF del LFS. Los perfiles ya
-   compilados se saltan.
-3. El resto de servicios arranca cuando los init containers terminan.
+   para cada perfil usando el PBF del LFS. Los perfiles ya compilados se saltan.
+3. **`otp-build`** — construye el grafo de OTP (`graph.obj`) a partir del feed
+   GTFS y el extracto OSM. Se salta si `graph.obj` ya existe.
+4. El resto de servicios arranca cuando los init containers terminan.
 
 ### Si clonaste sin Git LFS instalado
 
@@ -76,14 +126,14 @@ docker compose up --build
 ## Operaciones habituales
 
 ```bash
-docker compose up            # arrancar todos los servicios (rápido desde la 2ª vez)
-docker compose up --build    # reconstruir imágenes y arrancar (tras cambios en el código)
-docker compose down          # parar y eliminar contenedores
-docker compose logs -f backend      # ver logs del backend en tiempo real
-docker compose logs -f osrm-setup   # seguir la compilación de los grafos
-docker compose logs -f gtfs-init    # seguir la extracción del GTFS
-docker compose logs -f otp          # logs de OpenTripPlanner
-docker compose ps                   # estado de los contenedores
+docker compose up                # arrancar todos los servicios
+docker compose up --build        # reconstruir imágenes y arrancar
+docker compose build frontend && docker compose up  # solo reconstruir el frontend (tras añadir paquetes npm)
+docker compose down              # parar y eliminar contenedores
+docker compose logs -f backend   # ver logs del backend en tiempo real
+docker compose logs -f osrm-setup  # seguir la compilación de los grafos
+docker compose logs -f otp       # logs de OpenTripPlanner
+docker compose ps                # estado de los contenedores
 ```
 
 ---
@@ -94,7 +144,7 @@ docker compose ps                   # estado de los contenedores
 |---|---|
 | Simulador | http://127.0.0.1:5173 |
 | Backend API | http://127.0.0.1:8000 |
-| Health check | http://127.0.0.1:8000/health |
+| Documentación OpenAPI | http://127.0.0.1:8000/docs |
 | OpenTripPlanner | http://127.0.0.1:8080 |
 | OSRM coche | http://127.0.0.1:5001 |
 | OSRM bicicleta | http://127.0.0.1:5002 |
@@ -105,19 +155,20 @@ docker compose ps                   # estado de los contenedores
 ## Endpoints del API
 
 Todas las peticiones de enrutado e inferencia pasan por el backend FastAPI.
-La documentación OpenAPI completa está disponible en http://127.0.0.1:8000/docs.
+La documentación interactiva completa está en http://127.0.0.1:8000/docs.
 
 ```
 GET  /health
 POST /api/osrm/routes
 POST /api/otp/routes
-GET  /api/gtfs/stops?limit=5000
+GET  /api/gtfs/stops
 GET  /api/gtfs/routes
 GET  /api/gtfs/routes/{route_id}
 GET  /api/gtfs/routes/{route_id}/schedule?date=YYYY-MM-DD
 POST /api/lpmc/predict
 POST /api/lpmc/compare
-GET  /api/lpmc/model-info
+POST /api/lpmc/debug-features
+GET  /api/lpmc/models
 ```
 
 ---
@@ -132,11 +183,16 @@ routers:
 Navegador (React + Leaflet)
         │  HTTP
         ▼
-Backend FastAPI ──► OSRM coche     (puerto 5001)   /api/osrm
-                    OSRM bicicleta (puerto 5002)   /api/otp
-                    OSRM a pie     (puerto 5003)   /api/gtfs
-                    OTP            (puerto 8080)   /api/lpmc
+Backend FastAPI ─┬─► OSRM coche     (puerto 5001)  ┐
+                 ├─► OSRM bicicleta (puerto 5002)  ├─ /api/osrm
+                 ├─► OSRM a pie     (puerto 5003)  ┘
+                 ├─► OTP            (puerto 8080)  ── /api/otp · /api/gtfs
+                 └─► Modelos LPMC  (en memoria)   ── /api/lpmc
 ```
+
+OSRM requiere un proceso por perfil de transporte, de ahí los tres contenedores
+independientes. Los modelos LPMC se cargan en memoria dentro del propio proceso
+del backend, sin servicio adicional.
 
 ### Estructura del repositorio
 
@@ -152,70 +208,73 @@ Backend FastAPI ──► OSRM coche     (puerto 5001)   /api/osrm
 │   └── GTFS_Urbano_Toledo_2026.zip   GTFS urbano de Toledo (Git LFS, ~14 MB)
 ├── lpmc/
 │   ├── models/           Modelos entrenados (Git LFS)
-│   └── *.py              Scripts de entrenamiento
+│   └── *.py              Scripts de entrenamiento y ajuste
 ├── latex/                Memoria del TFM (fuente LaTeX + PDF compilado)
 ├── docker/               Dockerfiles (backend, frontend)
 ├── scripts/              Utilidades de setup
 └── docker-compose.yml
 ```
 
-### Ficheros almacenados en Git LFS
-
-Git LFS guarda los ficheros binarios pesados fuera del historial de git
-regular. Se descargan automáticamente al clonar con LFS instalado.
+### Ficheros en Git LFS
 
 | Fichero | Tamaño | Propósito |
 |---|---|---|
 | `osrm-clm/*.osm.pbf` | ~97 MB | Red viaria OSM (Castilla-La Mancha) |
 | `otp-toledo/graph.obj` | ~117 MB | Grafo OTP pre-compilado |
 | `otp-toledo/GTFS_Urbano_Toledo_2026.zip` | ~14 MB | Feed GTFS urbano de Toledo |
-| `lpmc/models/xgb_lpmc.joblib` | ~17 MB | Modelo XGBoost de elección modal |
-| `lpmc/models/rf_lpmc.joblib` | ~600 MB | Modelo Random Forest de elección modal |
-| `lpmc/models/dnn_lpmc.pt` | ~66 KB | Modelo DNN de elección modal (PyTorch) |
+| `lpmc/models/xgb_lpmc.joblib` | ~16 MB | Modelo XGBoost de elección modal |
+| `lpmc/models/rf_lpmc.joblib` | ~398 MB | Modelo Random Forest de elección modal |
+| `lpmc/models/dnn_lpmc.pt` | ~0,2 MB | Modelo DNN de elección modal (PyTorch) |
+
+El RF es el artefacto más pesado, pero se incluye porque el plan gratuito de
+GitHub LFS (10 GiB de almacenamiento, 10 GiB/mes de transferencia) da margen
+suficiente para el uso evaluador previsto. Si la transferencia resultara un
+problema, los modelos pueden distribuirse como release assets.
 
 ---
 
 ## Modelos de elección modal
 
-Los tres modelos se incluyen vía Git LFS y están listos para usar sin necesidad
-de entrenar nada.
+Los tres modelos se incluyen vía Git LFS y están listos para usar sin entrenar nada.
 
-| Modelo | Fichero | Incluido | Notas |
-|---|---|---|---|
-| XGBoost | `xgb_lpmc.joblib` | **Sí (LFS)** | Modelo activo, mejor accuracy (~73% test) |
-| DNN (PyTorch) | `dnn_lpmc.pt` | **Sí (LFS)** | Disponible en /compare |
-| Random Forest | `rf_lpmc.joblib` | **Sí (LFS, ~600 MB)** | Disponible en /compare |
+| Modelo | Fichero | Accuracy CV | GMPCA CV | Accuracy test | GMPCA test |
+|---|---|---|---|---|---|
+| XGBoost | `xgb_lpmc.joblib` | 75,5 % | 52,5 % | **74,4 %** | **51,6 %** |
+| Random Forest | `rf_lpmc.joblib` | 74,9 % | 51,5 % | 74,1 % | 50,6 % |
+| DNN (PyTorch) | `dnn_lpmc.pt` | 75,2 % | 51,3 % | 74,3 % | 50,4 % |
 
-`/api/lpmc/predict` usa XGBoost por defecto (`LPMC_MODEL_VARIANT=xgb` en
-`docker-compose.yml`). `/api/lpmc/compare` ejecuta los tres modelos simultáneamente.
+Métricas de validación cruzada de 5 folds agrupada por hogar sobre el conjunto
+de entrenamiento, y evaluación sobre el conjunto de prueba (separación temporal
+por oleada de encuesta). XGBoost es el modelo activo por defecto
+(`LPMC_MODEL_VARIANT=xgb` en `docker-compose.yml`). `/api/lpmc/compare` ejecuta
+los tres sobre el mismo escenario.
 
-### Reentrenar todos los modelos desde cero
+### Reentrenar desde cero
 
-El pipeline completo ejecuta seis scripts en secuencia. Se requiere Python
-3.10+ instalado localmente. El dataset LPMC tiene acceso libre a través del
-editor:
+El pipeline completo ejecuta seis scripts. Se requiere Python 3.10+ instalado
+localmente. El dataset LPMC tiene acceso libre:
 
 - Paper: https://doi.org/10.1680/jsmic.17.00018
 - Descarga CSV: https://www.emerald.com/jsmic/article-supplement/408759/csv/dataset/
 
-Coloca el fichero descargado en `lpmc/data/raw/LPMC_dataset.csv`.
+Coloca el fichero en `lpmc/data/raw/LPMC_dataset.csv`.
 
 ```bash
 cd lpmc
-pip install -r requirements.txt   # instalar dependencias
-python 01_explore.py           # análisis exploratorio de datos
-python 02_preprocess.py        # ingeniería de features y preprocesado
+pip install -r requirements.txt
+python 01_explore.py           # análisis exploratorio
+python 02_preprocess.py        # ingeniería de features
 python 03_train_xgb.py         # XGBoost → models/xgb_lpmc.joblib
 python 04_train_rf.py          # Random Forest → models/rf_lpmc.joblib (~15 min)
-python 05_train_dnn.py         # DNN (PyTorch) → models/dnn_lpmc.pt + .joblib
-python 06_compare_models.py    # tabla comparativa y métricas en LaTeX
+python 05_train_dnn.py         # DNN → models/dnn_lpmc.pt + scaler
+python 06_compare_models.py    # tabla comparativa
 docker compose restart backend
 ```
 
-Los tres modelos usan `GroupKFold(n_splits=5)` con `household_id` como clave
-de agrupación (solo para la partición train/test — `household_id` nunca se
-usa como feature). Las duraciones de OSRM y OTP se convierten de segundos a
-horas antes de la inferencia para coincidir con las unidades del dataset LPMC.
+Los tres modelos usan `GroupKFold(n_splits=5)` con `household_id` como clave de
+agrupación (nunca como feature). Las duraciones de OSRM y OTP se convierten de
+segundos a horas antes de la inferencia para coincidir con las unidades del
+dataset LPMC.
 
 ---
 
@@ -235,12 +294,7 @@ rm -rf osrm-clm/car osrm-clm/bike osrm-clm/foot
 Remove-Item -Recurse -Force osrm-clm\car, osrm-clm\bike, osrm-clm\foot
 ```
 
-Vuelve a ejecutar `docker compose up`. El servicio `osrm-setup` recompila
-los tres perfiles (~15 min).
-
 ### Extracción del GTFS fallida
-
-Borra el directorio extraído y reinicia:
 
 ```bash
 # Linux / macOS / Git Bash
@@ -252,16 +306,24 @@ rm -rf movilidad-urbana-sim/backend/data/gtfs/GTFS_Urbano_Toledo_2026
 Remove-Item -Recurse -Force "movilidad-urbana-sim\backend\data\gtfs\GTFS_Urbano_Toledo_2026"
 ```
 
-Vuelve a ejecutar `docker compose up`.
+### OTP no devuelve itinerarios con transporte público
+
+El feed GTFS cubre únicamente del **22 de febrero al 22 de mayo de 2026**.
+Las fechas fuera de ese rango devuelven solo trayectos a pie. Usa el control
+global de fecha y hora de la interfaz para seleccionar una fecha dentro del
+rango válido.
+
+### graph.obj ausente tras clonar sin LFS
+
+Ejecuta `git lfs pull` para descargar el grafo. Alternativamente, el servicio
+`otp-build` lo reconstruirá en el siguiente `docker compose up` (requiere que
+el extracto OSM y el ZIP del GTFS estén presentes).
 
 ---
 
 ## Reconstruir datos (avanzado)
 
-El `graph.obj` y los grafos OSRM pre-compilados cubren el uso normal.
-Reconstruye solo si actualizas el extracto OSM o el feed GTFS.
-
-### Reconstruir el grafo OTP
+### Reconstruir el grafo OTP manualmente
 
 ```bash
 docker run --rm \
@@ -273,7 +335,7 @@ docker run --rm \
 ### Reconstruir los grafos OSRM manualmente
 
 ```bash
-# Ejemplo para el perfil coche (repetir con bicycle.lua para bici, foot.lua para peatón)
+# Ejemplo para el perfil coche (repetir con bicycle.lua y foot.lua)
 docker run --rm -v "$(pwd)/osrm-clm/car:/data" osrm/osrm-backend:latest \
   osrm-extract -p /opt/car.lua /data/clm.osm.pbf
 docker run --rm -v "$(pwd)/osrm-clm/car:/data" osrm/osrm-backend:latest \
@@ -282,7 +344,7 @@ docker run --rm -v "$(pwd)/osrm-clm/car:/data" osrm/osrm-backend:latest \
   osrm-customize /data/clm.osrm
 ```
 
-Los perfiles OSRM (`car.lua`, `bicycle.lua`, `foot.lua`) van incluidos en la
+Los perfiles Lua (`car.lua`, `bicycle.lua`, `foot.lua`) están incluidos en la
 imagen oficial `osrm/osrm-backend` — no hace falta descargar nada aparte.
 
 ---
@@ -291,8 +353,8 @@ imagen oficial `osrm/osrm-backend` — no hace falta descargar nada aparte.
 
 | Dataset | Fuente |
 |---|---|
-| GTFS urbano de Toledo | [NAP — Ministerio de Transportes](https://nap.transportes.gob.es/Files/Detail/1377) |
-| Red viaria OSM (CLM) | [Geofabrik](https://download.geofabrik.de/europe/spain/castilla-la-mancha.html) |
+| GTFS urbano de Toledo (feb–may 2026) | [NAP — Ministerio de Transportes](https://nap.transportes.gob.es/Files/Detail/1377) |
+| Red viaria OSM (Castilla-La Mancha) | [Geofabrik](https://download.geofabrik.de/europe/spain/castilla-la-mancha.html) |
 | Dataset LPMC | [Hillel et al. (2018)](https://doi.org/10.1680/jsmic.17.00018) — acceso libre, [descargar CSV](https://www.emerald.com/jsmic/article-supplement/408759/csv/dataset/) |
 
 ---
@@ -302,8 +364,8 @@ imagen oficial `osrm/osrm-backend` — no hace falta descargar nada aparte.
 **Título:** Simulador web de escenarios de movilidad urbana mediante técnicas
 de inteligencia artificial
 
-**Máster:** Máster Universitario en Ingeniería Informática, ESIIAB — Universidad
-de Castilla-La Mancha
+**Máster:** Máster Universitario en Ingeniería Informática, ESIIAB —
+Universidad de Castilla-La Mancha (UCLM)
 
 **Referencias clave:**
 - Hillel et al. (2018) — Dataset LPMC
